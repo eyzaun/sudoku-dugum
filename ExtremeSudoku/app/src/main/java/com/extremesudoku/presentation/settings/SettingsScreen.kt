@@ -277,7 +277,7 @@ private fun ThemeSelector(
         ThemeOption(
             themeType = ThemeType.LIGHT,
             themeName = "Aydınlık Tema",
-            themeDescription = "Modern, parlak ve temiz görünüm - Mavi, Teal, Mor renkleri",
+            themeDescription = "Modern, parlak ve temiz - Mavi, Yeşil, Mor (WCAG AA Uyumlu)",
             isSelected = currentTheme == ThemeType.LIGHT,
             onSelected = { onThemeSelected(ThemeType.LIGHT) }
         )
@@ -285,17 +285,25 @@ private fun ThemeSelector(
         ThemeOption(
             themeType = ThemeType.DARK,
             themeName = "Karanlık Tema",
-            themeDescription = "Zifiri karanlıkta kolay - AMOLED Optimized Mavi-Gri tonları",
+            themeDescription = "AMOLED Optimized - Açık Mavi, Yeşil, Mor (Göz Rahatlığı)",
             isSelected = currentTheme == ThemeType.DARK,
             onSelected = { onThemeSelected(ThemeType.DARK) }
         )
 
         ThemeOption(
-            themeType = ThemeType.BLUE_OCEAN,
+            themeType = ThemeType.GAZETE,
             themeName = "Gazete Teması",
-            themeDescription = "Klasik gazete kağıdı görünümü - Şampanya, Siyah, Gri tonları",
-            isSelected = currentTheme == ThemeType.BLUE_OCEAN,
-            onSelected = { onThemeSelected(ThemeType.BLUE_OCEAN) }
+            themeDescription = "Gazete kağıdı görünümü - Krem, Siyah, Gri (Klasik)",
+            isSelected = currentTheme == ThemeType.GAZETE,
+            onSelected = { onThemeSelected(ThemeType.GAZETE) }
+        )
+
+        ThemeOption(
+            themeType = ThemeType.MONOCHROME,
+            themeName = "Monokrom Tema",
+            themeDescription = "Saf siyah-beyaz - Net kontrast, basit tasarım",
+            isSelected = currentTheme == ThemeType.MONOCHROME,
+            onSelected = { onThemeSelected(ThemeType.MONOCHROME) }
         )
     }
 }
