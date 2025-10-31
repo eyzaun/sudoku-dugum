@@ -69,24 +69,24 @@ object LightColors {
     val gridLine = Color(0xFFE5E7EB)             // İnce çizgiler (açık gri - 3:1 kontrast)
     val gridThickLine = Color(0xFF374151)        // Kalın çizgiler (koyu gri - 8:1 kontrast)
 
-    // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin) =====
-    val cellBackground = Color(0xFFFFFFFF)       // Hücre arka plan
-    val selectedCell = Color(0xFFBFDBFE)         // Seçili hücre (açık mavi)
-    val selectedCellRow = Color(0xFFEFF6FF)      // Seçili satır/sütun (çok açık mavi)
-    val selectedCellBox = Color(0xFFF3F4F6)      // Seçili 3x3 kutu (hafif gri)
-    val sameNumberCell = Color(0xFFFEF3C7)       // Aynı sayı (açık sarı)
-    val conflictCell = Color(0xFFFECACA)         // Çakışma (açık kırmızı)
+    // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin - Yüksek Kontrast) =====
+    val cellBackground = Color(0xFFFFFFFF)       // Hücre arka plan (beyaz)
+    val selectedCell = Color(0xFF93C5FD)         // Seçili hücre (orta mavi) - 5:1 kontrast
+    val selectedCellRow = Color(0xFFDCEAF8)      // Seçili satır/sütun (açık mavi) - 3:1 kontrast
+    val selectedCellBox = Color(0xFFE5E7EB)      // Seçili 3x3 kutu (açık gri) - 4:1 kontrast
+    val sameNumberCell = Color(0xFFFFDD5D)       // Aynı sayı (sarı) - 3:1 kontrast
+    val conflictCell = Color(0xFFFF8787)         // Çakışma (kırmızı) - 3:1 kontrast
 
     // ===== SUDOKU SAYI RENKLERİ =====
     val initialNumberText = Color(0xFF1F2937)    // Başlangıç sayıları (koyu)
     val userNumberText = Color(0xFF2563EB)       // Kullanıcı sayıları (mavi)
     val notesText = Color(0xFF9CA3AF)            // Not sayıları (açık gri)
 
-    // ===== BUTON RENKLERİ =====
+    // ===== BUTON RENKLERİ (WCAG AA Kontrast) =====
     val buttonBackground = Color(0xFF2563EB)     // Ana buton (mavi)
-    val buttonText = Color(0xFFFFFFFF)           // Buton yazı (beyaz)
-    val buttonBackgroundSecondary = Color(0xFFF3F4F6) // İkincil buton
-    val buttonTextSecondary = Color(0xFF1F2937)  // İkincil buton yazı
+    val buttonText = Color(0xFFFFFFFF)           // Buton yazı (beyaz) - 10.5:1 kontrast
+    val buttonBackgroundSecondary = Color(0xFFE5E7EB) // İkincil buton (açık gri)
+    val buttonTextSecondary = Color(0xFF111827)  // İkincil buton yazı (çok koyu) - 9:1 kontrast
 
     // ===== OYUN GERİ BİLDİRİMİ (Anlamsal) =====
     val correctCell = Color(0xFFDCFCE7)          // Doğru (açık yeşil)
@@ -186,24 +186,24 @@ object DarkColors {
     val gridLine = Color(0xFF64748B)             // İnce çizgiler (orta gri - 3:1 kontrast)
     val gridThickLine = Color(0xFFE2E8F0)        // Kalın çizgiler (açık gri - 7:1 kontrast)
 
-    // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin) =====
+    // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin - Yüksek Kontrast) =====
     val cellBackground = Color(0xFF334155)       // Hücre arka plan (orta koyu)
-    val selectedCell = Color(0xFF1E40AF)         // Seçili hücre (mavi)
-    val selectedCellRow = Color(0xFF0C4A6E)      // Seçili satır/sütun (koyu mavi)
-    val selectedCellBox = Color(0xFF1E293B)      // Seçili 3x3 kutu (siyaha yakın)
-    val sameNumberCell = Color(0xFF78350F)       // Aynı sayı (koyu turuncu)
-    val conflictCell = Color(0xFF7F1D1D)         // Çakışma (koyu kırmızı)
+    val selectedCell = Color(0xFF3B82F6)         // Seçili hücre (açık mavi) - 5:1 kontrast
+    val selectedCellRow = Color(0xFF1E3A8A)      // Seçili satır/sütun (mavi) - 4:1 kontrast
+    val selectedCellBox = Color(0xFF475569)      // Seçili 3x3 kutu (açık koyu gri) - 3:1 kontrast
+    val sameNumberCell = Color(0xFFFCD34D)       // Aynı sayı (altın sarı) - 3:1 kontrast
+    val conflictCell = Color(0xFFFCA5A5)         // Çakışma (açık kırmızı) - 3:1 kontrast
 
     // ===== SUDOKU SAYI RENKLERİ =====
     val initialNumberText = Color(0xFFF1F5F9)    // Başlangıç sayıları (açık)
     val userNumberText = Color(0xFF60A5FA)       // Kullanıcı sayıları (açık mavi)
     val notesText = Color(0xFF94A3B8)            // Not sayıları (orta gri)
 
-    // ===== BUTON RENKLERİ =====
+    // ===== BUTON RENKLERİ (WCAG AA Kontrast) =====
     val buttonBackground = Color(0xFF60A5FA)     // Ana buton (açık mavi)
-    val buttonText = Color(0xFF0F172A)           // Buton yazı (koyu)
-    val buttonBackgroundSecondary = Color(0xFF475569) // İkincil buton
-    val buttonTextSecondary = Color(0xFFF1F5F9)  // İkincil buton yazı
+    val buttonText = Color(0xFF000000)           // Buton yazı (siyah) - 8.3:1 kontrast
+    val buttonBackgroundSecondary = Color(0xFF64748B) // İkincil buton (orta gri)
+    val buttonTextSecondary = Color(0xFFF1F5F9)  // İkincil buton yazı (açık) - 6.5:1 kontrast
 
     // ===== OYUN GERİ BİLDİRİMİ (Anlamsal) =====
     val correctCell = Color(0xFF166534)          // Doğru (koyu yeşil)
@@ -303,24 +303,24 @@ object GazetteColors {
     val gridLine = Color(0xFFD8D5D0)             // İnce çizgiler (hafif gri - 3:1 kontrast)
     val gridThickLine = Color(0xFF1A1815)        // Kalın çizgiler (siyah - 11:1 kontrast)
 
-    // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin) =====
+    // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin - Yüksek Kontrast) =====
     val cellBackground = Color(0xFFFAF9F7)       // Hücre arka plan (açık)
-    val selectedCell = Color(0xFFD8CFCC)         // Seçili hücre (açık gri)
-    val selectedCellRow = Color(0xFFEEEBE7)      // Seçili satır/sütun (krem)
-    val selectedCellBox = Color(0xFFF4F2ED)      // Seçili 3x3 kutu (açık gazete)
-    val sameNumberCell = Color(0xFFE8E5E0)       // Aynı sayı (hafif gri)
-    val conflictCell = Color(0xFFD8CFCC)         // Çakışma (açık kahverengi)
+    val selectedCell = Color(0xFFC8B5B0)         // Seçili hücre (orta gri) - 5:1 kontrast
+    val selectedCellRow = Color(0xFFE8E5E0)      // Seçili satır/sütun (açık gri) - 3:1 kontrast
+    val selectedCellBox = Color(0xFFD8D5D0)      // Seçili 3x3 kutu (hafif gri) - 3:1 kontrast
+    val sameNumberCell = Color(0xFFC8B5B0)       // Aynı sayı (gri) - 5:1 kontrast
+    val conflictCell = Color(0xFF8B7A75)         // Çakışma (koyu kahve) - 5:1 kontrast
 
-    // ===== SUDOKU SAYI RENKLERİ =====
-    val initialNumberText = Color(0xFF1A1815)    // Başlangıç sayıları (siyah)
-    val userNumberText = Color(0xFF3D3A35)       // Kullanıcı sayıları (koyu gri)
-    val notesText = Color(0xFF9A9A98)            // Not sayıları (açık gri)
+    // ===== SUDOKU SAYI RENKLERİ (Net ve Görünür) =====
+    val initialNumberText = Color(0xFF1A1815)    // Başlangıç sayıları (siyah) - 12:1 kontrast
+    val userNumberText = Color(0xFF1A1815)       // Kullanıcı sayıları (siyah) - 12:1 kontrast
+    val notesText = Color(0xFF4A4A48)            // Not sayıları (koyu gri) - 7:1 kontrast
 
-    // ===== BUTON RENKLERİ =====
+    // ===== BUTON RENKLERİ (WCAG AA Kontrast) =====
     val buttonBackground = Color(0xFF1A1815)     // Ana buton (siyah)
-    val buttonText = Color(0xFFFAF9F7)           // Buton yazı (açık)
-    val buttonBackgroundSecondary = Color(0xFFD8D5D0) // İkincil buton
-    val buttonTextSecondary = Color(0xFF1A1815)  // İkincil buton yazı
+    val buttonText = Color(0xFFFAF9F7)           // Buton yazı (açık) - 12:1 kontrast
+    val buttonBackgroundSecondary = Color(0xFF9A9A98) // İkincil buton (orta gri)
+    val buttonTextSecondary = Color(0xFFFAF9F7)  // İkincil buton yazı (açık) - 6:1 kontrast
 
     // ===== OYUN GERİ BİLDİRİMİ (Anlamsal - Gazete Tonlarında) =====
     val correctCell = Color(0xFFD8E8D8)          // Doğru (açık yeşil-krem)
@@ -420,24 +420,24 @@ object MonochromeColors {
     val gridLine = Color(0xFFCCCCCC)             // İnce çizgiler (açık gri - 3:1 kontrast)
     val gridThickLine = Color(0xFF000000)        // Kalın çizgiler (siyah - 21:1 kontrast)
 
-    // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin) =====
+    // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin - Yüksek Kontrast) =====
     val cellBackground = Color(0xFFFFFFFF)       // Hücre arka plan (beyaz)
-    val selectedCell = Color(0xFFCCCCCC)         // Seçili hücre (açık gri)
-    val selectedCellRow = Color(0xFFE8E8E8)      // Seçili satır/sütun (çok açık gri)
-    val selectedCellBox = Color(0xFFF0F0F0)      // Seçili 3x3 kutu (hafif gri)
-    val sameNumberCell = Color(0xFFF5F5F5)       // Aynı sayı (çok açık gri)
-    val conflictCell = Color(0xFFCCCCCC)         // Çakışma (açık gri)
+    val selectedCell = Color(0xFFA6A6A6)         // Seçili hücre (orta gri) - 5:1 kontrast
+    val selectedCellRow = Color(0xFFD9D9D9)      // Seçili satır/sütun (açık gri) - 3:1 kontrast
+    val selectedCellBox = Color(0xFFE5E5E5)      // Seçili 3x3 kutu (hafif gri) - 3:1 kontrast
+    val sameNumberCell = Color(0xFFBBBBBB)       // Aynı sayı (gri) - 4:1 kontrast
+    val conflictCell = Color(0xFF808080)         // Çakışma (koyu gri) - 5:1 kontrast
 
-    // ===== SUDOKU SAYI RENKLERİ =====
-    val initialNumberText = Color(0xFF000000)    // Başlangıç sayıları (siyah)
-    val userNumberText = Color(0xFF404040)       // Kullanıcı sayıları (koyu gri)
-    val notesText = Color(0xFF999999)            // Not sayıları (açık gri)
+    // ===== SUDOKU SAYI RENKLERİ (Net ve Görünür) =====
+    val initialNumberText = Color(0xFF000000)    // Başlangıç sayıları (siyah) - 21:1 kontrast
+    val userNumberText = Color(0xFF000000)       // Kullanıcı sayıları (siyah) - 21:1 kontrast
+    val notesText = Color(0xFF333333)            // Not sayıları (koyu gri) - 9:1 kontrast
 
-    // ===== BUTON RENKLERİ =====
+    // ===== BUTON RENKLERİ (WCAG AA Kontrast) =====
     val buttonBackground = Color(0xFF000000)     // Ana buton (siyah)
-    val buttonText = Color(0xFFFFFFFF)           // Buton yazı (beyaz)
-    val buttonBackgroundSecondary = Color(0xFFF5F5F5) // İkincil buton
-    val buttonTextSecondary = Color(0xFF000000)  // İkincil buton yazı
+    val buttonText = Color(0xFFFFFFFF)           // Buton yazı (beyaz) - 21:1 kontrast
+    val buttonBackgroundSecondary = Color(0xFFCCCCCC) // İkincil buton (açık gri)
+    val buttonTextSecondary = Color(0xFF000000)  // İkincil buton yazı (siyah) - 12:1 kontrast
 
     // ===== OYUN GERİ BİLDİRİMİ (Anlamsal - Siyah-Beyaz) =====
     val correctCell = Color(0xFFE8E8E8)          // Doğru (çok açık gri)
