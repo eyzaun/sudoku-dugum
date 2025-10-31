@@ -516,7 +516,7 @@ class PvpLiveBattleViewModel @Inject constructor(
         
         // ✅ DOĞRU HÜCRE KONTROLÜ - Hücre zaten doğru dolduysa hamle yapma
         val correctValue = currentState.solution[row * 9 + col].digitToInt()
-        if (oldValue != null && oldValue == correctValue) {
+        if (oldValue == correctValue) {
             android.util.Log.d("PvpLiveBattle", "⚠️ Bu hücre zaten doğru dolu: ($row,$col) = $oldValue")
             hapticFeedback.error()
             return

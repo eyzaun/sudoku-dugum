@@ -273,13 +273,13 @@ class PvpFirebaseDataSource @Inject constructor(
                 firestore.runTransaction { transaction ->
                     // Önce mevcut durumları oku
                     val myDoc = transaction.get(matchmakingCollection.document(currentUserId))
-                    val opponentDoc = transaction.get(matchmakingCollection.document(opponentId))
+                    val opponentDocSnapshot = transaction.get(matchmakingCollection.document(opponentId))
                     
                     // İkisi de hala "searching" durumunda mı kontrol et
                     if (myDoc.getString("status") != "searching") {
                         throw Exception("Ben artık searching değilim")
                     }
-                    if (opponentDoc.getString("status") != "searching") {
+                    if (opponentDocSnapshot.getString("status") != "searching") {
                         throw Exception("Rakip artık searching değil")
                     }
                     
