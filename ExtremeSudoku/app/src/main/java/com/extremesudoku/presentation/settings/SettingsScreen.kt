@@ -276,24 +276,24 @@ private fun ThemeSelector(
     ) {
         ThemeOption(
             themeType = ThemeType.LIGHT,
-            themeName = "Light Theme",
-            themeDescription = "Bright and clean appearance",
+            themeName = "Aydınlık Tema",
+            themeDescription = "Modern, parlak ve temiz görünüm - Mavi, Teal, Mor renkleri",
             isSelected = currentTheme == ThemeType.LIGHT,
             onSelected = { onThemeSelected(ThemeType.LIGHT) }
         )
-        
+
         ThemeOption(
             themeType = ThemeType.DARK,
-            themeName = "Dark Theme",
-            themeDescription = "Easy on the eyes in low light",
+            themeName = "Karanlık Tema",
+            themeDescription = "Zifiri karanlıkta kolay - AMOLED Optimized Mavi-Gri tonları",
             isSelected = currentTheme == ThemeType.DARK,
             onSelected = { onThemeSelected(ThemeType.DARK) }
         )
-        
+
         ThemeOption(
             themeType = ThemeType.BLUE_OCEAN,
-            themeName = "Blue Ocean",
-            themeDescription = "Calming blue tones",
+            themeName = "Gazete Teması",
+            themeDescription = "Klasik gazete kağıdı görünümü - Şampanya, Siyah, Gri tonları",
             isSelected = currentTheme == ThemeType.BLUE_OCEAN,
             onSelected = { onThemeSelected(ThemeType.BLUE_OCEAN) }
         )

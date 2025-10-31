@@ -4,12 +4,12 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 /**
- * Theme types available in the app
+ * Uygulamada mevcut tema türleri
  */
 enum class ThemeType {
-    LIGHT,
-    DARK,
-    BLUE_OCEAN
+    LIGHT,          // Aydınlık Tema - Modern Mavi, Teal, Mor renk paletine sahip
+    DARK,           // Karanlık Tema - AMOLED Optimized, derin mavi-gri arka planı
+    BLUE_OCEAN      // Gazete Teması - Klasik gazete kağıdı renkleri (Şampanya-Siyah)
 }
 
 /**

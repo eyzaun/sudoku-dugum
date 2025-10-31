@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nTüm temaları komple tasarım ve görünüm açısından yeniden düzelt\n\n✨ Gazete Teması İyileştirmesi:\n- Arka plan rengini gerçek gazete kağıdı rengine değiştir (Şampanya/Krem #E8E6E1)\n- Tüm renk paletini gazete karakterine uyarla\n- Siyah yazı ve koyu gri tonları ekle\n- Gazete bölümleri için gri sınırlar ve ayırıcılar\n\n✨ Aydınlık Tema İyileştirmesi:\n- Material3 uyumlu modern renk paleti (Google Mavi #2196F3, Teal #009688, Mor #9C27B0)\n- Geliştirilmiş arka plan rengi (#FBFCFD) - daha hafif ve mavi tonlu\n- Tüm metin ve UI renkleri optimize et\n\n✨ Karanlık Tema İyileştirmesi:\n- AMOLED ekranlar için optimize edilmiş renk (Mavi-Gri #0A0E27)\n- Yüksek kontrast metin renkleri (#E8EAF6)\n- Açık mavi, teal, mor tonları eklendi\n- Göz rahatlığı için optimal arka plan tonları\n\n✨ Tema Tanımlamaları Güncelleme:\n- Türkçe tema adları ve açıklamaları ekle\n- Tema özelliklerini detaylı şekilde tanımla\n- SettingsScreen''de daha iyi bilgilendirme mesajları\n\n🎨 Renk Uyumluluğu:\n- Tüm üç tema arasında tutarlı renk işlemi\n- Zorluk seviyeleri, PvP, streak ve başarı renklerinin optimizasyonu\n- Erişilebilirlik ve kontrast standartlarına uyumlu\n\n🎯 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
