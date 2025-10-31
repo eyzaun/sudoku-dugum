@@ -1,0 +1,3635 @@
+Sudoku Android Uygulaması - Detaylı Proje Dökümanı
+Extreme zorluk seviyesindeki sudoku bulmacalarını içeren profesyonel bir Android uygulaması geliştireceğiz. İşte kapsamlı proje planı:
+📋 Proje Özeti
+Uygulama Adı: Extreme Sudoku (veya tercih edeceğiniz isim)
+Platform: Android (Kotlin)
+Backend: Firebase (Authentication, Firestore, Storage)
+Dataset: HuggingFace Sudoku Extreme Dataset
+Hedef: Gerçek kullanıcılar için production-ready sudoku uygulaması
+
+🎯 AŞAMA 1: Proje Planlama ve Analiz
+1.1 Temel Özellikler Listesi
+Oyun Özellikleri:
+
+✅ 9x9 sudoku grid ile oynanabilir oyun
+✅ Extreme zorluk seviyesinde bulmacalar
+✅ Otomatik hata kontrolü
+✅ İpucu sistemi (hint)
+✅ Not alma modu (pencil marks)
+✅ Geri alma/İleri alma (undo/redo)
+✅ Timer (süre takibi)
+✅ Oyunu kaydetme ve devam etme
+✅ Bulmaca çözme doğrulama
+
+Kullanıcı Özellikleri:
+
+✅ Firebase Authentication (Email, Google Sign-In)
+✅ Kullanıcı profili
+✅ İstatistikler (çözülen bulmacalar, ortalama süre, başarı oranı)
+✅ Liderlik tablosu (leaderboard)
+✅ Günlük challenge sistemi
+✅ Başarım sistemi (achievements)
+
+UI/UX Özellikleri:
+
+✅ Modern Material Design 3
+✅ Dark/Light tema desteği
+✅ Animasyonlar ve geçişler
+✅ Sezgisel kontroller
+✅ Responsive tasarım
+
+
+🏗️ AŞAMA 2: Teknik Mimari
+2.1 Proje Yapısı (MVVM + Clean Architecture)
+app/
+├── data/
+│   ├── local/
+│   │   ├── dao/
+│   │   │   ├── SudokuDao.kt
+│   │   │   ├── GameStateDao.kt
+│   │   │   └── UserStatsDao.kt
+│   │   ├── database/
+│   │   │   └── SudokuDatabase.kt
+│   │   └── entities/
+│   │       ├── SudokuEntity.kt
+│   │       ├── GameStateEntity.kt
+│   │       └── UserStatsEntity.kt
+│   ├── remote/
+│   │   ├── FirebaseDataSource.kt
+│   │   └── HuggingFaceService.kt
+│   ├── repository/
+│   │   ├── SudokuRepository.kt
+│   │   ├── UserRepository.kt
+│   │   └── LeaderboardRepository.kt
+│   └── models/
+│       ├── Sudoku.kt
+│       ├── Cell.kt
+│       └── GameState.kt
+├── domain/
+│   ├── usecase/
+│   │   ├── GetSudokuUseCase.kt
+│   │   ├── ValidateMoveUseCase.kt
+│   │   ├── SolveSudokuUseCase.kt
+│   │   ├── GetHintUseCase.kt
+│   │   └── SaveGameStateUseCase.kt
+│   └── repository/ (interfaces)
+├── presentation/
+│   ├── game/
+│   │   ├── GameViewModel.kt
+│   │   ├── GameScreen.kt
+│   │   └── components/
+│   │       ├── SudokuGrid.kt
+│   │       ├── NumberPad.kt
+│   │       └── GameControls.kt
+│   ├── home/
+│   │   ├── HomeViewModel.kt
+│   │   └── HomeScreen.kt
+│   ├── profile/
+│   │   ├── ProfileViewModel.kt
+│   │   └── ProfileScreen.kt
+│   ├── leaderboard/
+│   │   ├── LeaderboardViewModel.kt
+│   │   └── LeaderboardScreen.kt
+│   └── auth/
+│       ├── AuthViewModel.kt
+│       └── AuthScreen.kt
+├── di/ (Dependency Injection - Hilt)
+│   ├── AppModule.kt
+│   ├── DatabaseModule.kt
+│   ├── FirebaseModule.kt
+│   └── RepositoryModule.kt
+└── utils/
+    ├── SudokuSolver.kt
+    ├── SudokuValidator.kt
+    └── Constants.kt
+```
+
+### 2.2 Kullanılacak Teknolojiler
+
+**Core:**
+- Kotlin 1.9+
+- Android SDK 24+ (minimum), Target SDK 34
+- Jetpack Compose (UI)
+- Coroutines + Flow (asenkron işlemler)
+
+**Architecture Components:**
+- ViewModel
+- LiveData/StateFlow
+- Room Database
+- Navigation Component (Compose Navigation)
+- Hilt (Dependency Injection)
+
+**Firebase:**
+- Firebase Authentication
+- Cloud Firestore
+- Firebase Storage
+- Firebase Analytics
+- Firebase Crashlytics
+
+**Diğer Kütüphaneler:**
+- Retrofit (HuggingFace API için)
+- Coil (resim yükleme)
+- Gson/Kotlinx Serialization (JSON parsing)
+- Material Design 3 Components
+- Accompanist (sistem UI controller için)
+
+---
+
+## 📝 AŞAMA 3: Detaylı Adım Adım Uygulama Planı
+
+### ADIM 1: Proje Kurulumu (1. Gün)
+
+#### 1.1 Android Studio'da Proje Oluşturma
+```
+1. Android Studio'yu açın
+2. New Project → Empty Activity (Compose)
+3. Proje ayarları:
+   - Name: ExtremeSudoku
+   - Package name: com.yourname.extremesudoku
+   - Language: Kotlin
+   - Minimum SDK: API 24 (Android 7.0)
+   - Build configuration language: Kotlin DSL
+1.2 Gradle Yapılandırması
+build.gradle.kts (Project level):
+kotlinplugins {
+    id("com.android.application") version "8.2.0" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.20" apply false
+    id("com.google.dagger.hilt.android") version "2.48" apply false
+    id("com.google.gms.google-services") version "4.4.0" apply false
+}
+build.gradle.kts (App level) - Temel bağımlılıklar:
+kotlinplugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
+}
+
+android {
+    namespace = "com.yourname.extremesudoku"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.yourname.extremesudoku"
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.4"
+    }
+}
+
+dependencies {
+    // Compose
+    implementation("androidx.compose.ui:ui:1.5.4")
+    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
+    implementation("androidx.activity:activity-compose:1.8.1")
+    
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.5")
+    
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-compiler:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    
+    // Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+    
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
+}
+```
+
+#### 1.3 Firebase Kurulumu
+```
+1. Firebase Console'a gidin (https://console.firebase.google.com)
+2. Yeni proje oluşturun: "ExtremeSudoku"
+3. Android uygulaması ekleyin
+4. google-services.json dosyasını indirin
+5. Dosyayı app/ klasörüne koyun
+6. Firebase Console'da şu servisleri aktifleştirin:
+   - Authentication (Email/Password ve Google)
+   - Cloud Firestore
+   - Storage
+   - Analytics
+   - Crashlytics
+```
+
+---
+
+### ADIM 2: Dataset Hazırlığı (1. Gün)
+
+#### 2.1 HuggingFace Dataset İndirme
+
+**Seçenek 1: Manuel İndirme**
+```
+1. https://huggingface.co/datasets/sapientinc/sudoku-extreme adresine gidin
+2. "Files and versions" sekmesinden dataset'i indirin
+3. CSV/JSON formatındaki dosyayı projeye ekleyin
+Seçenek 2: API ile Çekme (Önerilen)
+kotlin// HuggingFaceService.kt
+interface HuggingFaceService {
+    @GET("datasets/sapientinc/sudoku-extreme/resolve/main/data.json")
+    suspend fun getSudokuDataset(): Response<SudokuDataset>
+}
+2.2 Dataset Modelleme
+kotlin// Sudoku.kt
+data class Sudoku(
+    val id: String,
+    val puzzle: String, // 81 karakter (0 = boş hücre)
+    val solution: String, // 81 karakter (çözüm)
+    val difficulty: String = "extreme",
+    val rating: Double = 0.0
+)
+
+// Örnek: puzzle = "003020600900305001001806400..."
+2.3 Dataset'i Firebase'e Yükleme Scripti
+kotlin// DatasetUploader.kt (tek seferlik çalıştırılacak)
+class DatasetUploader(
+    private val firestore: FirebaseFirestore
+) {
+    suspend fun uploadDataset(sudokus: List<Sudoku>) {
+        val batch = firestore.batch()
+        sudokus.forEachIndexed { index, sudoku ->
+            val docRef = firestore.collection("sudokus").document(sudoku.id)
+            batch.set(docRef, sudoku)
+            
+            if (index % 500 == 0) {
+                batch.commit()
+                // Yeni batch başlat
+            }
+        }
+        batch.commit()
+    }
+}
+
+ADIM 3: Data Layer - Local Database (2. Gün)
+3.1 Room Entities Oluşturma
+kotlin// SudokuEntity.kt
+@Entity(tableName = "sudokus")
+data class SudokuEntity(
+    @PrimaryKey val id: String,
+    val puzzle: String,
+    val solution: String,
+    val difficulty: String,
+    val rating: Double,
+    val isSynced: Boolean = false
+)
+
+// GameStateEntity.kt
+@Entity(tableName = "game_states")
+data class GameStateEntity(
+    @PrimaryKey val gameId: String,
+    val sudokuId: String,
+    val currentState: String, // 81 karakter (mevcut durum)
+    val notes: String, // JSON format (her hücre için notlar)
+    val elapsedTime: Long, // saniye cinsinden
+    val moves: Int,
+    val hintsUsed: Int,
+    val isCompleted: Boolean,
+    val lastPlayedAt: Long,
+    val createdAt: Long
+)
+
+// UserStatsEntity.kt
+@Entity(tableName = "user_stats")
+data class UserStatsEntity(
+    @PrimaryKey val userId: String,
+    val gamesPlayed: Int,
+    val gamesCompleted: Int,
+    val totalTime: Long,
+    val bestTime: Long,
+    val averageTime: Long,
+    val hintsUsed: Int,
+    val currentStreak: Int,
+    val longestStreak: Int
+)
+3.2 DAO Interfaces
+kotlin// SudokuDao.kt
+@Dao
+interface SudokuDao {
+    @Query("SELECT * FROM sudokus WHERE id = :id")
+    suspend fun getSudokuById(id: String): SudokuEntity?
+    
+    @Query("SELECT * FROM sudokus ORDER BY RANDOM() LIMIT 1")
+    suspend fun getRandomSudoku(): SudokuEntity?
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSudokus(sudokus: List<SudokuEntity>)
+    
+    @Query("SELECT COUNT(*) FROM sudokus")
+    suspend fun getSudokuCount(): Int
+}
+
+// GameStateDao.kt
+@Dao
+interface GameStateDao {
+    @Query("SELECT * FROM game_states WHERE gameId = :gameId")
+    suspend fun getGameState(gameId: String): GameStateEntity?
+    
+    @Query("SELECT * FROM game_states WHERE isCompleted = 0 ORDER BY lastPlayedAt DESC")
+    fun getActiveGames(): Flow<List<GameStateEntity>>
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveGameState(gameState: GameStateEntity)
+    
+    @Delete
+    suspend fun deleteGameState(gameState: GameStateEntity)
+}
+
+// UserStatsDao.kt
+@Dao
+interface UserStatsDao {
+    @Query("SELECT * FROM user_stats WHERE userId = :userId")
+    fun getUserStats(userId: String): Flow<UserStatsEntity?>
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateUserStats(stats: UserStatsEntity)
+}
+3.3 Database Sınıfı
+kotlin// SudokuDatabase.kt
+@Database(
+    entities = [
+        SudokuEntity::class,
+        GameStateEntity::class,
+        UserStatsEntity::class
+    ],
+    version = 1,
+    exportSchema = false
+)
+abstract class SudokuDatabase : RoomDatabase() {
+    abstract fun sudokuDao(): SudokuDao
+    abstract fun gameStateDao(): GameStateDao
+    abstract fun userStatsDao(): UserStatsDao
+}
+
+ADIM 4: Data Layer - Remote (Firebase) (2. Gün)
+4.1 Firebase Data Source
+kotlin// FirebaseDataSource.kt
+class FirebaseDataSource(
+    private val firestore: FirebaseFirestore,
+    private val auth: FirebaseAuth
+) {
+    // Sudoku operasyonları
+    suspend fun getSudokuById(id: String): Result<Sudoku> = withContext(Dispatchers.IO) {
+        try {
+            val doc = firestore.collection("sudokus").document(id).get().await()
+            Result.success(doc.toObject(Sudoku::class.java)!!)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    suspend fun getRandomSudoku(): Result<Sudoku> = withContext(Dispatchers.IO) {
+        try {
+            val query = firestore.collection("sudokus")
+                .limit(1)
+                .get()
+                .await()
+            Result.success(query.documents[0].toObject(Sudoku::class.java)!!)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    // User stats operasyonları
+    suspend fun getUserStats(userId: String): Result<UserStats> = withContext(Dispatchers.IO) {
+        try {
+            val doc = firestore.collection("users").document(userId)
+                .collection("stats").document("current").get().await()
+            Result.success(doc.toObject(UserStats::class.java) ?: UserStats())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    suspend fun updateUserStats(userId: String, stats: UserStats): Result<Unit> {
+        return try {
+            firestore.collection("users").document(userId)
+                .collection("stats").document("current")
+                .set(stats).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    // Leaderboard operasyonları
+    fun getLeaderboard(limit: Int = 100): Flow<List<LeaderboardEntry>> = callbackFlow {
+        val listener = firestore.collection("leaderboard")
+            .orderBy("bestTime", Query.Direction.ASCENDING)
+            .limit(limit.toLong())
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                val entries = snapshot?.toObjects(LeaderboardEntry::class.java) ?: emptyList()
+                trySend(entries)
+            }
+        awaitClose { listener.remove() }
+    }
+    
+    // Game state sync
+    suspend fun syncGameState(gameState: GameState): Result<Unit> {
+        val userId = auth.currentUser?.uid ?: return Result.failure(Exception("User not logged in"))
+        return try {
+            firestore.collection("users").document(userId)
+                .collection("games").document(gameState.gameId)
+                .set(gameState).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+}
+4.2 Firestore Data Models
+kotlin// Firebase'de kullanılacak veri modelleri
+data class UserStats(
+    val gamesPlayed: Int = 0,
+    val gamesCompleted: Int = 0,
+    val totalTime: Long = 0,
+    val bestTime: Long = Long.MAX_VALUE,
+    val averageTime: Long = 0,
+    val hintsUsed: Int = 0,
+    val currentStreak: Int = 0,
+    val longestStreak: Int = 0,
+    val lastPlayedDate: Long = 0
+)
+
+data class LeaderboardEntry(
+    val userId: String = "",
+    val username: String = "",
+    val profilePictureUrl: String = "",
+    val bestTime: Long = 0,
+    val gamesCompleted: Int = 0,
+    val rank: Int = 0
+)
+
+data class Achievement(
+    val id: String = "",
+    val title: String = "",
+    val description: String = "",
+    val iconUrl: String = "",
+    val unlockedAt: Long? = null,
+    val progress: Int = 0,
+    val maxProgress: Int = 100
+)
+
+ADIM 5: Repository Layer (3. Gün)
+5.1 Repository Implementation
+kotlin// SudokuRepository.kt
+class SudokuRepository(
+    private val sudokuDao: SudokuDao,
+    private val gameStateDao: GameStateDao,
+    private val firebaseDataSource: FirebaseDataSource
+) {
+    // Sudoku getirme (önce local, sonra remote)
+    suspend fun getSudoku(id: String): Result<Sudoku> {
+        val localSudoku = sudokuDao.getSudokuById(id)
+        if (localSudoku != null) {
+            return Result.success(localSudoku.toDomain())
+        }
+        
+        return firebaseDataSource.getSudokuById(id).also { result ->
+            result.getOrNull()?.let { sudoku ->
+                sudokuDao.insertSudokus(listOf(sudoku.toEntity()))
+            }
+        }
+    }
+    
+    suspend fun getRandomSudoku(): Result<Sudoku> {
+        // Önce local'den dene
+        val localSudoku = sudokuDao.getRandomSudoku()
+        if (localSudoku != null) {
+            return Result.success(localSudoku.toDomain())
+        }
+        
+        // Local'de yoksa Firebase'den çek
+        return firebaseDataSource.getRandomSudoku().also { result ->
+            result.getOrNull()?.let { sudoku ->
+                sudokuDao.insertSudokus(listOf(sudoku.toEntity()))
+            }
+        }
+    }
+    
+    // Game state operasyonları
+    fun getActiveGames(): Flow<List<GameState>> {
+        return gameStateDao.getActiveGames().map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+    
+    suspend fun saveGameState(gameState: GameState) {
+        gameStateDao.saveGameState(gameState.toEntity())
+        // Background'da Firebase'e sync et
+        firebaseDataSource.syncGameState(gameState)
+    }
+    
+    suspend fun getGameState(gameId: String): GameState? {
+        return gameStateDao.getGameState(gameId)?.toDomain()
+    }
+    
+    // Sudoku cache'i doldurma
+    suspend fun cacheSudokus(count: Int = 50) {
+        val currentCount = sudokuDao.getSudokuCount()
+        if (currentCount >= count) return
+        
+        // Firebase'den batch halinde çek ve cache'le
+        // Bu işlem arka planda yapılmalı
+    }
+}
+
+// UserRepository.kt
+class UserRepository(
+    private val userStatsDao: UserStatsDao,
+    private val firebaseDataSource: FirebaseDataSource,
+    private val auth: FirebaseAuth
+) {
+    fun getCurrentUserId(): String? = auth.currentUser?.uid
+    
+    fun getUserStats(): Flow<UserStats> {
+        val userId = getCurrentUserId() ?: return flowOf(UserStats())
+        return userStatsDao.getUserStats(userId).map { entity ->
+            entity?.toDomain() ?: UserStats()
+        }
+    }
+    
+    suspend fun updateStats(stats: UserStats) {
+        val userId = getCurrentUserId() ?: return
+        userStatsDao.updateUserStats(stats.toEntity(userId))
+        firebaseDataSource.updateUserStats(userId, stats)
+    }
+    
+    suspend fun signIn(email: String, password: String): Result<Unit> {
+        return try {
+            auth.signInWithEmailAndPassword(email, password).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    suspend fun signUp(email: String, password: String): Result<Unit> {
+        return try {
+            auth.createUserWithEmailAndPassword(email, password).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    fun signOut() = auth.signOut()
+}
+
+// LeaderboardRepository.kt
+class LeaderboardRepository(
+    private val firebaseDataSource: FirebaseDataSource
+) {
+    fun getLeaderboard(): Flow<List<LeaderboardEntry>> {
+        return firebaseDataSource.getLeaderboard()
+    }
+}
+
+ADIM 6: Domain Layer - Use Cases (3. Gün)
+kotlin// GetSudokuUseCase.kt
+class GetSudokuUseCase(
+    private val repository: SudokuRepository
+) {
+    suspend operator fun invoke(id: String? = null): Result<Sudoku> {
+        return if (id != null) {
+            repository.getSudoku(id)
+        } else {
+            repository.getRandomSudoku()
+        }
+    }
+}
+
+// ValidateMoveUseCase.kt
+class ValidateMoveUseCase {
+    operator fun invoke(
+        grid: Array<IntArray>,
+        row: Int,
+        col: Int,
+        num: Int
+    ): Boolean {
+        // Satır kontrolü
+        if (grid[row].contains(num)) return false
+        
+        // Sütun kontrolü
+        for (i in 0..8) {
+            if (grid[i][col] == num) return false
+        }
+        
+        // 3x3 kutu kontrolü
+        val boxRow = row / 3 * 3
+        val boxCol = col / 3 * 3
+        for (i in boxRow until boxRow + 3) {
+            for (j in boxCol until boxCol + 3) {
+                if (grid[i][j] == num) return false
+            }
+        }
+        
+        return true
+    }
+}
+
+// SolveSudokuUseCase.kt
+class SolveSudokuUseCase {
+    operator fun invoke(puzzle: String): String? {
+        val grid = puzzleToGrid(puzzle)
+        if (solve(grid)) {
+            return gridToPuzzle(grid)
+        }
+        return null
+    }
+    
+    private fun solve(grid: Array<IntArray>): Boolean {
+        for (row in 0..8) {
+            for (col in 0..8) {
+                if (grid[row][col] == 0) {
+                    for (num in 1..9) {
+                        if (isValid(grid, row, col, num)) {
+                            grid[row][col] = num
+                            if (solve(grid)) return true
+                            grid[row][col] = 0
+                        }
+                    }
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    
+    private fun isValid(grid: Array<IntArray>, row: Int, col: Int, num: Int): Boolean {
+        // ValidateMoveUseCase ile aynı mantık
+        return true // Sadeleştirmek için
+    }
+    
+    private fun puzzleToGrid(puzzle: String): Array<IntArray> {
+        return Array(9) { row ->
+            IntArray(9) { col ->
+                puzzle[row * 9 + col].toString().toIntOrNull() ?: 0
+            }
+        }
+    }
+    
+    private fun gridToPuzzle(grid: Array<IntArray>): String {
+        return grid.joinToString("") { row ->
+            row.joinToString("")
+        }
+    }
+}
+
+// GetHintUseCase.kt
+class GetHintUseCase(
+    private val solveSudokuUseCase: SolveSudokuUseCase
+) {
+    operator fun invoke(currentState: String, solution: String): Pair<Int, Int>? {
+        // Boş hücreleri bul
+        val emptyCells = mutableListOf<Pair<Int, Int>>()
+        for (i in currentState.indices) {
+            if (currentState[i] == '0') {
+                val row = i / 9
+                val col = i % 9
+                emptyCells.add(Pair(row, col))
+            }
+        }
+        
+        if (emptyCells.isEmpty()) return null
+        
+        // Random bir boş hücre seç
+        return emptyCells.random()
+    }
+}
+
+// SaveGameStateUseCase.kt
+class SaveGameStateUseCase(
+    private val repository: SudokuRepository
+) {
+    suspend operator fun invoke(gameState: GameState) {
+        repository.saveGameState(gameState)
+    }
+}
+
+// CheckCompletionUseCase.kt
+class CheckCompletionUseCase {
+    operator fun invoke(currentState: String, solution: String): Boolean {
+        return currentState == solution
+    }
+}
+
+ADIM 7: Presentation Layer - ViewModels (4. Gün)
+7.1 Game ViewModel
+kotlin// GameViewModel.kt
+@HiltViewModel
+class GameViewModel @Inject constructor(
+    private val getSudokuUseCase: GetSudokuUseCase,
+    private val validateMoveUseCase: ValidateMoveUseCase,
+    private val getHintUseCase: GetHintUseCase,
+    private val saveGameStateUseCase: SaveGameStateUseCase,
+    private val checkCompletionUseCase: CheckCompletionUseCase,
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
+    
+    private val _uiState = MutableStateFlow(GameUiState())
+    val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
+    
+    private var timer: Job? = null
+    private val moveHistory = mutableListOf<Move>()
+    private var redoStack = mutableListOf<Move>()
+    
+    init {
+        loadGame(savedStateHandle.get<String>("gameId"))
+    }
+    
+    private fun loadGame(gameId: String?) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            
+            val result = getSudokuUseCase(gameId)
+            result.onSuccess { sudoku ->
+                _uiState.update {
+                    it.copy(
+                        sudoku = sudoku,
+                        currentGrid = sudoku.puzzle.toCellGrid(),
+                        initialGrid = sudoku.puzzle.toCellGrid(),
+                        isLoading = false
+                    )
+                }
+                startTimer()
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = error.message
+                    )
+                }
+            }
+        }
+    }
+    
+    fun onCellSelected(row: Int, col: Int) {
+        val cell = _uiState.value.currentGrid[row][col]
+        if (cell.isInitial) return // Başlangıçtaki hücreleri değiştirme
+        
+        _uiState.update {
+            it.copy(
+                selectedCell = Pair(row, col),
+                highlightedNumber = if (cell.value != 0) cell.value else null
+            )
+        }
+    }
+    
+    fun onNumberSelected(number: Int) {
+        val (row, col) = _uiState.value.selectedCell ?: returnRetryClaude does not have the ability to run the code it generates yet.NHContinuekotlin        val currentCell = _uiState.value.currentGrid[row][col]
+        if (currentCell.isInitial) return
+        
+        // Not modu aktifse
+        if (_uiState.value.isNoteMode) {
+            updateNotes(row, col, number)
+            return
+        }
+        
+        // Hareket geçmişine ekle
+        val move = Move(row, col, currentCell.value, number)
+        moveHistory.add(move)
+        redoStack.clear()
+        
+        // Grid'i güncelle
+        val newGrid = _uiState.value.currentGrid.map { it.clone() }.toTypedArray()
+        val isValid = validateMoveUseCase(
+            newGrid.map { row -> row.map { it.value }.toIntArray() }.toTypedArray(),
+            row, col, number
+        )
+        
+        newGrid[row][col] = currentCell.copy(
+            value = number,
+            isError = !isValid,
+            notes = emptySet()
+        )
+        
+        _uiState.update {
+            it.copy(
+                currentGrid = newGrid,
+                moves = it.moves + 1,
+                highlightedNumber = number
+            )
+        }
+        
+        // Tamamlanma kontrolü
+        checkCompletion()
+        
+        // Otomatik kayıt
+        autoSave()
+    }
+    
+    fun onDeletePressed() {
+        val (row, col) = _uiState.value.selectedCell ?: return
+        val currentCell = _uiState.value.currentGrid[row][col]
+        if (currentCell.isInitial) return
+        
+        if (_uiState.value.isNoteMode) {
+            // Notları temizle
+            val newGrid = _uiState.value.currentGrid.map { it.clone() }.toTypedArray()
+            newGrid[row][col] = currentCell.copy(notes = emptySet())
+            _uiState.update { it.copy(currentGrid = newGrid) }
+        } else {
+            // Sayıyı sil
+            onNumberSelected(0)
+        }
+    }
+    
+    fun onHintRequested() {
+        if (_uiState.value.hintsUsed >= MAX_HINTS) {
+            _uiState.update { it.copy(error = "Maximum hints reached") }
+            return
+        }
+        
+        val currentState = _uiState.value.currentGrid.toGridString()
+        val solution = _uiState.value.sudoku?.solution ?: return
+        
+        val hint = getHintUseCase(currentState, solution) ?: return
+        val (row, col) = hint
+        val correctNumber = solution[row * 9 + col].toString().toInt()
+        
+        // Hint'i uygula
+        val newGrid = _uiState.value.currentGrid.map { it.clone() }.toTypedArray()
+        newGrid[row][col] = newGrid[row][col].copy(
+            value = correctNumber,
+            isHint = true,
+            isError = false,
+            notes = emptySet()
+        )
+        
+        _uiState.update {
+            it.copy(
+                currentGrid = newGrid,
+                hintsUsed = it.hintsUsed + 1,
+                selectedCell = hint
+            )
+        }
+        
+        checkCompletion()
+        autoSave()
+    }
+    
+    fun onUndoPressed() {
+        if (moveHistory.isEmpty()) return
+        
+        val lastMove = moveHistory.removeAt(moveHistory.lastIndex)
+        redoStack.add(lastMove)
+        
+        val newGrid = _uiState.value.currentGrid.map { it.clone() }.toTypedArray()
+        newGrid[lastMove.row][lastMove.col] = 
+            newGrid[lastMove.row][lastMove.col].copy(
+                value = lastMove.oldValue,
+                isError = false
+            )
+        
+        _uiState.update {
+            it.copy(currentGrid = newGrid, moves = it.moves - 1)
+        }
+    }
+    
+    fun onRedoPressed() {
+        if (redoStack.isEmpty()) return
+        
+        val move = redoStack.removeAt(redoStack.lastIndex)
+        moveHistory.add(move)
+        
+        val newGrid = _uiState.value.currentGrid.map { it.clone() }.toTypedArray()
+        newGrid[move.row][move.col] = 
+            newGrid[move.row][move.col].copy(value = move.newValue)
+        
+        _uiState.update {
+            it.copy(currentGrid = newGrid, moves = it.moves + 1)
+        }
+    }
+    
+    fun toggleNoteMode() {
+        _uiState.update { it.copy(isNoteMode = !it.isNoteMode) }
+    }
+    
+    fun onPauseGame() {
+        stopTimer()
+        _uiState.update { it.copy(isPaused = true) }
+        autoSave()
+    }
+    
+    fun onResumeGame() {
+        _uiState.update { it.copy(isPaused = false) }
+        startTimer()
+    }
+    
+    private fun startTimer() {
+        timer?.cancel()
+        timer = viewModelScope.launch {
+            while (true) {
+                delay(1000)
+                _uiState.update { it.copy(elapsedTime = it.elapsedTime + 1) }
+            }
+        }
+    }
+    
+    private fun stopTimer() {
+        timer?.cancel()
+    }
+    
+    private fun updateNotes(row: Int, col: Int, number: Int) {
+        val newGrid = _uiState.value.currentGrid.map { it.clone() }.toTypedArray()
+        val currentCell = newGrid[row][col]
+        
+        val newNotes = if (currentCell.notes.contains(number)) {
+            currentCell.notes - number
+        } else {
+            currentCell.notes + number
+        }
+        
+        newGrid[row][col] = currentCell.copy(notes = newNotes)
+        _uiState.update { it.copy(currentGrid = newGrid) }
+    }
+    
+    private fun checkCompletion() {
+        val currentState = _uiState.value.currentGrid.toGridString()
+        val solution = _uiState.value.sudoku?.solution ?: return
+        
+        if (checkCompletionUseCase(currentState, solution)) {
+            stopTimer()
+            _uiState.update { it.copy(isCompleted = true) }
+            saveCompletedGame()
+        }
+    }
+    
+    private fun autoSave() {
+        viewModelScope.launch {
+            val state = _uiState.value
+            val gameState = GameState(
+                gameId = state.sudoku?.id ?: return@launch,
+                sudokuId = state.sudoku.id,
+                currentState = state.currentGrid.toGridString(),
+                notes = state.currentGrid.notesToJson(),
+                elapsedTime = state.elapsedTime,
+                moves = state.moves,
+                hintsUsed = state.hintsUsed,
+                isCompleted = state.isCompleted,
+                lastPlayedAt = System.currentTimeMillis(),
+                createdAt = state.createdAt
+            )
+            saveGameStateUseCase(gameState)
+        }
+    }
+    
+    private fun saveCompletedGame() {
+        viewModelScope.launch {
+            // UserStats'ı güncelle
+            // Achievement kontrolü yap
+            // Leaderboard'a ekle
+        }
+    }
+    
+    override fun onCleared() {
+        super.onCleared()
+        stopTimer()
+        autoSave()
+    }
+    
+    companion object {
+        private const val MAX_HINTS = 3
+    }
+}
+
+// GameUiState.kt
+data class GameUiState(
+    val sudoku: Sudoku? = null,
+    val currentGrid: Array<Array<Cell>> = emptyArray(),
+    val initialGrid: Array<Array<Cell>> = emptyArray(),
+    val selectedCell: Pair<Int, Int>? = null,
+    val highlightedNumber: Int? = null,
+    val isNoteMode: Boolean = false,
+    val isPaused: Boolean = false,
+    val isCompleted: Boolean = false,
+    val isLoading: Boolean = false,
+    val elapsedTime: Long = 0,
+    val moves: Int = 0,
+    val hintsUsed: Int = 0,
+    val createdAt: Long = System.currentTimeMillis(),
+    val error: String? = null
+)
+
+data class Cell(
+    val value: Int = 0,
+    val isInitial: Boolean = false,
+    val isError: Boolean = false,
+    val isHint: Boolean = false,
+    val notes: Set<Int> = emptySet()
+)
+
+data class Move(
+    val row: Int,
+    val col: Int,
+    val oldValue: Int,
+    val newValue: Int
+)
+
+// Extension functions
+fun String.toCellGrid(): Array<Array<Cell>> {
+    return Array(9) { row ->
+        Array(9) { col ->
+            val index = row * 9 + col
+            val value = this[index].toString().toIntOrNull() ?: 0
+            Cell(value = value, isInitial = value != 0)
+        }
+    }
+}
+
+fun Array<Array<Cell>>.toGridString(): String {
+    return this.joinToString("") { row ->
+        row.joinToString("") { it.value.toString() }
+    }
+}
+
+fun Array<Array<Cell>>.notesToJson(): String {
+    val notesMap = mutableMapOf<String, Set<Int>>()
+    forEachIndexed { row, cells ->
+        cells.forEachIndexed { col, cell ->
+            if (cell.notes.isNotEmpty()) {
+                notesMap["$row,$col"] = cell.notes
+            }
+        }
+    }
+    return Gson().toJson(notesMap)
+}
+7.2 Home ViewModel
+kotlin// HomeViewModel.kt
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val sudokuRepository: SudokuRepository,
+    private val userRepository: UserRepository
+) : ViewModel() {
+    
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    
+    init {
+        loadData()
+    }
+    
+    private fun loadData() {
+        viewModelScope.launch {
+            // Aktif oyunları yükle
+            sudokuRepository.getActiveGames().collect { games ->
+                _uiState.update { it.copy(activeGames = games) }
+            }
+        }
+        
+        viewModelScope.launch {
+            // Kullanıcı istatistiklerini yükle
+            userRepository.getUserStats().collect { stats ->
+                _uiState.update { it.copy(userStats = stats) }
+            }
+        }
+        
+        // Günlük challenge'ı kontrol et
+        checkDailyChallenge()
+    }
+    
+    fun onNewGameClicked() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            
+            val result = sudokuRepository.getRandomSudoku()
+            result.onSuccess { sudoku ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        navigateToGame = sudoku.id
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = error.message
+                    )
+                }
+            }
+        }
+    }
+    
+    fun onContinueGameClicked(gameId: String) {
+        _uiState.update { it.copy(navigateToGame = gameId) }
+    }
+    
+    fun onDailyChallengeClicked() {
+        viewModelScope.launch {
+            // Günün sudokusunu getir
+            val dailySudokuId = getDailySudokuId()
+            _uiState.update { it.copy(navigateToGame = dailySudokuId) }
+        }
+    }
+    
+    private fun checkDailyChallenge() {
+        viewModelScope.launch {
+            val today = LocalDate.now()
+            val lastPlayed = _uiState.value.userStats?.lastPlayedDate?.let {
+                Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
+            }
+            
+            _uiState.update {
+                it.copy(isDailyChallengeAvailable = today != lastPlayed)
+            }
+        }
+    }
+    
+    private fun getDailySudokuId(): String {
+        // Günün seed'ine göre belirli bir sudoku ID'si döndür
+        val today = LocalDate.now()
+        val seed = today.toEpochDay()
+        return "daily_$seed"
+    }
+    
+    fun onNavigationComplete() {
+        _uiState.update { it.copy(navigateToGame = null) }
+    }
+}
+
+data class HomeUiState(
+    val activeGames: List<GameState> = emptyList(),
+    val userStats: UserStats? = null,
+    val isDailyChallengeAvailable: Boolean = true,
+    val isLoading: Boolean = false,
+    val navigateToGame: String? = null,
+    val error: String? = null
+)
+7.3 Profile ViewModel
+kotlin// ProfileViewModel.kt
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
+    
+    private val _uiState = MutableStateFlow(ProfileUiState())
+    val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+    
+    init {
+        loadUserData()
+    }
+    
+    private fun loadUserData() {
+        viewModelScope.launch {
+            userRepository.getUserStats().collect { stats ->
+                _uiState.update { it.copy(userStats = stats) }
+            }
+        }
+    }
+    
+    fun onSignOutClicked() {
+        userRepository.signOut()
+        _uiState.update { it.copy(navigateToAuth = true) }
+    }
+}
+
+data class ProfileUiState(
+    val userStats: UserStats? = null,
+    val navigateToAuth: Boolean = false
+)
+7.4 Leaderboard ViewModel
+kotlin// LeaderboardViewModel.kt
+@HiltViewModel
+class LeaderboardViewModel @Inject constructor(
+    private val leaderboardRepository: LeaderboardRepository
+) : ViewModel() {
+    
+    private val _uiState = MutableStateFlow(LeaderboardUiState())
+    val uiState: StateFlow<LeaderboardUiState> = _uiState.asStateFlow()
+    
+    init {
+        loadLeaderboard()
+    }
+    
+    private fun loadLeaderboard() {
+        viewModelScope.launch {
+            leaderboardRepository.getLeaderboard().collect { entries ->
+                _uiState.update { it.copy(entries = entries, isLoading = false) }
+            }
+        }
+    }
+    
+    fun onRefresh() {
+        _uiState.update { it.copy(isLoading = true) }
+        loadLeaderboard()
+    }
+}
+
+data class LeaderboardUiState(
+    val entries: List<LeaderboardEntry> = emptyList(),
+    val isLoading: Boolean = true
+)
+7.5 Auth ViewModel
+kotlin// AuthViewModel.kt
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
+    
+    private val _uiState = MutableStateFlow(AuthUiState())
+    val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+    
+    fun onEmailChanged(email: String) {
+        _uiState.update { it.copy(email = email, error = null) }
+    }
+    
+    fun onPasswordChanged(password: String) {
+        _uiState.update { it.copy(password = password, error = null) }
+    }
+    
+    fun onSignInClicked() {
+        if (!validateInputs()) return
+        
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            
+            val result = userRepository.signIn(
+                _uiState.value.email,
+                _uiState.value.password
+            )
+            
+            result.onSuccess {
+                _uiState.update {
+                    it.copy(isLoading = false, navigateToHome = true)
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(isLoading = false, error = error.message)
+                }
+            }
+        }
+    }
+    
+    fun onSignUpClicked() {
+        if (!validateInputs()) return
+        
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            
+            val result = userRepository.signUp(
+                _uiState.value.email,
+                _uiState.value.password
+            )
+            
+            result.onSuccess {
+                _uiState.update {
+                    it.copy(isLoading = false, navigateToHome = true)
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(isLoading = false, error = error.message)
+                }
+            }
+        }
+    }
+    
+    private fun validateInputs(): Boolean {
+        val email = _uiState.value.email
+        val password = _uiState.value.password
+        
+        when {
+            email.isBlank() -> {
+                _uiState.update { it.copy(error = "Email is required") }
+                return false
+            }
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                _uiState.update { it.copy(error = "Invalid email format") }
+                return false
+            }
+            password.length < 6 -> {
+                _uiState.update { it.copy(error = "Password must be at least 6 characters") }
+                return false
+            }
+        }
+        return true
+    }
+}
+
+data class AuthUiState(
+    val email: String = "",
+    val password: String = "",
+    val isLoading: Boolean = false,
+    val navigateToHome: Boolean = false,
+    val error: String? = null
+)
+
+ADIM 8: Presentation Layer - UI Screens (5-6. Gün)
+8.1 Game Screen
+kotlin// GameScreen.kt
+@Composable
+fun GameScreen(
+    viewModel: GameViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    
+    Scaffold(
+        topBar = {
+            GameTopBar(
+                elapsedTime = uiState.elapsedTime,
+                onPauseClick = { viewModel.onPauseGame() },
+                onBackClick = onNavigateBack
+            )
+        }
+    ) { padding ->
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Stats Row
+                GameStatsRow(
+                    moves = uiState.moves,
+                    hintsUsed = uiState.hintsUsed,
+                    maxHints = 3
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Sudoku Grid
+                SudokuGrid(
+                    grid = uiState.currentGrid,
+                    selectedCell = uiState.selectedCell,
+                    highlightedNumber = uiState.highlightedNumber,
+                    onCellClick = { row, col ->
+                        viewModel.onCellSelected(row, col)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Game Controls
+                GameControls(
+                    isNoteMode = uiState.isNoteMode,
+                    onNoteModeToggle = { viewModel.toggleNoteMode() },
+                    onUndoClick = { viewModel.onUndoPressed() },
+                    onRedoClick = { viewModel.onRedoPressed() },
+                    onHintClick = { viewModel.onHintRequested() },
+                    onDeleteClick = { viewModel.onDeletePressed() }
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Number Pad
+                NumberPad(
+                    onNumberClick = { number ->
+                        viewModel.onNumberSelected(number)
+                    }
+                )
+            }
+        }
+        
+        // Pause Dialog
+        if (uiState.isPaused) {
+            PauseDialog(
+                onResume = { viewModel.onResumeGame() },
+                onQuit = onNavigateBack
+            )
+        }
+        
+        // Completion Dialog
+        if (uiState.isCompleted) {
+            CompletionDialog(
+                time = uiState.elapsedTime,
+                moves = uiState.moves,
+                onNewGame = { /* Navigate to new game */ },
+                onHome = onNavigateBack
+            )
+        }
+    }
+}
+
+@Composable
+fun GameTopBar(
+    elapsedTime: Long,
+    onPauseClick: () -> Unit,
+    onBackClick: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = formatTime(elapsedTime),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+        },
+        actions = {
+            IconButton(onClick = onPauseClick) {
+                Icon(Icons.Default.Pause, contentDescription = "Pause")
+            }
+        }
+    )
+}
+
+@Composable
+fun GameStatsRow(
+    moves: Int,
+    hintsUsed: Int,
+    maxHints: Int
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        StatItem(
+            icon = Icons.Default.Edit,
+            label = "Moves",
+            value = moves.toString()
+        )
+        StatItem(
+            icon = Icons.Default.Lightbulb,
+            label = "Hints",
+            value = "$hintsUsed/$maxHints"
+        )
+    }
+}
+
+@Composable
+fun StatItem(
+    icon: ImageVector,
+    label: String,
+    value: String
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+fun formatTime(seconds: Long): String {
+    val hours = seconds / 3600
+    val minutes = (seconds % 3600) / 60
+    val secs = seconds % 60
+    return if (hours > 0) {
+        String.format("%02d:%02d:%02d", hours, minutes, secs)
+    } else {
+        String.format("%02d:%02d", minutes, secs)
+    }
+}
+8.2 Sudoku Grid Component
+kotlin// SudokuGrid.kt
+@Composable
+fun SudokuGrid(
+    grid: Array<Array<Cell>>,
+    selectedCell: Pair<Int, Int>?,
+    highlightedNumber: Int?,
+    onCellClick: (Int, Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+    ) {
+        val cellSize = maxWidth / 9
+        
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures { offset ->
+                        val row = (offset.y / cellSize.toPx()).toInt().coerceIn(0, 8)
+                        val col = (offset.x / cellSize.toPx()).toInt().coerceIn(0, 8)
+                        onCellClick(row, col)
+                    }
+                }
+        ) {
+            // Background highlights
+            selectedCell?.let { (selRow, selCol) ->
+                // Highlight selected cell
+                drawRect(
+                    color = Color(0xFF BBDEFB),
+                    topLeft = Offset(selCol * cellSize.toPx(), selRow * cellSize.toPx()),
+                    size = Size(cellSize.toPx(), cellSize.toPx())
+                )
+                
+                // Highlight row and column
+                drawRect(
+                    color = Color(0xFFE3F2FD),
+                    topLeft = Offset(0f, selRow * cellSize.toPx()),
+                    size = Size(size.width, cellSize.toPx())
+                )
+                drawRect(
+                    color = Color(0xFFE3F2FD),
+                    topLeft = Offset(selCol * cellSize.toPx(), 0f),
+                    size = Size(cellSize.toPx(), size.height)
+                )
+                
+                // Highlight 3x3 box
+                val boxRow = selRow / 3
+                val boxCol = selCol / 3
+                drawRect(
+                    color = Color(0xFFE3F2FD),
+                    topLeft = Offset(boxCol * 3 * cellSize.toPx(), boxRow * 3 * cellSize.toPx()),
+                    size = Size(3 * cellSize.toPx(), 3 * cellSize.toPx())
+                )
+            }
+            
+            // Highlight cells with same number
+            highlightedNumber?.let { num ->
+                grid.forEachIndexed { row, cells ->
+                    cells.forEachIndexed { col, cell ->
+                        if (cell.value == num && num != 0) {
+                            drawRect(
+                                color = Color(0xFFFFF9C4),
+                                topLeft = Offset(col * cellSize.toPx(), row * cellSize.toPx()),
+                                size = Size(cellSize.toPx(), cellSize.toPx())
+                            )
+                        }
+                    }
+                }
+            }
+            
+            // Grid lines
+            for (i in 0..9) {
+                val strokeWidth = if (i % 3 == 0) 4.dp.toPx() else 1.dp.toPx()
+                val color = if (i % 3 == 0) Color.Black else Color.Gray
+                
+                // Vertical lines
+                drawLine(
+                    color = color,
+                    start = Offset(i * cellSize.toPx(), 0f),
+                    end = Offset(i * cellSize.toPx(), size.height),
+                    strokeWidth = strokeWidth
+                )
+                
+                // Horizontal lines
+                drawLine(
+                    color = color,
+                    start = Offset(0f, i * cellSize.toPx()),
+                    end = Offset(size.width, i * cellSize.toPx()),
+                    strokeWidth = strokeWidth
+                )
+            }
+        }
+        
+        // Cell content
+        grid.forEachIndexed { row, cells ->
+            cells.forEachIndexed { col, cell ->
+                Box(
+                    modifier = Modifier
+                        .offset(
+                            x = col * cellSize,
+                            y = row * cellSize
+                        )
+                        .size(cellSize),
+                    contentAlignment = Alignment.Center
+                ) {
+                    when {
+                        cell.value != 0 -> {
+                            Text(
+                                text = cell.value.toString(),
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = if (cell.isInitial) FontWeight.Bold else FontWeight.Normal,
+                                color = when {
+                                    cell.isError -> Color.Red
+                                    cell.isHint -> Color.Blue
+                                    cell.isInitial -> Color.Black
+                                    else -> Color(0xFF424242)
+                                }
+                            )
+                        }
+                        cell.notes.isNotEmpty() -> {
+                            NoteGrid(notes = cell.notes, cellSize = cellSize)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NoteGrid(notes: Set<Int>, cellSize: Dp) {
+    Box(modifier = Modifier.size(cellSize)) {
+        for (note in notes) {
+            val row = (note - 1) / 3
+            val col = (note - 1) % 3
+            Text(
+                text = note.toString(),
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier
+                    .offset(
+                        x = col * (cellSize / 3),
+                        y = row * (cellSize / 3)
+                    )
+                    .size(cellSize / 3)
+                    .wrapContentSize(Alignment.Center),
+                fontSize = 10.sp,
+                color = Color.Gray
+            )
+        }
+    }
+}
+8.3 Number Pad Component
+kotlin// NumberPad.kt
+@Composable
+fun NumberPad(
+    onNumberClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        for (number in 1..9) {
+            NumberButton(
+                number = number,
+                onClick = { onNumberClick(number) }
+            )
+        }
+    }
+}
+
+@Composable
+fun NumberButton(
+    number: Int,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.size(40.dp),
+        contentPadding = PaddingValues(0.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Text(
+            text = number.toString(),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+8.4 Game Controls Component
+kotlin// GameControls.kt
+@Composable
+fun GameControls(
+    isNoteMode: Boolean,
+    onNoteModeToggle: () -> Unit,
+    onUndoClick: () -> Unit,
+    onRedoClick: () -> Unit,
+    onHintClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        ControlButton(
+            icon = Icons.Default.Undo,
+            label = "Undo",
+            onClick = onUndoClick
+        )
+        
+        ControlButton(RetryClaude does not have the ability to run the code it generates yet.NHContinuekotlin            icon = Icons.Default.Redo,
+            label = "Redo",
+            onClick = onRedoClick
+        )
+        
+        ControlButton(
+            icon = Icons.Default.Delete,
+            label = "Erase",
+            onClick = onDeleteClick
+        )
+        
+        ControlButton(
+            icon = if (isNoteMode) Icons.Default.Edit else Icons.Outlined.Edit,
+            label = "Notes",
+            onClick = onNoteModeToggle,
+            isSelected = isNoteMode
+        )
+        
+        ControlButton(
+            icon = Icons.Default.Lightbulb,
+            label = "Hint",
+            onClick = onHintClick
+        )
+    }
+}
+
+@Composable
+fun ControlButton(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    isSelected: Boolean = false
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(onClick = onClick)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = if (isSelected) 
+                MaterialTheme.colorScheme.primary 
+            else 
+                MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(32.dp)
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = if (isSelected) 
+                MaterialTheme.colorScheme.primary 
+            else 
+                MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+8.5 Dialogs
+kotlin// PauseDialog.kt
+@Composable
+fun PauseDialog(
+    onResume: () -> Unit,
+    onQuit: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onResume,
+        title = { Text("Game Paused") },
+        text = { Text("Take a break or continue playing") },
+        confirmButton = {
+            TextButton(onClick = onResume) {
+                Text("Resume")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onQuit) {
+                Text("Quit")
+            }
+        }
+    )
+}
+
+// CompletionDialog.kt
+@Composable
+fun CompletionDialog(
+    time: Long,
+    moves: Int,
+    onNewGame: () -> Unit,
+    onHome: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onHome,
+        title = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(
+                    imageVector = Icons.Default.EmojiEvents,
+                    contentDescription = null,
+                    tint = Color(0xFFFFD700),
+                    modifier = Modifier.size(64.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Congratulations!")
+            }
+        },
+        text = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "You completed the puzzle!",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = formatTime(time),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text("Time", style = MaterialTheme.typography.bodySmall)
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = moves.toString(),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text("Moves", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onNewGame) {
+                Text("New Game")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onHome) {
+                Text("Home")
+            }
+        }
+    )
+}
+8.6 Home Screen
+kotlin// HomeScreen.kt
+@Composable
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onNavigateToGame: (String?) -> Unit,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToLeaderboard: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    
+    LaunchedEffect(uiState.navigateToGame) {
+        uiState.navigateToGame?.let { gameId ->
+            onNavigateToGame(gameId)
+            viewModel.onNavigationComplete()
+        }
+    }
+    
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Extreme Sudoku") },
+                actions = {
+                    IconButton(onClick = onNavigateToProfile) {
+                        Icon(Icons.Default.Person, contentDescription = "Profile")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            // Welcome Card
+            uiState.userStats?.let { stats ->
+                UserStatsCard(stats = stats)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            
+            // Main Actions
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { viewModel.onNewGameClicked() }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            text = "New Game",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Start a new extreme sudoku",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // Daily Challenge
+            if (uiState.isDailyChallengeAvailable) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { viewModel.onDailyChallengeClicked() },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CalendarToday,
+                            contentDescription = null,
+                            modifier = Modifier.size(40.dp)
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
+                            Text(
+                                text = "Daily Challenge",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "Complete today's puzzle",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+            
+            // Leaderboard
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onNavigateToLeaderboard
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Leaderboard,
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = "Leaderboard",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Continue Playing Section
+            if (uiState.activeGames.isNotEmpty()) {
+                Text(
+                    text = "Continue Playing",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                LazyColumn {
+                    items(uiState.activeGames) { game ->
+                        GameCard(
+                            game = game,
+                            onClick = { viewModel.onContinueGameClicked(game.gameId) }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun UserStatsCard(stats: UserStats) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "Your Stats",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                StatColumn("Played", stats.gamesPlayed.toString())
+                StatColumn("Completed", stats.gamesCompleted.toString())
+                StatColumn("Best Time", formatTime(stats.bestTime))
+                StatColumn("Streak", "${stats.currentStreak}🔥")
+            }
+        }
+    }
+}
+
+@Composable
+fun StatColumn(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+fun GameCard(
+    game: GameState,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "Game ${game.gameId.take(8)}",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Time: ${formatTime(game.elapsedTime)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null
+            )
+        }
+    }
+}
+8.7 Profile Screen
+kotlin// ProfileScreen.kt
+@Composable
+fun ProfileScreen(
+    viewModel: ProfileViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit,
+    onNavigateToAuth: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    
+    LaunchedEffect(uiState.navigateToAuth) {
+        if (uiState.navigateToAuth) {
+            onNavigateToAuth()
+        }
+    }
+    
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Profile") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            // Profile Header
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(80.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Player",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Detailed Stats
+            uiState.userStats?.let { stats ->
+                Text(
+                    text = "Statistics",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                DetailedStatCard(
+                    title = "Games",
+                    items = listOf(
+                        "Played" to stats.gamesPlayed.toString(),
+                        "Completed" to stats.gamesCompleted.toString(),
+                        "Completion Rate" to "${(stats.gamesCompleted * 100 / (stats.gamesPlayed.coerceAtLeast(1)))}%"
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                DetailedStatCard(
+                    title = "Time",
+                    items = listOf(
+                        "Best Time" to formatTime(stats.bestTime),
+                        "Average Time" to formatTime(stats.averageTime),
+                        "Total Time" to formatTime(stats.totalTime)
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                DetailedStatCard(
+                    title = "Streaks",
+                    items = listOf(
+                        "Current Streak" to "${stats.currentStreak} days",
+                        "Longest Streak" to "${stats.longestStreak} days",
+                        "Total Hints Used" to stats.hintsUsed.toString()
+                    )
+                )
+            }
+            
+            Spacer(modifier = Modifier.weight(1f))
+            
+            // Sign Out Button
+            Button(
+                onClick = { viewModel.onSignOutClicked() },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Sign Out")
+            }
+        }
+    }
+}
+
+@Composable
+fun DetailedStatCard(
+    title: String,
+    items: List<Pair<String, String>>
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            items.forEach { (label, value) ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = value,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                if (items.last() != label to value) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+}
+8.8 Leaderboard Screen
+kotlin// LeaderboardScreen.kt
+@Composable
+fun LeaderboardScreen(
+    viewModel: LeaderboardViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Leaderboard") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { viewModel.onRefresh() }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                itemsIndexed(uiState.entries) { index, entry ->
+                    LeaderboardItem(
+                        rank = index + 1,
+                        entry = entry,
+                        isTopThree = index < 3
+                    )
+                    if (index < uiState.entries.lastIndex) {
+                        Divider()
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LeaderboardItem(
+    rank: Int,
+    entry: LeaderboardEntry,
+    isTopThree: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Rank
+        Box(
+            modifier = Modifier.size(40.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (isTopThree) {
+                Icon(
+                    imageVector = Icons.Default.EmojiEvents,
+                    contentDescription = null,
+                    tint = when (rank) {
+                        1 -> Color(0xFFFFD700) // Gold
+                        2 -> Color(0xFFC0C0C0) // Silver
+                        3 -> Color(0xFFCD7F32) // Bronze
+                        else -> Color.Gray
+                    },
+                    modifier = Modifier.size(32.dp)
+                )
+            } else {
+                Text(
+                    text = rank.toString(),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.width(16.dp))
+        
+        // User info
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = entry.username,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "${entry.gamesCompleted} games completed",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        
+        // Best time
+        Column(horizontalAlignment = Alignment.End) {
+            Text(
+                text = formatTime(entry.bestTime),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "best time",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+8.9 Auth Screen
+kotlin// AuthScreen.kt
+@Composable
+fun AuthScreen(
+    viewModel: AuthViewModel = hiltViewModel(),
+    onNavigateToHome: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    var isSignUp by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(uiState.navigateToHome) {
+        if (uiState.navigateToHome) {
+            onNavigateToHome()
+        }
+    }
+    
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Logo/Title
+                Icon(
+                    imageVector = Icons.Default.GridOn,
+                    contentDescription = null,
+                    modifier = Modifier.size(80.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Extreme Sudoku",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = if (isSignUp) "Create Account" else "Welcome Back",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                
+                Spacer(modifier = Modifier.height(32.dp))
+                
+                // Email Field
+                OutlinedTextField(
+                    value = uiState.email,
+                    onValueChange = { viewModel.onEmailChanged(it) },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    singleLine = true
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Password Field
+                OutlinedTextField(
+                    value = uiState.password,
+                    onValueChange = { viewModel.onPasswordChanged(it) },
+                    label = { Text("Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    singleLine = true
+                )
+                
+                // Error Message
+                if (uiState.error != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = uiState.error!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // Sign In/Up Button
+                Button(
+                    onClick = {
+                        if (isSignUp) {
+                            viewModel.onSignUpClicked()
+                        } else {
+                            viewModel.onSignInClicked()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !uiState.isLoading
+                ) {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(if (isSignUp) "Sign Up" else "Sign In")
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Toggle Sign In/Up
+                TextButton(
+                    onClick = { isSignUp = !isSignUp }
+                ) {
+                    Text(
+                        if (isSignUp) 
+                            "Already have an account? Sign In" 
+                        else 
+                            "Don't have an account? Sign Up"
+                    )
+                }
+            }
+        }
+    }
+}
+
+ADIM 9: Navigation Setup (6. Gün)
+kotlin// Navigation.kt
+@Composable
+fun SudokuNavigation() {
+    val navController = rememberNavController()
+    val auth = Firebase.auth
+    
+    val startDestination = if (auth.currentUser != null) {
+        Screen.Home.route
+    } else {
+        Screen.Auth.route
+    }
+    
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        composable(Screen.Auth.route) {
+            AuthScreen(
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Auth.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        
+        composable(Screen.Home.route) {
+            HomeScreen(
+                onNavigateToGame = { gameId ->
+                    navController.navigate(Screen.Game.createRoute(gameId))
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                },
+                onNavigateToLeaderboard = {
+                    navController.navigate(Screen.Leaderboard.route)
+                }
+            )
+        }
+        
+        composable(
+            route = Screen.Game.route,
+            arguments = listOf(
+                navArgument("gameId") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) {
+            GameScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        
+        composable(Screen.Profile.route) {
+            ProfileScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToAuth = {
+                    navController.navigate(Screen.Auth.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+        
+        composable(Screen.Leaderboard.route) {
+            LeaderboardScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
+}
+
+sealed class Screen(val route: String) {
+    object Auth : Screen("auth")
+    object Home : Screen("home")
+    object Game : Screen("game?gameId={gameId}") {
+        fun createRoute(gameId: String?) = if (gameId != null) {
+            "game?gameId=$gameId"
+        } else {
+            "game"
+        }
+    }
+    object Profile : Screen("profile")
+    object Leaderboard : Screen("leaderboard")
+}
+
+ADIM 10: Dependency Injection (Hilt) (7. Gün)
+kotlin// AppModule.kt
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+    
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
+    
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore = Firebase.firestore
+    
+    @Provides
+    @Singleton
+    fun provideFirebaseStorage(): FirebaseStorage = Firebase.storage
+}
+
+// DatabaseModule.kt
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+    
+    @Provides
+    @Singleton
+    fun provideSudokuDatabase(
+        @ApplicationContext context: Context
+    ): SudokuDatabase {
+        return Room.databaseBuilder(
+            context,
+            SudokuDatabase::class.java,
+            "sudoku_database"
+        ).build()
+    }
+    
+    @Provides
+    fun provideSudokuDao(database: SudokuDatabase) = database.sudokuDao()
+    
+    @Provides
+    fun provideGameStateDao(database: SudokuDatabase) = database.gameStateDao()
+    
+    @Provides
+    fun provideUserStatsDao(database: SudokuDatabase) = database.userStatsDao()
+}
+
+// NetworkModule.kt
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+    
+    @Provides
+    @Singleton
+    fun provideRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://huggingface.co/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideHuggingFaceService(retrofit: Retrofit): HuggingFaceService {
+        return retrofit.create(HuggingFaceService::class.java)
+    }
+}
+
+// RepositoryModule.kt
+@Module
+@InstallIn(SingletonComponent::class)
+object RepositoryModule {
+    
+    @Provides
+    @Singleton
+    fun provideFirebaseDataSource(
+        firestore: FirebaseFirestore,
+        auth: FirebaseAuth
+    ): FirebaseDataSource {
+        return FirebaseDataSource(firestore, auth)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideSudokuRepository(
+        sudokuDao: SudokuDao,
+        gameStateDao: GameStateDao,
+        firebaseDataSource: FirebaseDataSource
+    ): SudokuRepository {
+        return SudokuRepository(sudokuDao, gameStateDao, firebaseDataSource)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideUserRepository(
+        userStatsDao: UserStatsDao,
+        firebaseDataSource: FirebaseDataSource,
+        auth: FirebaseAuth
+    ): UserRepository {
+        return UserRepository(userStatsDao, firebaseDataSource, auth)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideLeaderboardRepository(
+        firebaseDataSource: FirebaseDataSource
+    ): LeaderboardRepository {
+        return LeaderboardRepository(firebaseDataSource)
+    }
+}
+
+ADIM 11: Application Class & MainActivity (7. Gün)
+kotlin// SudokuApplication.kt
+@HiltAndroidApp
+class SudokuApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        
+        // Firebase initialization
+        Firebase.apply {
+            // Firebase is auto-initialized
+        }
+        
+        // Crashlytics setup
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+    }
+}
+
+// MainActivity.kt
+@AndroidEntryRetryClaude does not have the ability to run the code it generates yet.NHContinuekotlin// MainActivity.kt
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        enableEdgeToEdge()
+        
+        setContent {
+            ExtremeSudokuTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    SudokuNavigation()
+                }
+            }
+        }
+    }
+}
+
+// Theme.kt
+@Composable
+fun ExtremeSudokuTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    val colorScheme = if (darkTheme) {
+        darkColorScheme(
+            primary = Color(0xFF6200EE),
+            secondary = Color(0xFF03DAC6),
+            tertiary = Color(0xFF3700B3)
+        )
+    } else {
+        lightColorScheme(
+            primary = Color(0xFF6200EE),
+            secondary = Color(0xFF03DAC6),
+            tertiary = Color(0xFF3700B3)
+        )
+    }
+    
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography,
+        content = content
+    )
+}
+
+ADIM 12: AndroidManifest.xml ve Permissions (7. Gün)
+xml<!-- AndroidManifest.xml -->
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".SudokuApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ExtremeSudoku"
+        tools:targetApi="31">
+        
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ExtremeSudoku">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Firebase Services -->
+        <service
+            android:name="com.google.firebase.components.ComponentDiscoveryService"
+            android:exported="false">
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+        </service>
+    </application>
+</manifest>
+
+🗂️ AŞAMA 4: Test ve Optimizasyon (8-9. Gün)
+ADIM 13: Unit Tests
+kotlin// SudokuSolverTest.kt
+class SudokuSolverTest {
+    
+    private lateinit var solveSudokuUseCase: SolveSudokuUseCase
+    
+    @Before
+    fun setup() {
+        solveSudokuUseCase = SolveSudokuUseCase()
+    }
+    
+    @Test
+    fun `solve valid sudoku puzzle`() {
+        val puzzle = "003020600900305001001806400..." // 81 karakter
+        val solution = solveSudokuUseCase(puzzle)
+        
+        assertNotNull(solution)
+        assertEquals(81, solution?.length)
+        assertFalse(solution?.contains('0') ?: true)
+    }
+    
+    @Test
+    fun `validate move in empty cell`() {
+        val validateMoveUseCase = ValidateMoveUseCase()
+        val grid = Array(9) { IntArray(9) }
+        
+        val isValid = validateMoveUseCase(grid, 0, 0, 5)
+        assertTrue(isValid)
+    }
+}
+
+// GameViewModelTest.kt
+@ExperimentalCoroutinesApi
+class GameViewModelTest {
+    
+    @get:Rule
+    val instantExecutorRule = InstantTaskExecutorRule()
+    
+    private lateinit var viewModel: GameViewModel
+    private lateinit var getSudokuUseCase: GetSudokuUseCase
+    
+    @Before
+    fun setup() {
+        getSudokuUseCase = mockk()
+        // Setup other mocks
+        viewModel = GameViewModel(/* inject mocks */)
+    }
+    
+    @Test
+    fun `load game successfully`() = runTest {
+        val sudoku = Sudoku(
+            id = "test",
+            puzzle = "0".repeat(81),
+            solution = "123456789".repeat(9)
+        )
+        
+        coEvery { getSudokuUseCase(any()) } returns Result.success(sudoku)
+        
+        viewModel.loadGame("test")
+        
+        assertEquals(sudoku, viewModel.uiState.value.sudoku)
+        assertFalse(viewModel.uiState.value.isLoading)
+    }
+}
+ADIM 14: UI Tests
+kotlin// GameScreenTest.kt
+@RunWith(AndroidJUnit4::class)
+class GameScreenTest {
+    
+    @get:Rule
+    val composeTestRule = createComposeRule()
+    
+    @Test
+    fun sudokuGridIsDisplayed() {
+        composeTestRule.setContent {
+            GameScreen(
+                viewModel = mockk(relaxed = true),
+                onNavigateBack = {}
+            )
+        }
+        
+        composeTestRule.onNodeWithTag("sudoku_grid").assertExists()
+    }
+    
+    @Test
+    fun numberPadIsDisplayed() {
+        composeTestRule.setContent {
+            NumberPad(onNumberClick = {})
+        }
+        
+        for (i in 1..9) {
+            composeTestRule.onNodeWithText(i.toString()).assertExists()
+        }
+    }
+}
+ADIM 15: Performance Optimizations
+kotlin// Optimizations to implement:
+
+// 1. Grid State Memoization
+@Composable
+fun SudokuGrid(/* params */) {
+    val gridState = remember(grid) {
+        derivedStateOf { grid.toImmutableList() }
+    }
+    // Use gridState instead of grid
+}
+
+// 2. Lazy Loading for Sudoku Cache
+class SudokuRepository {
+    private val sudokuCache = mutableListOf<Sudoku>()
+    
+    init {
+        viewModelScope.launch {
+            // Background cache loading
+            loadSudokuCache()
+        }
+    }
+    
+    private suspend fun loadSudokuCache() {
+        repeat(100) {
+            delay(100) // Don't block main thread
+            val sudoku = firebaseDataSource.getRandomSudoku()
+            sudoku.getOrNull()?.let { sudokuCache.add(it) }
+        }
+    }
+}
+
+// 3. Image Optimization (if using images)
+@Composable
+fun UserAvatar(url: String) {
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(url)
+            .crossfade(true)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .build(),
+        contentDescription = null
+    )
+}
+
+// 4. Database Indices
+@Entity(
+    tableName = "game_states",
+    indices = [
+        Index(value = ["isCompleted"]),
+        Index(value = ["lastPlayedAt"])
+    ]
+)
+data class GameStateEntity(/* ... */)
+
+📱 AŞAMA 5: Ek Özellikler ve İyileştirmeler (10-12. Gün)
+ADIM 16: Push Notifications (Daily Challenge Reminder)
+kotlin// NotificationService.kt
+class NotificationService(private val context: Context) {
+    
+    fun scheduleDailyChallengeNotification() {
+        val alarmManager = context.getSystemService(AlarmManager::class.java)
+        val intent = Intent(context, DailyChallengeReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context, 0, intent, PendingIntent.FLAG_IMMUTABLE
+        )
+        
+        // Her gün saat 09:00'da bildirim gönder
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, 9)
+            set(Calendar.MINUTE, 0)
+        }
+        
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
+    }
+}
+
+// DailyChallengeReceiver.kt
+class DailyChallengeReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val notificationManager = context.getSystemService(NotificationManager::class.java)
+        
+        val notification = NotificationCompat.Builder(context, "daily_challenge")
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle("Daily Challenge Available!")
+            .setContentText("Complete today's extreme sudoku puzzle")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .build()
+        
+        notificationManager.notify(1, notification)
+    }
+}
+ADIM 17: Achievements System
+kotlin// Achievement.kt
+data class Achievement(
+    val id: String,
+    val title: String,
+    val description: String,
+    val iconRes: Int,
+    val requirement: Int,
+    val isUnlocked: Boolean = false,
+    val progress: Int = 0
+)
+
+object Achievements {
+    val FIRST_WIN = Achievement(
+        id = "first_win",
+        title = "First Victory",
+        description = "Complete your first puzzle",
+        iconRes = R.drawable.ic_trophy,
+        requirement = 1
+    )
+    
+    val SPEED_DEMON = Achievement(
+        id = "speed_demon",
+        title = "Speed Demon",
+        description = "Complete a puzzle in under 10 minutes",
+        iconRes = R.drawable.ic_speed,
+        requirement = 1
+    )
+    
+    val WEEK_STREAK = Achievement(
+        id = "week_streak",
+        title = "Week Warrior",
+        description = "Play for 7 days in a row",
+        iconRes = R.drawable.ic_streak,
+        requirement = 7
+    )
+    
+    val NO_HINTS = Achievement(
+        id = "no_hints",
+        title = "Pure Solver",
+        description = "Complete a puzzle without using hints",
+        iconRes = R.drawable.ic_brain,
+        requirement = 1
+    )
+    
+    fun getAll() = listOf(FIRST_WIN, SPEED_DEMON, WEEK_STREAK, NO_HINTS)
+}
+
+// AchievementManager.kt
+class AchievementManager(
+    private val firestore: FirebaseFirestore,
+    private val auth: FirebaseAuth
+) {
+    suspend fun checkAchievements(gameState: GameState, userStats: UserStats) {
+        val achievements = mutableListOf<Achievement>()
+        
+        // First win
+        if (userStats.gamesCompleted == 1) {
+            achievements.add(Achievements.FIRST_WIN)
+        }
+        
+        // Speed demon
+        if (gameState.elapsedTime < 600 && gameState.isCompleted) {
+            achievements.add(Achievements.SPEED_DEMON)
+        }
+        
+        // Week streak
+        if (userStats.currentStreak >= 7) {
+            achievements.add(Achievements.WEEK_STREAK)
+        }
+        
+        // No hints
+        if (gameState.hintsUsed == 0 && gameState.isCompleted) {
+            achievements.add(Achievements.NO_HINTS)
+        }
+        
+        // Save unlocked achievements
+        achievements.forEach { unlockAchievement(it) }
+    }
+    
+    private suspend fun unlockAchievement(achievement: Achievement) {
+        val userId = auth.currentUser?.uid ?: return
+        
+        firestore.collection("users")
+            .document(userId)
+            .collection("achievements")
+            .document(achievement.id)
+            .set(mapOf(
+                "unlockedAt" to System.currentTimeMillis(),
+                "achievement" to achievement
+            ))
+            .await()
+    }
+}
+ADIM 18: App Shortcuts
+xml<!-- res/xml/shortcuts.xml -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="new_game"
+        android:enabled="true"
+        android:icon="@drawable/ic_play"
+        android:shortcutShortLabel="@string/new_game"
+        android:shortcutLongLabel="@string/start_new_game">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.yourname.extremesudoku"
+            android:targetClass="com.yourname.extremesudoku.MainActivity"
+            android:data="extremesudoku://new_game" />
+    </shortcut>
+    
+    <shortcut
+        android:shortcutId="daily_challenge"
+        android:enabled="true"
+        android:icon="@drawable/ic_calendar"
+        android:shortcutShortLabel="@string/daily_challenge"
+        android:shortcutLongLabel="@string/play_daily_challenge">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.yourname.extremesudoku"
+            android:targetClass="com.yourname.extremesudoku.MainActivity"
+            android:data="extremesudoku://daily_challenge" />
+    </shortcut>
+</shortcuts>
+ADIM 19: Widget (Home Screen)
+kotlin// SudokuWidget.kt
+class SudokuWidget : GlanceAppWidget() {
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        provideContent {
+            SudokuWidgetContent()
+        }
+    }
+}
+
+@Composable
+fun SudokuWidgetContent() {
+    Column(
+        modifier = GlanceModifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Extreme Sudoku",
+            style = TextStyle(
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        )
+        Spacer(modifier = GlanceModifier.height(8.dp))
+        Button(
+            text = "New Game",
+            onClick = actionStartActivity<MainActivity>()
+        )
+        Spacer(modifier = GlanceModifier.height(4.dp))
+        Button(
+            text = "Daily Challenge",
+            onClick = actionStartActivity<MainActivity>()
+        )
+    }
+}
+
+🔧 AŞAMA 6: Projenin Tamamlanması (13-14. Gün)
+ADIM 20: Firestore Security Rules
+javascript// firestore.rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Sudoku collection (public read, admin write)
+    match /sudokus/{sudokuId} {
+      allow read: if true;
+      allow write: if false; // Sadece admin
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // User stats
+      match /stats/{statId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // User games
+      match /games/{gameId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // User achievements
+      match /achievements/{achievementId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Leaderboard (public read, authenticated write)
+    match /leaderboard/{entryId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
+ADIM 21: ProGuard Rules
+proguard# proguard-rules.pro
+
+# Firebase
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+
+# Gson
+-keepattributes Signature
+-keep class com.google.gson.** { *; }
+-keep class * implements com.google.gson.TypeAdapter
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+
+# Room
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-dontwarn androidx.room.paging.**
+
+# Retrofit
+-keepattributes Signature, InnerClasses, EnclosingMethod
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+
+# Coroutines
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+```
+
+### ADIM 22: App Icons ve Branding
+```
+Oluşturulacak Görseller:
+1. App Icon (adaptive icon)
+   - res/mipmap-xxxhdpi/ic_launcher.png (192x192)
+   - res/mipmap-xxhdpi/ic_launcher.png (144x144)
+   - res/mipmap-xhdpi/ic_launcher.png (96x96)
+   - res/mipmap-hdpi/ic_launcher.png (72x72)
+   - res/mipmap-mdpi/ic_launcher.png (48x48)
+
+2. Splash Screen
+   - res/drawable/splash_background.xml
+
+3. Feature Graphics (Play Store)
+   - 1024x500 px
+ADIM 23: strings.xml ve Localization
+xml<!-- res/values/strings.xml -->
+<resources>
+    <string name="app_name">Extreme Sudoku</string>
+    
+    <!-- Home Screen -->
+    <string name="new_game">New Game</string>
+    <string name="continue_playing">Continue Playing</string>
+    <string name="daily_challenge">Daily Challenge</string>
+    <string name="leaderboard">Leaderboard</string>
+    
+    <!-- Game Screen -->
+    <string name="hint">Hint</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="notes">Notes</string>
+    <string name="erase">Erase</string>
+    <string name="pause">Pause</string>
+    
+    <!-- Stats -->
+    <string name="games_played">Games Played</string>
+    <string name="games_completed">Games Completed</string>
+    <string name="best_time">Best Time</string>
+    <string name="average_time">Average Time</string>
+    <string name="current_streak">Current Streak</string>
+    
+    <!-- Messages -->
+    <string name="puzzle_complete">Congratulations! Puzzle Complete!</string>
+    <string name="game_paused">Game Paused</string>
+    <string name="error_loading">Error loading game</string>
+</resources>
+
+<!-- res/values-tr/strings.xml (Türkçe) -->
+<resources>
+    <string name="app_name">Extreme Sudoku</string>
+    <string name="new_game">Yeni Oyun</string>
+    <string name="continue_playing">Devam Et</string>
+    <string name="daily_challenge">Günlük Challenge</string>
+    <string name="leaderboard">Lider Tablosu</string>
+    <!-- ... diğer çeviriler -->
+</resources>
+
+📊 AŞAMA 7: Dağıtım ve Yayınlama (15. Gün)
+ADIM 24: Release Build Hazırlığı
+kotlin// build.gradle.kts (app level)
+android {
+    // ...
+    
+    signingConfigs {
+        create("release") {
+            storeFile = file("keystore/release.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
+        }
+    }
+    
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+}
+```
+
+### ADIM 25: Google Play Store Hazırlığı
+
+**Gerekli Materyaller:**
+1. **App Icon** (512x512 px)
+2. **Feature Graphic** (1024x500 px)
+3. **Screenshots** (En az 2 adet, farklı cihazlar için)
+   - Phone: 1080x1920 px
+   - Tablet: 1920x1200 px
+4. **Short Description** (Max 80 karakter)
+5. **Full Description** (Max 4000 karakter)
+6. **Privacy Policy** URL
+
+**Örnek Store Listing:**
+```
+Title: Extreme Sudoku - Challenge Your Mind
+
+Short Description:
+Master extreme sudoku puzzles! Test your skills with the most challenging sudoku game.
+
+Full Description:
+🧩 Extreme Sudoku - The Ultimate Puzzle Challenge!
+
+Are you ready for the most challenging sudoku experience? Extreme Sudoku brings you thousands of expert-level puzzles that will test your logic and problem-solving skills.
+
+✨ FEATURES:
+- Thousands of extreme difficulty puzzles
+- Daily challenges to keep you engaged
+- Track your progress with detailed statistics
+- Compete with players worldwide on the leaderboard
+- Hints system when you're stuck
+- Note-taking mode for advanced strategies
+- Undo/Redo functionality
+- Auto-save - never lose your progress
+- Beautiful, intuitive interface
+- Dark mode support
+- Achievement system
+
+🎯 PERFECT FOR:
+- Sudoku experts looking for a real challenge
+- Brain training enthusiasts
+- Logic puzzle lovers
+- Anyone who wants to improve their problem-solving skills
+
+📊 TRACK YOUR PROGRESS:
+- View your solving times
+- Monitor your win streak
+- Compare your skills with others
+- Unlock achievements as you play
+
+🏆 LEADERBOARD:
+Compete with sudoku players from around the world and climb to the top!
+
+Download Extreme Sudoku now and put your mind to the ultimate test!
+
+Tags: sudoku, puzzle, brain games, logic, extreme, challenge
+```
+
+---
+
+## 📋 Proje Tamamlama Checklist
+```
+GELIŞTIRME:
+☐ Firebase projesi oluşturuldu
+☐ Android projesi kuruldu
+☐ Tüm bağımlılıklar eklendi
+☐ Dataset indirildi ve işlendi
+☐ Room database implement edildi
+☐ Firebase entegrasyonu tamamlandı
+☐ Repository pattern implement edildi
+☐ Use case'ler yazıldı
+☐ ViewModels oluşturuldu
+☐ UI screens tasarlandı
+☐ Navigation kuruldu
+☐ Dependency injection (Hilt) yapılandırıldı
+☐ Sudoku solver algoritması yazıldı
+☐ Game logic tamamlandı
+☐ Authentication sistemi çalışıyor
+☐ Leaderboard sistemi aktif
+☐ Achievements sistemi implement edildi
+☐ Daily challenge özelliği eklendi
+
+TEST:
+☐ Unit testler yazıldı
+☐ UI testleri yapıldı
+☐ Manuel test senaryoları tamamlandı
+☐ Performance testleri yapıldı
+☐ Farklı cihazlarda test edildi
+☐ Offline mode test edildi
+
+OPTIMIZASYON:
+☐ ProGuard kuralları eklendi
+☐ App boyutu optimize edildi
+☐ Performance iyileştirmeleri yapıldı
+☐ Memory leaks kontrol edildi
+☐ Battery optimization yapıldı
+
+DAĞITIM:
+☐ Release keystore oluşturuldu
+☐ Signing configs yapılandırıldı
+☐ Release APK/AAB oluşturuldu
+☐ Play Store materyalleri hazırlandı
+☐ Privacy policy oluşturuldu
+☐ Firestore security rules güncellendi
+☐ App Store'a yüklendi
+
+EK ÖZELLİKLER:
+☐ Push notifications
+☐ App shortcuts
+☐ Home screen widget
+☐ Dark mode
+☐ Localization (Türkçe/İngilizce)
+☐ Analytics entegrasyonu
+☐ Crashlytics kuruldu
+
+🎨 Ekstra Özellik Önerileri (Gelecek Versiyonlar)
+V2.0 Özellikleri
+
+Multiplayer Mode
+
+Real-time sudoku yarışmaları
+Arkadaşlarla challenge sistemi
+
+
+Farklı Zorluk Seviyeleri
+
+Easy, Medium, Hard, Expert, Extreme
+
+
+Özel Tema Sistemi
+
+Kullanıcı tarafından özelleştirilebilir renkler
+Premium temalar
+
+
+Tutorial Modu
+
+Yeni başlayanlar için rehber
+İpuçları ve stratejiler
+
+
+Offline Mode İyileştirmeleri
+
+Daha fazla offline sudoku cache'i
+Background sync
+
+
+Social Features
+
+Arkadaş sistemi
+Challenge gönderme
+Paylaşım özellikleri
+
+
+Premium Features
+
+Sınırsız hint
+Reklamsız deneyim
+Özel temalar
+İstatistik detayları
+
+
+
+
+📖 Kullanılacak Komutlar ve Scriptler
+Dataset Upload Script (Kotlin)
+kotlin// DatasetUploadScript.kt
+// Bu script'i tek seferlik çalıştırarak dataset'i Firebase'e yükleyin
+
+suspend fun main() {
+    val firestore = Firebase.firestore
+    
+    // JSON dosyasını oku
+    val json = File("sudoku_dataset.json").readText()
+    val sudokus = Gson().fromJson(json, Array<Sudoku>::class.java)
+    
+    println("Total sudokus: ${sudokus.size}")
+    
+    // Batch olarak yükle (500'er 500'er)
+    sudokus.chunked(500).forEachIndexed { index, batch ->
+        val batchWrite = firestore.batch()
+        
+        batch.forEach { sudoku ->
+            val docRef = firestore.collection("sudokus").document(sudoku.id)
+            batchWrite.set(docRef, sudoku)
+        }
+        
+        batchWrite.commit().await()
+        println("Batch $index uploaded (${batch.size} documents)")
+        delay(1000) // Rate limiting için
+    }
+    
+    println("Upload complete!")
+}
+Build Commands
+bash# Debug build
+./gradlew assembleDebug
+
+# Release build
+./gradlew assembleRelease
+
+# Run tests
+./gradlew test
+
+# Run instrumented tests
+./gradlew connectedAndroidTest
+
+# Generate signed APK
+./gradlew bundleRelease
+
+# Install on device
+./gradlew installDebug
+
+🎯 Sonuç ve Özet
+Bu dokümanda Extreme Sudoku Android uygulaması için eksiksiz bir geliştirme planı sunuldu. Proje şu aşamalardan oluşuyor:
+
+Mimari Tasarım: Clean Architecture + MVVM pattern
+Database: Room (local) + Firebase Firestore (remote)
+UI: Jetpack Compose + Material Design 3
+Authentication: Firebase Auth
+Features:
+
+Extreme sudoku puzzles
+Daily challenges
+Leaderboards
+Achievements
+Statistics tracking
+Hints & Notes
+Auto-save
+
+
+
+Tahmini Geliştirme Süresi: 14-15 gün (full-time çalışma ile)
+Sonraki Adımlar:
+
+Firebase projesini oluştur
+Android Studio'da projeyi oluştur
+Bu dokümandaki adımları sırayla uygula
+Her adımda test et
+Release'e hazırla
+Google Play Store'a yükle
+
+İyi çalışmalar! 🚀

@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // User's games subcollection
+      match /games/{gameId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Sudoku puzzles collection
+    match /sudoku_puzzles/{puzzleId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only admins can write
+    }
+    
+    // Sudokus collection (daily/weekly puzzles)
+    match /sudokus/{sudokuId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only admins/Cloud Functions can write
+    }
+    
+    // User games collection
+    match /user_games/{gameId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+    
+    // Game states collection (sync from local Room DB)
+    match /game_states/{gameId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+    
+    // User stats collection
+    match /user_stats/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Leaderboard collection
+    match /leaderboard/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // PVP Queue collection (matchmaking_queue)
+    match /matchmaking_queue/{userId} {
+      allow read: if request.auth != null; // Anyone can read queue to find opponents
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null; // Allow updating for matchmaking
+      allow delete: if request.auth != null;
+    }
+    
+    // Legacy pvp_queue (keep for backwards compatibility)
+    match /pvp_queue/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if request.auth != null;
+    }
+    
+    // PVP Matches collection
+    match /pvp_matches/{matchId} {
+      // Anyone authenticated can read matches (for spectating, stats, etc.)
+      allow read: if request.auth != null;
+      
+      // Allow authenticated users to create matches (for client-side matchmaking)
+      allow create: if request.auth != null;
+      
+      // Allow players in the match to update it
+      allow update: if request.auth != null;
+      
+      // PVP Moves subcollection
+      match /moves/{moveId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null;
+      }
+    }
+    
+    // PVP Stats collection
+    match /pvp_stats/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // User preferences
+    match /user_preferences/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

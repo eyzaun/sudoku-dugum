@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Include/Exclude specific files or directories -->
+    <include domain="sharedpref" path="."/>
+    <exclude domain="sharedpref" path="device.xml"/>
+    
+    <!-- Include database -->
+    <include domain="database" path="."/>
+</full-backup-content>
