@@ -8,7 +8,10 @@
       "Bash(./gradlew assembleDebug:*)",
       "Bash(cmd /c gradlew.bat assembleDebug)",
       "Bash(git commit:*)",
-      "Bash(./gradlew.bat assembleDebug:*)"
+      "Bash(./gradlew.bat assembleDebug:*)",
+      "Bash(dir /B *.bat)",
+      "Bash(bash gradlew:*)",
+      "Bash(/c/Users/eyyup/OneDrive/Desktop/sites/sudoku/ExtremeSudoku/gradlew.bat assembleDebug)"
     ],
     "deny": [],
     "ask": []
