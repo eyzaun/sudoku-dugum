@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.LocalThemeColors
@@ -42,15 +43,6 @@ fun OnboardingScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(themeColors.background)
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures { change, dragAmount ->
-                    change.consume()
-                    when {
-                        dragAmount > 100 -> viewModel.previousPage()
-                        dragAmount < -100 -> viewModel.nextPage()
-                    }
-                }
-            }
     ) {
         // Sağ üst - Atlama butonu
         IconButton(
@@ -58,6 +50,7 @@ fun OnboardingScreen(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(AppDimensions.spacingMedium)
+                .zIndex(10f)
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
@@ -67,7 +60,7 @@ fun OnboardingScreen(
             )
         }
 
-        // Sayfalar
+        // Sayfalar - pointerInput ile
         AnimatedContent(
             targetState = currentPage,
             transitionSpec = {
@@ -82,6 +75,15 @@ fun OnboardingScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 56.dp, bottom = 120.dp)
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures { change, dragAmount ->
+                        change.consume()
+                        when {
+                            dragAmount > 100 -> viewModel.previousPage()
+                            dragAmount < -100 -> viewModel.nextPage()
+                        }
+                    }
+                }
         ) { page ->
             when (page) {
                 0 -> OnboardingPage1()
