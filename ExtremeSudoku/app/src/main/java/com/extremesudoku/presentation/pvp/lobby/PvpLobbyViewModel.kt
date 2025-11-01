@@ -65,24 +65,27 @@ class PvpLobbyViewModel @Inject constructor(
     }
     
     /**
-     * Aktif olarak diğer oyuncuları arar (her 2 saniyede bir)
+     * Aktif olarak diğer oyuncuları arar (her 3 saniyede bir)
+     * OPTIMIZASYON: Polling aralığını artırıldı, server yükü azaltıldı
      */
     private fun startActiveMatchmaking(mode: PvpMode) {
         android.util.Log.d("PvpLobby", "🚀 Aktif matchmaking başlatıldı")
-        
+
         viewModelScope.launch {
             var attemptCount = 0
-            
-            while (_uiState.value is PvpLobbyState.Searching) {
+            var timeoutSeconds = 0
+            val maxTimeoutSeconds = 180  // 3 dakika sonra timeout
+
+            while (_uiState.value is PvpLobbyState.Searching && timeoutSeconds < maxTimeoutSeconds) {
                 attemptCount++
-                android.util.Log.d("PvpLobby", "🔍 Matchmaking denemesi #$attemptCount")
-                
+                android.util.Log.d("PvpLobby", "🔍 Matchmaking denemesi #$attemptCount (${timeoutSeconds}s / ${maxTimeoutSeconds}s)")
+
                 // Hala aranıyor mu kontrol et
                 if (_uiState.value !is PvpLobbyState.Searching) {
                     android.util.Log.d("PvpLobby", "⏹️ Matchmaking durduruldu")
                     break
                 }
-                
+
                 // Matchmaking dene
                 repository.tryMatchmaking(mode).fold(
                     onSuccess = { matchId ->
@@ -91,7 +94,7 @@ class PvpLobbyViewModel @Inject constructor(
                             android.util.Log.d("PvpLobby", "🎉 EŞLEŞME BULUNDU! MatchID: $matchId")
                             _uiState.value = PvpLobbyState.MatchFound(matchId)
                         } else {
-                            android.util.Log.d("PvpLobby", "⏳ Henüz rakip yok, denemeye devam...")
+                            android.util.Log.d("PvpLobby", "⏳ Henüz rakip yok (attempt #$attemptCount), denemeye devam...")
                         }
                     },
                     onFailure = { error ->
@@ -99,12 +102,19 @@ class PvpLobbyViewModel @Inject constructor(
                         // Hata olsa bile devam et
                     }
                 )
-                
-                // 2 saniye bekle (daha hızlı)
-                delay(2000)
+
+                // 3 saniye bekle (server yükü azaltımı)
+                delay(3000)
+                timeoutSeconds += 3
             }
-            
-            android.util.Log.d("PvpLobby", "🛑 Aktif matchmaking sonlandı (toplam $attemptCount deneme)")
+
+            // Timeout kontrolü
+            if (timeoutSeconds >= maxTimeoutSeconds) {
+                android.util.Log.w("PvpLobby", "⏱️ TIMEOUT! 3 dakika sonra matchmaking iptal edildi")
+                _uiState.value = PvpLobbyState.Error("Eşleşme bulunamadı (zaman aşımı)")
+            }
+
+            android.util.Log.d("PvpLobby", "🛑 Aktif matchmaking sonlandı (toplam $attemptCount deneme, $timeoutSeconds saniye)")
         }
     }
     

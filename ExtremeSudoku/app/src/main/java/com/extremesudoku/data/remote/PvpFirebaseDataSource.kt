@@ -144,8 +144,44 @@ class PvpFirebaseDataSource @Inject constructor(
         }
     }
     
+    // ========== DIAGNOSTIC ==========
+
+    /**
+     * Debug: Kuyruk durumunu kontrol et
+     * Matchmaking sorunlarında kullan
+     */
+    suspend fun getDiagnosticInfo(): Result<String> = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val snapshot = matchmakingCollection.get().await()
+            val docs = snapshot.documents
+
+            val info = buildString {
+                appendLine("=== MATCHMAKING QUEUE DIAGNOSTICS ===")
+                appendLine("Total docs in queue: ${docs.size}")
+                appendLine("Current user: $currentUserId")
+                appendLine()
+
+                docs.forEach { doc ->
+                    val userId = doc.getString("userId") ?: "N/A"
+                    val status = doc.getString("status") ?: "N/A"
+                    val mode = doc.getString("mode") ?: "N/A"
+                    val timestamp = doc.getLong("timestamp") ?: 0L
+                    val age = (System.currentTimeMillis() - timestamp) / 1000
+
+                    appendLine("- $userId (Status: $status, Mode: $mode, Age: ${age}s)")
+                }
+            }
+
+            android.util.Log.d("PvpFirebase", info)
+            Result.success(info)
+        } catch (e: Exception) {
+            android.util.Log.e("PvpFirebase", "Diagnostic error: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
     // ========== Matchmaking ==========
-    
+
     suspend fun joinMatchmaking(mode: PvpMode): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             android.util.Log.d("PvpFirebase", "📝 Matchmaking kuyruğuna katılıyor - User: $currentUserId, Mode: $mode")
@@ -189,17 +225,22 @@ class PvpFirebaseDataSource @Inject constructor(
     /**
      * Kuyruktaki diğer oyuncuları arar ve eşleşme yapar
      * Client-side matchmaking
+     *
+     * NOT: Firestore composite index için:
+     * Collection: matchmaking_queue
+     * Fields: status (Ascending), mode (Ascending), timestamp (Ascending)
      */
     suspend fun tryMatchmaking(mode: PvpMode): Result<String?> = withContext(Dispatchers.IO) {
         try {
             android.util.Log.d("PvpFirebase", "🔍 Rakip aranıyor - Mode: $mode, CurrentUser: $currentUserId")
-            
-            // Aynı modda bekleyen tüm oyuncuları bul (whereNotEqualTo Firestore'da sorun çıkarıyor)
+
+            // ⚡ FIX: Query yapısını Firestore index ile uyumlu hale getir
+            // Firestore index gerekli: status + mode + timestamp (composite index)
             val querySnapshot = matchmakingCollection
-                .whereEqualTo("mode", mode.name)
-                .whereEqualTo("status", "searching")
-                .orderBy("timestamp", Query.Direction.ASCENDING)
-                .limit(10) // İlk 10 kişiyi al
+                .whereEqualTo("status", "searching")  // FIRST - primary filter
+                .whereEqualTo("mode", mode.name)      // SECOND - secondary filter
+                .orderBy("timestamp", Query.Direction.ASCENDING) // THEN - sorting
+                .limit(20) // Limit artırıldı - daha fazla aday arama
                 .get()
                 .await()
             
