@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "sudoku-lonca"
-  }
+    "default": "sudoku-lonca",
+    "sudoku-lonca": "sudoku-lonca"
+  },
+  "targets": {},
+  "etags": {}
 }

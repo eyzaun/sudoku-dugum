@@ -343,7 +343,21 @@ class PvpFirebaseDataSource @Inject constructor(
                 Result.success(null) // Başarısızlık değil, sadece rakip kaçtı
             }
         } catch (e: Exception) {
-            android.util.Log.e("PvpFirebase", "❌ Matchmaking hatası", e)
+            // ⚡ ERROR DIAGNOSIS: Detailed logging for debugging
+            val errorDetails = when {
+                e.message?.contains("index", ignoreCase = true) == true ->
+                    "🔴 FIRESTORE INDEX MISSING! Firebase Console'da composite index oluştur:\n" +
+                    "Collection: matchmaking_queue\n" +
+                    "Fields: status (Asc), mode (Asc), timestamp (Asc)"
+                e.message?.contains("PERMISSION_DENIED", ignoreCase = true) == true ->
+                    "🔴 FIRESTORE PERMISSION ERROR! Security rules eksik veya yanlış.\n" +
+                    "matchmaking_queue koleksiyonuna okuma/yazma izni ver"
+                e.message?.contains("UNAVAILABLE", ignoreCase = true) == true ->
+                    "🔴 FIRESTORE UNAVAILABLE! Bağlantı hatası veya server problemli"
+                else ->
+                    "🔴 Unknown matchmaking error: ${e.message}"
+            }
+            android.util.Log.e("PvpFirebase", errorDetails, e)
             Result.failure(e)
         }
     }
