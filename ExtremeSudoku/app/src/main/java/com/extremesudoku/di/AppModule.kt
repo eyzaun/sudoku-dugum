@@ -1,6 +1,7 @@
 package com.extremesudoku.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.extremesudoku.data.remote.FirebaseDataSource
 import com.extremesudoku.data.remote.PvpFirebaseDataSource
 import com.extremesudoku.data.repository.PvpMatchRepositoryImpl
@@ -88,4 +89,13 @@ object AppModule {
         @ApplicationContext context: Context,
         preferencesRepository: UserPreferencesRepository
     ): SoundEffects = SoundEffects(context, preferencesRepository)
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(
+        @ApplicationContext context: Context
+    ): SharedPreferences = context.getSharedPreferences(
+        "extreme_sudoku_prefs",
+        Context.MODE_PRIVATE
+    )
 }

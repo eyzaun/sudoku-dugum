@@ -8,6 +8,7 @@ import com.extremesudoku.data.models.User
 import com.extremesudoku.data.models.UserStats
 import com.extremesudoku.data.remote.FirebaseDataSource
 import com.google.firebase.auth.FirebaseAuth
+import android.content.SharedPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -20,13 +21,15 @@ class UserRepository @Inject constructor(
     private val userStatsDao: UserStatsDao,
     private val gameStateDao: GameStateDao,
     private val firebaseDataSource: FirebaseDataSource,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val sharedPreferences: SharedPreferences
 ) {
     companion object {
         private const val GUEST_USER_ID = "guest_user"
         private const val PREFS_IS_GUEST = "is_guest_mode"
+        private const val PREFS_ONBOARDING_COMPLETED = "onboarding_completed"
     }
-    
+
     // Guest mode flag - SharedPreferences'tan okuyacağız
     private var isGuestMode = false
     
@@ -213,5 +216,14 @@ class UserRepository @Inject constructor(
     fun signOut() {
         isGuestMode = false
         auth.signOut()
+    }
+
+    // ============ Onboarding Methods ============
+    fun isOnboardingCompleted(): Boolean {
+        return sharedPreferences.getBoolean(PREFS_ONBOARDING_COMPLETED, false)
+    }
+
+    suspend fun setOnboardingCompleted(completed: Boolean) {
+        sharedPreferences.edit().putBoolean(PREFS_ONBOARDING_COMPLETED, completed).apply()
     }
 }
