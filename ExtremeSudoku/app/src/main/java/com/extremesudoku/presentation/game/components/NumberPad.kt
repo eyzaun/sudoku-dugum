@@ -1,6 +1,8 @@
 package com.extremesudoku.presentation.game.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -9,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.dp
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.LocalThemeColors
@@ -46,16 +49,8 @@ fun NumberButton(
         modifier = Modifier.size(AppDimensions.numberPadButtonSizeSmall),
         contentPadding = PaddingValues(AppDimensions.numberPadContentPadding),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (remaining == 0) {
-                themeColors.buttonBackgroundSecondary
-            } else {
-                themeColors.buttonBackground
-            },
-            contentColor = if (remaining == 0) {
-                themeColors.buttonTextSecondary
-            } else {
-                themeColors.buttonText
-            }
+            containerColor = androidx.compose.ui.graphics.Color(0xFF333333),
+            contentColor = androidx.compose.ui.graphics.Color.White
         ),
         enabled = remaining > 0
     ) {
@@ -65,17 +60,14 @@ fun NumberButton(
             Text(
                 text = number.toString(),
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = androidx.compose.ui.graphics.Color.White
             )
             if (remaining < 9) {
                 Text(
                     text = remaining.toString(),
                     style = MaterialTheme.typography.labelSmall,
-                    color = if (remaining == 0) {
-                        themeColors.wrongCell
-                    } else {
-                        themeColors.text.copy(alpha = 0.7f)
-                    },
+                    color = androidx.compose.ui.graphics.Color.White,
                     fontWeight = FontWeight.Bold
                 )
             }

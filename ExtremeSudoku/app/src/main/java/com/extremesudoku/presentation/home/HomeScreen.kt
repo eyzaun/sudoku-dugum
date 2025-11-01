@@ -254,7 +254,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(AppDimensions.spacingMedium))
                         Column {
                             Text(
-                                text = "🔥 PvP Mode",
+                                text = "PvP Mode",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -466,7 +466,7 @@ fun UserStatsCard(stats: com.extremesudoku.data.models.UserStats) {
                 StatColumn("Played", stats.gamesPlayed.toString())
                 StatColumn("Completed", stats.gamesCompleted.toString())
                 StatColumn("Best Time", formatTime(stats.bestTime))
-                StatColumn("Streak", "${stats.currentStreak}🔥")
+                StatColumn("Streak", "${stats.currentStreak}")
             }
         }
     }

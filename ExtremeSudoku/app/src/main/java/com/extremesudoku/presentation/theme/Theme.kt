@@ -27,9 +27,11 @@ fun ExtremeSudokuTheme(
     // MaterialTheme'i bizim renklerle senkronize et
     val colorScheme = lightColorScheme(
         primary = themeColors.primary,
+        onPrimary = themeColors.onPrimary,
         primaryContainer = themeColors.primaryContainer,
         onPrimaryContainer = themeColors.onPrimaryContainer,
         secondary = themeColors.secondary,
+        onSecondary = themeColors.onSecondary,
         secondaryContainer = themeColors.secondaryContainer,
         onSecondaryContainer = themeColors.onSecondaryContainer,
         tertiary = themeColors.tertiary,
@@ -37,8 +39,6 @@ fun ExtremeSudokuTheme(
         background = themeColors.background,
         surface = themeColors.surface,
         surfaceVariant = themeColors.surfaceVariant,
-        onPrimary = themeColors.textOnPrimary,
-        onSecondary = themeColors.textOnPrimary,
         onBackground = themeColors.text,
         onSurface = themeColors.text,
         onSurfaceVariant = themeColors.onSurfaceVariant,

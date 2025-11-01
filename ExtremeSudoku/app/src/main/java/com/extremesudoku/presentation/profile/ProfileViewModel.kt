@@ -7,8 +7,10 @@ import com.extremesudoku.data.models.UserStats
 import com.extremesudoku.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,10 +36,16 @@ class ProfileViewModel @Inject constructor(
             val user = userRepository.getCurrentUser()
             _uiState.update { it.copy(user = user, isGuestMode = isGuest) }
             
-            // Load user stats
-            userRepository.getUserStats().collect { stats ->
-                _uiState.update { it.copy(userStats = stats) }
-            }
+            // ✅ FIX: Lifecycle-aware flow collection
+            userRepository.getUserStats()
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = null
+                )
+                .collect { stats ->
+                    _uiState.update { it.copy(userStats = stats) }
+                }
         }
     }
     

@@ -197,14 +197,14 @@ private fun StreakLevelBadge(
  */
 private fun getFireEmoji(streak: Int): String {
     return when {
-        streak == 0 -> "💤" // Sleeping
-        streak in 1..2 -> "🔥" // Single fire
-        streak in 3..5 -> "🔥🔥" // Double fire
-        streak in 6..9 -> "🔥🔥🔥" // Triple fire
-        streak in 10..14 -> "🔥🔥🔥🔥" // Quad fire
-        streak in 15..19 -> "🚀" // Rocket
-        streak >= 20 -> "⚡" // Lightning - Master level
-        else -> "🔥"
+        streak == 0 -> "" // Sleeping
+        streak in 1..2 -> "×1" // Single fire
+        streak in 3..5 -> "×2" // Double fire
+        streak in 6..9 -> "×3" // Triple fire
+        streak in 10..14 -> "×4" // Quad fire
+        streak in 15..19 -> "★" // Rocket
+        streak >= 20 -> "⬆" // Lightning - Master level
+        else -> "×1"
     }
 }
 
@@ -213,10 +213,10 @@ private fun getFireEmoji(streak: Int): String {
  */
 private fun getStreakLevel(streak: Int): String {
     return when {
-        streak in 10..14 -> "🔥"
-        streak in 15..19 -> "🚀"
-        streak >= 20 -> "⚡"
-        else -> "🔥"
+        streak in 10..14 -> "×4"
+        streak in 15..19 -> "★"
+        streak >= 20 -> "⬆"
+        else -> "×1"
     }
 }
 

@@ -49,7 +49,7 @@ fun PvpModeSelectionScreen(
         ) {
             // Başlık
             Text(
-                text = "🎮 PvP Modu",
+                text = "PvP Modu",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -65,7 +65,7 @@ fun PvpModeSelectionScreen(
             
             // Blind Race Mode Card
             ModeCard(
-                title = "⚡ Kör Yarış",
+                title = "Kör Yarış",
                 description = "Rakibi görmeden yarış!\nAynı sudoku'yu kim daha hızlı çözer?",
                 icon = Icons.Default.Timer,
                 color = MaterialTheme.colorScheme.primary,

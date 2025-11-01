@@ -120,9 +120,9 @@ fun PvpGameFinishedOverlay(
             ) {
                 Text(
                     text = when (isWinner) {
-                        true -> "🏆"
-                        false -> "😔"
-                        null -> "⏱️"
+                        true -> "★"
+                        false -> "X"
+                        null -> "T"
                     },
                     fontSize = AppTypography.fontSizeDisplay
                 )

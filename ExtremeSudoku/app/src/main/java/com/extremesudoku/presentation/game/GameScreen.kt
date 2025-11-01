@@ -174,7 +174,7 @@ fun GameScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "🔥",
+                                        text = "S:",
                                         style = MaterialTheme.typography.labelMedium
                                     )
                                     Text(

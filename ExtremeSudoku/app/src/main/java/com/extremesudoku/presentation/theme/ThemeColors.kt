@@ -45,13 +45,12 @@ data class ThemeColors(
     val textSecondary: Color,
     val onSurfaceVariant: Color,
     val outline: Color,
-    val divider: Color,
-    
+
     // Grid colors
     val gridBackground: Color,
     val gridLine: Color,
     val gridThickLine: Color,
-    
+
     // Cell colors
     val cellBackground: Color,
     val selectedCell: Color,
@@ -59,23 +58,24 @@ data class ThemeColors(
     val selectedCellBox: Color,
     val sameNumberCell: Color,
     val conflictCell: Color,
-    
+    val affectedAreaCell: Color,
+
     // Number colors
     val initialNumberText: Color,
     val userNumberText: Color,
     val notesText: Color,
-    
+
     // Button colors
     val buttonBackground: Color,
     val buttonText: Color,
     val buttonBackgroundSecondary: Color,
     val buttonTextSecondary: Color,
-    
+
     // Game feedback colors
     val correctCell: Color,
     val wrongCell: Color,
     val hintCell: Color,
-    
+
     // UI elements
     val divider: Color,
     val cardBackground: Color,

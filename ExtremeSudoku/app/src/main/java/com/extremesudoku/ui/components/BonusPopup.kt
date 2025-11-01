@@ -274,7 +274,7 @@ fun ComboMultiplierPopup(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "🔥",
+                text = "×",
                 fontSize = AppDimensions.scoreIconSize.value.sp
             )
             Text(
@@ -295,10 +295,10 @@ fun ComboMultiplierPopup(
 private fun getBonusStyle(type: BonusType): Pair<Color, String> {
     val themeColors = LocalThemeColors.current
     return when (type) {
-        BonusType.STREAK -> themeColors.bonusGold to "🔥"
-        BonusType.COMPLETION -> themeColors.bonusBlue to "📦"
-        BonusType.TIME -> themeColors.bonusCyan to "⚡"
-        BonusType.PERFECT -> themeColors.bonusPink to "🏆"
-        BonusType.SPECIAL -> themeColors.bonusLightGreen to "✨"
+        BonusType.STREAK -> themeColors.bonusGold to "S"
+        BonusType.COMPLETION -> themeColors.bonusBlue to "C"
+        BonusType.TIME -> themeColors.bonusCyan to "T"
+        BonusType.PERFECT -> themeColors.bonusPink to "★"
+        BonusType.SPECIAL -> themeColors.bonusLightGreen to "+"
     }
 }

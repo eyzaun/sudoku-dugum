@@ -167,9 +167,9 @@ private fun VictoryHeader(
     ) {
         Text(
             text = when {
-                isPerfect -> "🏆"
-                isNewHighScore -> "🎉"
-                else -> "✨"
+                isPerfect -> "★"
+                isNewHighScore -> "↑"
+                else -> "✓"
             },
             fontSize = AppDimensions.dialogIconSize.value.sp
         )
@@ -279,7 +279,7 @@ private fun ScoreBreakdown(score: GameScore) {
             BreakdownRow(
                 label = "Streak Bonus (Max: ${score.maxStreak})",
                 value = score.streakBonus,
-                icon = "🔥",
+                icon = "S",
                 color = themeColors.streakOrange
             )
         }
@@ -289,7 +289,7 @@ private fun ScoreBreakdown(score: GameScore) {
             BreakdownRow(
                 label = "Speed Bonus",
                 value = score.timeBonus,
-                icon = "⚡",
+                icon = "T",
                 color = themeColors.streakCyan
             )
         }
@@ -300,7 +300,7 @@ private fun ScoreBreakdown(score: GameScore) {
             BreakdownRow(
                 label = "Completion Bonuses",
                 value = totalCompletionBonus,
-                icon = "📦",
+                icon = "B",
                 color = themeColors.streakPurple
             )
         }
@@ -310,7 +310,7 @@ private fun ScoreBreakdown(score: GameScore) {
             BreakdownRow(
                 label = "Perfect Game",
                 value = 10000,
-                icon = "🏆",
+                icon = "★",
                 color = themeColors.achievementGold
             )
         }
@@ -319,7 +319,7 @@ private fun ScoreBreakdown(score: GameScore) {
             BreakdownRow(
                 label = "No Notes Used",
                 value = 5000,
-                icon = "🧠",
+                icon = "N",
                 color = themeColors.accuracyMedium
             )
         }
@@ -329,7 +329,7 @@ private fun ScoreBreakdown(score: GameScore) {
             BreakdownRow(
                 label = "Penalties",
                 value = score.penalties,
-                icon = "❌",
+                icon = "X",
                 color = themeColors.accuracyLow
             )
         }
@@ -382,21 +382,21 @@ private fun GameStatistics(score: GameScore) {
         StatCard(
             label = "Accuracy",
             value = "${(score.accuracy * 100).toInt()}%",
-            icon = "🎯",
+            icon = "A",
             color = if (score.accuracy >= 0.9f) themeColors.accuracyHigh else themeColors.accuracyMedium
         )
         
         StatCard(
             label = "Time",
             value = formatTime(score.elapsedTimeMs),
-            icon = "⏱️",
+            icon = "T",
             color = MaterialTheme.colorScheme.primary
         )
         
         StatCard(
             label = "Best Streak",
             value = "${score.maxStreak}",
-            icon = "🔥",
+            icon = "S",
             color = themeColors.streakHotOrange
         )
     }
@@ -441,7 +441,7 @@ private fun EarnedBadgesSection(badges: List<Badge>) {
         verticalArrangement = Arrangement.spacedBy(AppDimensions.spacingMedium)
     ) {
         Text(
-            text = "🎖️ Badges Earned",
+            text = "★ Badges Earned",
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Bold
             )

@@ -146,7 +146,7 @@ fun SearchingContent(
             )
             
             Text(
-                text = "🎮",
+                text = "VS",
                 style = MaterialTheme.typography.displayMedium
             )
         }
@@ -220,7 +220,7 @@ fun MatchFoundContent(matchId: String) {
     ) {
         // Success icon
         Text(
-            text = "🎉",
+            text = "✓",
             style = MaterialTheme.typography.displayLarge
         )
         
@@ -255,7 +255,7 @@ fun ErrorContent(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.dialogPadding)
     ) {
         Text(
-            text = "⚠️",
+            text = "!",
             style = MaterialTheme.typography.displayLarge
         )
         

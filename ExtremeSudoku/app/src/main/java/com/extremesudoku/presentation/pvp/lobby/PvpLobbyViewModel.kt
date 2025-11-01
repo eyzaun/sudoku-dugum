@@ -6,9 +6,11 @@ import com.extremesudoku.data.models.pvp.PvpMode
 import com.extremesudoku.domain.repository.PvpMatchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import javax.inject.Inject
@@ -111,30 +113,37 @@ class PvpLobbyViewModel @Inject constructor(
      * Başka bir oyuncu bizim için match oluşturabilir!
      */
     private suspend fun observeMatchmaking() {
-        repository.observeMatchmaking().collectLatest { request ->
-            when {
-                request == null -> {
-                    // Kullanıcı kuyruktan çıktı
-                    android.util.Log.d("PvpLobby", "📭 Matchmaking kaydı yok")
-                    _uiState.value = PvpLobbyState.Idle
-                }
-                request.status == "matched" && request.matchId != null -> {
-                    // ⚡ PASSIVE MATCH: Başka biri bizim için match oluşturdu!
-                    android.util.Log.d("PvpLobby", "🎉 PASSIVE MATCH BULUNDU! MatchID: ${request.matchId}")
-                    _uiState.value = PvpLobbyState.MatchFound(request.matchId)
-                }
-                request.status == "cancelled" -> {
-                    // İptal edildi
-                    android.util.Log.d("PvpLobby", "❌ Matchmaking iptal edildi")
-                    _uiState.value = PvpLobbyState.Cancelled
-                }
-                request.status == "searching" -> {
-                    // Hala aranıyor
-                    android.util.Log.d("PvpLobby", "🔍 Hala aranıyor...")
-                    _uiState.value = PvpLobbyState.Searching(selectedMode)
+        // ✅ FIX: Lifecycle-aware flow collection
+        repository.observeMatchmaking()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = null
+            )
+            .collectLatest { request ->
+                when {
+                    request == null -> {
+                        // Kullanıcı kuyruktan çıktı
+                        android.util.Log.d("PvpLobby", "📭 Matchmaking kaydı yok")
+                        _uiState.value = PvpLobbyState.Idle
+                    }
+                    request.status == "matched" && request.matchId != null -> {
+                        // ⚡ PASSIVE MATCH: Başka biri bizim için match oluşturdu!
+                        android.util.Log.d("PvpLobby", "🎉 PASSIVE MATCH BULUNDU! MatchID: ${request.matchId}")
+                        _uiState.value = PvpLobbyState.MatchFound(request.matchId)
+                    }
+                    request.status == "cancelled" -> {
+                        // İptal edildi
+                        android.util.Log.d("PvpLobby", "❌ Matchmaking iptal edildi")
+                        _uiState.value = PvpLobbyState.Cancelled
+                    }
+                    request.status == "searching" -> {
+                        // Hala aranıyor
+                        android.util.Log.d("PvpLobby", "🔍 Hala aranıyor...")
+                        _uiState.value = PvpLobbyState.Searching(selectedMode)
+                    }
                 }
             }
-        }
     }
     
     /**

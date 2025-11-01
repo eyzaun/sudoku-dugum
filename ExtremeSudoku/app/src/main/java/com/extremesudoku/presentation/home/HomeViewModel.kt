@@ -8,8 +8,11 @@ import com.extremesudoku.data.repository.SudokuRepository
 import com.extremesudoku.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -29,18 +32,32 @@ class HomeViewModel @Inject constructor(
     }
     
     private fun loadData() {
+        // ✅ FIX: Lifecycle-aware flow collection with stateIn
         viewModelScope.launch {
-            // Aktif oyunları yükle
-            sudokuRepository.getActiveGames().collect { games ->
-                _uiState.update { it.copy(activeGames = games) }
-            }
-        }
-        
-        viewModelScope.launch {
-            // Kullanıcı istatistiklerini yükle
-            userRepository.getUserStats().collect { stats ->
-                _uiState.update { it.copy(userStats = stats) }
-            }
+            // Her iki flow'u da lifecycle-aware yap
+            val activeGamesFlow = sudokuRepository.getActiveGames()
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = emptyList()
+                )
+            
+            val userStatsFlow = userRepository.getUserStats()
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = null
+                )
+            
+            // Combine ile iki flow'u birleştir
+            combine(activeGamesFlow, userStatsFlow) { games, stats ->
+                _uiState.update {
+                    it.copy(
+                        activeGames = games,
+                        userStats = stats
+                    )
+                }
+            }.collect { }
         }
         
         // Günlük challenge'ı kontrol et

@@ -132,10 +132,10 @@ fun SudokuGrid(
                             }
                         }
                         
-                        // Etkilenen alanları koyu mavi ile highlight et
+                        // Etkilenen alanları özel renk ile highlight et
                         affectedCells.forEach { (row, col) ->
                             drawRect(
-                                color = themeColors.selectedCellRow, // Koyu mavi
+                                color = themeColors.affectedAreaCell,
                                 topLeft = Offset(col * cellSize.toPx(), row * cellSize.toPx()),
                                 size = Size(cellSize.toPx(), cellSize.toPx())
                             )
@@ -145,15 +145,15 @@ fun SudokuGrid(
                         selectedCell?.let { (selRow, selCol) ->
                             val selCell = grid[selRow][selCol]
                             if (selCell.value == num) {
-                                // Sadece seçili hücrenin satır, sütun ve box'ı
+                                // Sadece seçili hücrenin satır, sütun ve box'ı - özel renk ile
                                 for (i in 0..8) {
                                     drawRect(
-                                        color = themeColors.selectedCellRow,
+                                        color = themeColors.affectedAreaCell,
                                         topLeft = Offset(i * cellSize.toPx(), selRow * cellSize.toPx()),
                                         size = Size(cellSize.toPx(), cellSize.toPx())
                                     )
                                     drawRect(
-                                        color = themeColors.selectedCellRow,
+                                        color = themeColors.affectedAreaCell,
                                         topLeft = Offset(selCol * cellSize.toPx(), i * cellSize.toPx()),
                                         size = Size(cellSize.toPx(), cellSize.toPx())
                                     )
@@ -162,7 +162,7 @@ fun SudokuGrid(
                                 val boxRow = selRow / 3
                                 val boxCol = selCol / 3
                                 drawRect(
-                                    color = themeColors.selectedCellBox,
+                                    color = themeColors.affectedAreaCell,
                                     topLeft = Offset(boxCol * 3 * cellSize.toPx(), boxRow * 3 * cellSize.toPx()),
                                     size = Size(3 * cellSize.toPx(), 3 * cellSize.toPx())
                                 )

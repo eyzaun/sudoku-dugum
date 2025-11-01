@@ -66,7 +66,7 @@ fun ProfileScreen(
                             modifier = Modifier.padding(AppDimensions.spacingMedium)
                         ) {
                             Text(
-                                text = "⚠️ Guest Mode",
+                                text = "! Guest Mode",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer

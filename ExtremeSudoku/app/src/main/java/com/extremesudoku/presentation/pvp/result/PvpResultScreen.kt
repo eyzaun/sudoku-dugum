@@ -90,7 +90,7 @@ fun ResultContent(
             result.isCancelled -> {
                 if (result.isWinner) {
                     Text(
-                        text = "🏆",
+                        text = "★",
                         fontSize = AppTypography.fontSizeDisplay * 2.5f
                     )
                     Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
@@ -108,7 +108,7 @@ fun ResultContent(
                     )
                 } else {
                     Text(
-                        text = "😢",
+                        text = "X",
                         fontSize = AppTypography.fontSizeDisplay * 2.5f
                     )
                     Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
@@ -129,7 +129,7 @@ fun ResultContent(
             // NORMAL BİTİŞ: Skordan bak
             result.isDraw -> {
                 Text(
-                    text = "🤝",
+                    text = "=",
                     fontSize = AppTypography.fontSizeDisplay * 2.5f
                 )
                 Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
@@ -142,7 +142,7 @@ fun ResultContent(
             }
             result.isWinner -> {
                 Text(
-                    text = "🏆",
+                    text = "★",
                     fontSize = AppTypography.fontSizeDisplay * 2.5f
                 )
                 Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
@@ -155,7 +155,7 @@ fun ResultContent(
             }
             else -> {
                 Text(
-                    text = "😢",
+                    text = "X",
                     fontSize = AppTypography.fontSizeDisplay * 2.5f
                 )
                 Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))

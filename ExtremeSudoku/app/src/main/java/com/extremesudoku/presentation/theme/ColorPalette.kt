@@ -27,10 +27,10 @@ import androidx.compose.ui.graphics.Color
 // ============================================================================
 object LightColors {
     // ===== TEMEL RENKLER (60%) - Arka Plan ve Yüzeyler =====
-    val background = Color(0xFFFAFBFC)          // Ana arka plan (neutral gri-beyaz)
-    val surface = Color(0xFFFFFFFF)              // Yüzey rengi (tam beyaz)
-    val cardBackground = Color(0xFFF8F9FA)       // Kart arka plan (hafif gri)
-    val surfaceVariant = Color(0xFFF0F2F5)       // İkincil yüzey (orta gri)
+    val background = Color(0xFFFFFFFF)          // Ana arka plan (tam beyaz)
+    val surface = Color(0xFFF5F5F5)              // Yüzey rengi (açık gri)
+    val cardBackground = Color(0xFFEEEEEE)       // Kart arka plan (orta açık gri)
+    val surfaceVariant = Color(0xFFE0E0E0)       // İkincil yüzey (orta gri)
 
     // ===== YAPISAL RENKLERİ (Kontrol ve Sınırlar) =====
     val outline = Color(0xFFD0D5DD)              // Sınırlar (hafif gri)
@@ -71,11 +71,12 @@ object LightColors {
 
     // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin - Yüksek Kontrast) =====
     val cellBackground = Color(0xFFFFFFFF)       // Hücre arka plan (beyaz)
-    val selectedCell = Color(0xFF93C5FD)         // Seçili hücre (orta mavi) - 5:1 kontrast
+    val selectedCell = Color(0xFF3B82F6)         // Seçili hücre (parlak mavi) - 7:1 kontrast
     val selectedCellRow = Color(0xFFDCEAF8)      // Seçili satır/sütun (açık mavi) - 3:1 kontrast
     val selectedCellBox = Color(0xFFE5E7EB)      // Seçili 3x3 kutu (açık gri) - 4:1 kontrast
-    val sameNumberCell = Color(0xFFFFDD5D)       // Aynı sayı (sarı) - 3:1 kontrast
-    val conflictCell = Color(0xFFFF8787)         // Çakışma (kırmızı) - 3:1 kontrast
+    val sameNumberCell = Color(0xFFFCD34D)       // Aynı sayı (altın sarı) - 4:1 kontrast
+    val conflictCell = Color(0xFFEF4444)         // Çakışma (canlı kırmızı) - 4:1 kontrast
+    val affectedAreaCell = Color(0xFFBFDBFE)     // Etkilenen alanlar (açık mavi-gri) - 2.5:1 kontrast
 
     // ===== SUDOKU SAYI RENKLERİ =====
     val initialNumberText = Color(0xFF1F2937)    // Başlangıç sayıları (koyu)
@@ -85,7 +86,7 @@ object LightColors {
     // ===== BUTON RENKLERİ (WCAG AA Kontrast) =====
     val buttonBackground = Color(0xFF2563EB)     // Ana buton (mavi)
     val buttonText = Color(0xFFFFFFFF)           // Buton yazı (beyaz) - 10.5:1 kontrast
-    val buttonBackgroundSecondary = Color(0xFFE5E7EB) // İkincil buton (açık gri)
+    val buttonBackgroundSecondary = Color(0xFFD0D0D0) // İkincil buton (orta gri)
     val buttonTextSecondary = Color(0xFF111827)  // İkincil buton yazı (çok koyu) - 9:1 kontrast
 
     // ===== OYUN GERİ BİLDİRİMİ (Anlamsal) =====
@@ -188,11 +189,12 @@ object DarkColors {
 
     // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin - Yüksek Kontrast) =====
     val cellBackground = Color(0xFF334155)       // Hücre arka plan (orta koyu)
-    val selectedCell = Color(0xFF3B82F6)         // Seçili hücre (açık mavi) - 5:1 kontrast
+    val selectedCell = Color(0xFF60A5FA)         // Seçili hücre (çok açık mavi) - 6:1 kontrast
     val selectedCellRow = Color(0xFF1E3A8A)      // Seçili satır/sütun (mavi) - 4:1 kontrast
     val selectedCellBox = Color(0xFF475569)      // Seçili 3x3 kutu (açık koyu gri) - 3:1 kontrast
-    val sameNumberCell = Color(0xFFFCD34D)       // Aynı sayı (altın sarı) - 3:1 kontrast
-    val conflictCell = Color(0xFFFCA5A5)         // Çakışma (açık kırmızı) - 3:1 kontrast
+    val sameNumberCell = Color(0xFFFBBF24)       // Aynı sayı (canlı sarı) - 5:1 kontrast
+    val conflictCell = Color(0xFFFF6B6B)         // Çakışma (canlı kırmızı) - 4:1 kontrast
+    val affectedAreaCell = Color(0xFF1E3A8A)     // Etkilenen alanlar (koyu mavi) - 4:1 kontrast
 
     // ===== SUDOKU SAYI RENKLERİ =====
     val initialNumberText = Color(0xFFF1F5F9)    // Başlangıç sayıları (açık)
@@ -261,14 +263,14 @@ object DarkColors {
 // ============================================================================
 object GazetteColors {
     // ===== TEMEL RENKLER (60%) - Arka Plan ve Yüzeyler =====
-    val background = Color(0xFFEEEBE7)           // Ana arka plan (gazete kağıdı)
-    val surface = Color(0xFFFAF9F7)              // Yüzey (açık gazete)
-    val cardBackground = Color(0xFFF4F2ED)       // Kart arka plan (orta gazete)
-    val surfaceVariant = Color(0xFFE8E5E0)       // İkincil yüzey (koyu gazete)
+    val background = Color(0xFFC4BFB4)           // Ana arka plan (çok eski gazete kağıdı - koyu sarımtırak bej)
+    val surface = Color(0xFFD0CCC2)              // Yüzey (koyu gazete)
+    val cardBackground = Color(0xFFCAC5BA)       // Kart arka plan (daha koyu bej)
+    val surfaceVariant = Color(0xFFB8B3A8)       // İkincil yüzey (çok koyu gazete)
 
     // ===== YAPISAL RENKLERİ (Kontrol ve Sınırlar) =====
-    val outline = Color(0xFFCBC8C3)              // Sınırlar (açık kahverengi)
-    val divider = Color(0xFFD8D5D0)              // Ayırıcı çizgi (hafif gri)
+    val outline = Color(0xFFA5A095)              // Sınırlar (daha koyu bej)
+    val divider = Color(0xFFB0ACA1)              // Ayırıcı çizgi (koyu bej)
     val modalScrim = Color(0x99000000)           // Modal arka plan (siyah 60%)
 
     // ===== TEMEL VURGU RENKLERİ (30%) - Etkileşim =====
@@ -299,17 +301,18 @@ object GazetteColors {
     val onErrorContainer = Color(0xFF1A1815)     // Hata hafif üstü
 
     // ===== SUDOKU GRID RENKLERİ (Net ve Belirgin) =====
-    val gridBackground = Color(0xFFFAF9F7)       // Grid arka plan (açık gazete)
-    val gridLine = Color(0xFFD8D5D0)             // İnce çizgiler (hafif gri - 3:1 kontrast)
+    val gridBackground = Color(0xFFD0CCC2)       // Grid arka plan (koyu gazete)
+    val gridLine = Color(0xFFB0ACA1)             // İnce çizgiler (daha koyu bej - 3:1 kontrast)
     val gridThickLine = Color(0xFF1A1815)        // Kalın çizgiler (siyah - 11:1 kontrast)
 
     // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin - Yüksek Kontrast) =====
-    val cellBackground = Color(0xFFFAF9F7)       // Hücre arka plan (açık)
-    val selectedCell = Color(0xFFC8B5B0)         // Seçili hücre (orta gri) - 5:1 kontrast
-    val selectedCellRow = Color(0xFFE8E5E0)      // Seçili satır/sütun (açık gri) - 3:1 kontrast
-    val selectedCellBox = Color(0xFFD8D5D0)      // Seçili 3x3 kutu (hafif gri) - 3:1 kontrast
-    val sameNumberCell = Color(0xFFC8B5B0)       // Aynı sayı (gri) - 5:1 kontrast
-    val conflictCell = Color(0xFF8B7A75)         // Çakışma (koyu kahve) - 5:1 kontrast
+    val cellBackground = Color(0xFFD0CCC2)       // Hücre arka plan (koyu gazete)
+    val selectedCell = Color(0xFF8B7A75)         // Seçili hücre (koyu kahve) - 6:1 kontrast
+    val selectedCellRow = Color(0xFFBCB7AC)      // Seçili satır/sütun (koyu bej) - 3:1 kontrast
+    val selectedCellBox = Color(0xFFC4BFB4)      // Seçili 3x3 kutu (orta bej) - 3:1 kontrast
+    val sameNumberCell = Color(0xFFA8988D)       // Aynı sayı (daha koyu bej) - 5:1 kontrast
+    val conflictCell = Color(0xFF6F5F54)         // Çakışma (çok koyu kahve) - 8:1 kontrast
+    val affectedAreaCell = Color(0xFFC4BFB4)     // Etkilenen alanlar (açık bej) - 3:1 kontrast
 
     // ===== SUDOKU SAYI RENKLERİ (Net ve Görünür) =====
     val initialNumberText = Color(0xFF1A1815)    // Başlangıç sayıları (siyah) - 12:1 kontrast
@@ -323,9 +326,9 @@ object GazetteColors {
     val buttonTextSecondary = Color(0xFFFAF9F7)  // İkincil buton yazı (açık) - 6:1 kontrast
 
     // ===== OYUN GERİ BİLDİRİMİ (Anlamsal - Gazete Tonlarında) =====
-    val correctCell = Color(0xFFD8E8D8)          // Doğru (açık yeşil-krem)
-    val wrongCell = Color(0xFFD8CFCC)            // Yanlış (açık kahve)
-    val hintCell = Color(0xFFDCD8D0)             // İpucu (açık gri)
+    val correctCell = Color(0xFFC8D8C8)          // Doğru (koyu yeşil-krem)
+    val wrongCell = Color(0xFFC8BFBC)            // Yanlış (koyu kahve)
+    val hintCell = Color(0xFFCCC8C0)             // İpucu (koyu bej)
 
     // ===== ZORLUK SEVİYESİ RENKLERİ (Anlamsal - Gri Tonları) =====
     val difficultyEasy = Color(0xFF7A8D7A)       // Kolay (açık yeşilimsi gri)
@@ -378,102 +381,103 @@ object GazetteColors {
 // ============================================================================
 object MonochromeColors {
     // ===== TEMEL RENKLER (60%) - Arka Plan ve Yüzeyler =====
-    val background = Color(0xFFFAFAFA)           // Ana arka plan (beyaz)
-    val surface = Color(0xFFFFFFFF)              // Yüzey (tam beyaz)
-    val cardBackground = Color(0xFFF5F5F5)       // Kart arka plan (hafif gri)
-    val surfaceVariant = Color(0xFFEEEEEE)       // İkincil yüzey (orta gri)
+    val background = Color(0xFF000000)           // Ana arka plan (siyah)
+    val surface = Color(0xFF0A0A0A)              // Yüzey (koyu siyah)
+    val cardBackground = Color(0xFF1A1A1A)       // Kart arka plan (çok koyu gri)
+    val surfaceVariant = Color(0xFF2A2A2A)       // İkincil yüzey (koyu gri)
 
     // ===== YAPISAL RENKLERİ (Kontrol ve Sınırlar) =====
-    val outline = Color(0xFFD0D0D0)              // Sınırlar (açık gri)
-    val divider = Color(0xFFDDDDDD)              // Ayırıcı çizgi (açık gri)
-    val modalScrim = Color(0x80000000)           // Modal arka plan (siyah 50%)
+    val outline = Color(0xFF505050)              // Sınırlar (orta gri)
+    val divider = Color(0xFF404040)              // Ayırıcı çizgi (koyu gri)
+    val modalScrim = Color(0x80FFFFFF)           // Modal arka plan (beyaz 50%)
 
     // ===== TEMEL VURGU RENKLERİ (30%) - Etkileşim =====
-    val primary = Color(0xFF000000)              // Birincil (siyah - güçlü vurgu)
-    val onPrimary = Color(0xFFFFFFFF)            // Birincil üstü (beyaz metin)
-    val primaryContainer = Color(0xFF424242)     // Birincil hafif (koyu gri)
-    val onPrimaryContainer = Color(0xFFFFFFFF)   // Birincil hafif üstü (beyaz)
+    val primary = Color(0xFFFFFFFF)              // Birincil (beyaz - güçlü vurgu)
+    val onPrimary = Color(0xFF000000)            // Birincil üstü (siyah metin)
+    val primaryContainer = Color(0xFFBDBDBD)     // Birincil hafif (açık gri)
+    val onPrimaryContainer = Color(0xFF000000)   // Birincil hafif üstü (siyah)
 
-    val secondary = Color(0xFF383838)            // İkincil (koyu gri - vurgu)
-    val onSecondary = Color(0xFFFFFFFF)          // İkincil üstü (beyaz metin)
-    val secondaryContainer = Color(0xFFCCCCCC)   // İkincil hafif
-    val onSecondaryContainer = Color(0xFF000000) // İkincil hafif üstü
+    val secondary = Color(0xFFCCCCCC)            // İkincil (açık gri - vurgu)
+    val onSecondary = Color(0xFF000000)          // İkincil üstü (siyah metin)
+    val secondaryContainer = Color(0xFF333333)   // İkincil hafif
+    val onSecondaryContainer = Color(0xFFFFFFFF) // İkincil hafif üstü
 
-    val tertiary = Color(0xFF616161)             // Üçüncül (orta gri - bilgi)
-    val onTertiary = Color(0xFFFFFFFF)           // Üçüncül üstü (beyaz metin)
-    val tertiaryContainer = Color(0xFFB0B0B0)    // Üçüncül hafif
-    val onTertiaryContainer = Color(0xFF000000)  // Üçüncül hafif üstü
+    val tertiary = Color(0xFF9E9E9E)             // Üçüncül (orta gri - bilgi)
+    val onTertiary = Color(0xFF000000)           // Üçüncül üstü (siyah metin)
+    val tertiaryContainer = Color(0xFF4F4F4F)    // Üçüncül hafif
+    val onTertiaryContainer = Color(0xFFFFFFFF)  // Üçüncül hafif üstü
 
     // ===== METIN RENKLERİ (WCAG AA Uyumlu) =====
-    val text = Color(0xFF000000)                 // Ana metin (siyah - 21:1 kontrast)
-    val textSecondary = Color(0xFF333333)        // İkincil metin (koyu gri - 9:1 kontrast)
-    val onSurfaceVariant = Color(0xFF555555)     // Varyant üzerindeki metin
+    val text = Color(0xFFFFFFFF)                 // Ana metin (beyaz - 21:1 kontrast)
+    val textSecondary = Color(0xFFCCCCCC)        // İkincil metin (açık gri - 9:1 kontrast)
+    val onSurfaceVariant = Color(0xFFAAAAAA)     // Varyant üzerindeki metin
 
     // ===== HATA VE UYARI RENKLERİ (Anlamsal - Siyah-Beyaz) =====
-    val error = Color(0xFF404040)                // Hata (çok koyu gri)
-    val onError = Color(0xFFFFFFFF)              // Hata üstü (beyaz)
-    val errorContainer = Color(0xFFD0D0D0)       // Hata hafif
-    val onErrorContainer = Color(0xFF000000)     // Hata hafif üstü
+    val error = Color(0xFFBFBFBF)                // Hata (çok açık gri)
+    val onError = Color(0xFF000000)              // Hata üstü (siyah)
+    val errorContainer = Color(0xFF2F2F2F)       // Hata hafif
+    val onErrorContainer = Color(0xFFFFFFFF)     // Hata hafif üstü
 
     // ===== SUDOKU GRID RENKLERİ (Saf Siyah-Beyaz) =====
-    val gridBackground = Color(0xFFFFFFFF)       // Grid arka plan (beyaz)
-    val gridLine = Color(0xFFCCCCCC)             // İnce çizgiler (açık gri - 3:1 kontrast)
-    val gridThickLine = Color(0xFF000000)        // Kalın çizgiler (siyah - 21:1 kontrast)
+    val gridBackground = Color(0xFF000000)       // Grid arka plan (siyah)
+    val gridLine = Color(0xFF333333)             // İnce çizgiler (koyu gri - 3:1 kontrast)
+    val gridThickLine = Color(0xFFFFFFFF)        // Kalın çizgiler (beyaz - 21:1 kontrast)
 
     // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin - Yüksek Kontrast) =====
-    val cellBackground = Color(0xFFFFFFFF)       // Hücre arka plan (beyaz)
-    val selectedCell = Color(0xFFA6A6A6)         // Seçili hücre (orta gri) - 5:1 kontrast
-    val selectedCellRow = Color(0xFFD9D9D9)      // Seçili satır/sütun (açık gri) - 3:1 kontrast
-    val selectedCellBox = Color(0xFFE5E5E5)      // Seçili 3x3 kutu (hafif gri) - 3:1 kontrast
-    val sameNumberCell = Color(0xFFBBBBBB)       // Aynı sayı (gri) - 4:1 kontrast
-    val conflictCell = Color(0xFF808080)         // Çakışma (koyu gri) - 5:1 kontrast
+    val cellBackground = Color(0xFF000000)       // Hücre arka plan (siyah)
+    val selectedCell = Color(0xFFAFAFAF)         // Seçili hücre (açık gri) - 8:1 kontrast
+    val selectedCellRow = Color(0xFF3D3D3D)      // Seçili satır/sütun (koyu gri) - 4:1 kontrast
+    val selectedCellBox = Color(0xFF1F1F1F)      // Seçili 3x3 kutu (çok koyu gri) - 4:1 kontrast
+    val sameNumberCell = Color(0xFF656565)       // Aynı sayı (orta gri) - 6:1 kontrast
+    val conflictCell = Color(0xFFC7C7C7)         // Çakışma (çok açık gri) - 12:1 kontrast
+    val affectedAreaCell = Color(0xFF2A2A2A)     // Etkilenen alanlar (çok koyu gri) - 3:1 kontrast
 
     // ===== SUDOKU SAYI RENKLERİ (Net ve Görünür) =====
-    val initialNumberText = Color(0xFF000000)    // Başlangıç sayıları (siyah) - 21:1 kontrast
-    val userNumberText = Color(0xFF000000)       // Kullanıcı sayıları (siyah) - 21:1 kontrast
-    val notesText = Color(0xFF333333)            // Not sayıları (koyu gri) - 9:1 kontrast
+    val initialNumberText = Color(0xFFFFFFFF)    // Başlangıç sayıları (beyaz) - 21:1 kontrast
+    val userNumberText = Color(0xFFFFFFFF)       // Kullanıcı sayıları (beyaz) - 21:1 kontrast
+    val notesText = Color(0xFFCCCCCC)            // Not sayıları (açık gri) - 9:1 kontrast
 
     // ===== BUTON RENKLERİ (WCAG AA Kontrast) =====
-    val buttonBackground = Color(0xFF000000)     // Ana buton (siyah)
-    val buttonText = Color(0xFFFFFFFF)           // Buton yazı (beyaz) - 21:1 kontrast
-    val buttonBackgroundSecondary = Color(0xFFCCCCCC) // İkincil buton (açık gri)
-    val buttonTextSecondary = Color(0xFF000000)  // İkincil buton yazı (siyah) - 12:1 kontrast
+    val buttonBackground = Color(0xFFFFFFFF)     // Ana buton (beyaz)
+    val buttonText = Color(0xFF000000)           // Buton yazı (siyah) - 21:1 kontrast
+    val buttonBackgroundSecondary = Color(0xFF333333) // İkincil buton (koyu gri)
+    val buttonTextSecondary = Color(0xFFFFFFFF)  // İkincil buton yazı (beyaz) - 12:1 kontrast
 
     // ===== OYUN GERİ BİLDİRİMİ (Anlamsal - Siyah-Beyaz) =====
-    val correctCell = Color(0xFFE8E8E8)          // Doğru (çok açık gri)
-    val wrongCell = Color(0xFFCCCCCC)            // Yanlış (açık gri)
-    val hintCell = Color(0xFFDDDDDD)             // İpucu (hafif gri)
+    val correctCell = Color(0xFF171717)          // Doğru (çok koyu gri)
+    val wrongCell = Color(0xFF333333)            // Yanlış (koyu gri)
+    val hintCell = Color(0xFF222222)             // İpucu (koyu gri)
 
     // ===== ZORLUK SEVİYESİ RENKLERİ (Anlamsal - Gri Tonları) =====
-    val difficultyEasy = Color(0xFF808080)       // Kolay (açık gri)
-    val difficultyMedium = Color(0xFF616161)     // Orta (orta gri)
-    val difficultyHard = Color(0xFF383838)       // Zor (koyu gri)
-    val difficultyExpert = Color(0xFF000000)     // Uzman (siyah)
+    val difficultyEasy = Color(0xFF7F7F7F)       // Kolay (açık gri)
+    val difficultyMedium = Color(0xFF9E9E9E)     // Orta (orta gri)
+    val difficultyHard = Color(0xFFC7C7C7)       // Zor (açık gri)
+    val difficultyExpert = Color(0xFFFFFFFF)     // Uzman (beyaz)
 
     // ===== PVP RENKLERİ =====
-    val playerOneColor = Color(0xFF000000)       // Oyuncu 1 (siyah)
-    val playerTwoColor = Color(0xFF606060)       // Oyuncu 2 (koyu gri)
-    val winColor = Color(0xFF383838)             // Kazanma (koyu gri)
-    val loseColor = Color(0xFF999999)            // Kaybetme (açık gri)
+    val playerOneColor = Color(0xFFFFFFFF)       // Oyuncu 1 (beyaz)
+    val playerTwoColor = Color(0xFF9F9F9F)       // Oyuncu 2 (açık gri)
+    val winColor = Color(0xFFC7C7C7)             // Kazanma (açık gri)
+    val loseColor = Color(0xFF666666)            // Kaybetme (koyu gri)
 
     // ===== STREAK VE BONUS RENKLERİ (Gri Skalası) =====
-    val streakGray = Color(0xFF999999)
-    val streakGreen = Color(0xFF808080)
-    val streakCyan = Color(0xFF707070)
-    val streakGold = Color(0xFF606060)
-    val streakOrange = Color(0xFF707070)
-    val streakDeepOrange = Color(0xFF606060)
-    val streakPink = Color(0xFF808080)
-    val streakPurple = Color(0xFF707070)
-    val streakTurquoise = Color(0xFF808080)
-    val streakHotOrange = Color(0xFF606060)
+    val streakGray = Color(0xFF666666)
+    val streakGreen = Color(0xFF7F7F7F)
+    val streakCyan = Color(0xFF8F8F8F)
+    val streakGold = Color(0xFF9F9F9F)
+    val streakOrange = Color(0xFF8F8F8F)
+    val streakDeepOrange = Color(0xFF9F9F9F)
+    val streakPink = Color(0xFF7F7F7F)
+    val streakPurple = Color(0xFF8F8F8F)
+    val streakTurquoise = Color(0xFF7F7F7F)
+    val streakHotOrange = Color(0xFF9F9F9F)
 
     // ===== BONUS RENKLERİ =====
-    val bonusGold = Color(0xFF606060)
-    val bonusBlue = Color(0xFF616161)
-    val bonusCyan = Color(0xFF707070)
-    val bonusPink = Color(0xFF808080)
-    val bonusLightGreen = Color(0xFF808080)
+    val bonusGold = Color(0xFF9F9F9F)
+    val bonusBlue = Color(0xFF9E9E9E)
+    val bonusCyan = Color(0xFF8F8F8F)
+    val bonusPink = Color(0xFF7F7F7F)
+    val bonusLightGreen = Color(0xFF7F7F7F)
 
     // ===== BAŞARI RENKLERİ =====
     val achievementGold = Color(0xFF606060)
@@ -525,6 +529,7 @@ fun getColorPalette(themeType: ThemeType): ThemeColors {
             selectedCellBox = LightColors.selectedCellBox,
             sameNumberCell = LightColors.sameNumberCell,
             conflictCell = LightColors.conflictCell,
+            affectedAreaCell = LightColors.affectedAreaCell,
             initialNumberText = LightColors.initialNumberText,
             userNumberText = LightColors.userNumberText,
             notesText = LightColors.notesText,
@@ -603,6 +608,7 @@ fun getColorPalette(themeType: ThemeType): ThemeColors {
             selectedCellBox = DarkColors.selectedCellBox,
             sameNumberCell = DarkColors.sameNumberCell,
             conflictCell = DarkColors.conflictCell,
+            affectedAreaCell = DarkColors.affectedAreaCell,
             initialNumberText = DarkColors.initialNumberText,
             userNumberText = DarkColors.userNumberText,
             notesText = DarkColors.notesText,
@@ -681,6 +687,7 @@ fun getColorPalette(themeType: ThemeType): ThemeColors {
             selectedCellBox = GazetteColors.selectedCellBox,
             sameNumberCell = GazetteColors.sameNumberCell,
             conflictCell = GazetteColors.conflictCell,
+            affectedAreaCell = GazetteColors.affectedAreaCell,
             initialNumberText = GazetteColors.initialNumberText,
             userNumberText = GazetteColors.userNumberText,
             notesText = GazetteColors.notesText,
@@ -759,6 +766,7 @@ fun getColorPalette(themeType: ThemeType): ThemeColors {
             selectedCellBox = MonochromeColors.selectedCellBox,
             sameNumberCell = MonochromeColors.sameNumberCell,
             conflictCell = MonochromeColors.conflictCell,
+            affectedAreaCell = MonochromeColors.affectedAreaCell,
             initialNumberText = MonochromeColors.initialNumberText,
             userNumberText = MonochromeColors.userNumberText,
             notesText = MonochromeColors.notesText,
