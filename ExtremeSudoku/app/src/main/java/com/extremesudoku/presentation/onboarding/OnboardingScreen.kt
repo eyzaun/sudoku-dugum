@@ -1,9 +1,11 @@
 package com.extremesudoku.presentation.onboarding
 
+import android.app.Activity
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -15,14 +17,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.extremesudoku.R
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.LocalThemeColors
+import com.extremesudoku.util.LocaleManager
 
 @Composable
 fun OnboardingScreen(
@@ -32,6 +38,26 @@ fun OnboardingScreen(
     val currentPage by viewModel.currentPage.collectAsState()
     val onboardingComplete by viewModel.onboardingComplete.collectAsState()
     val themeColors = LocalThemeColors.current
+    val context = LocalContext.current
+    val activity = context as? Activity
+    
+    var currentLanguage by remember { 
+        mutableStateOf(LocaleManager.getSavedLanguage(context))
+    }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    
+    if (showLanguageDialog) {
+        LanguageSelectionDialog(
+            currentLanguage = currentLanguage,
+            onLanguageSelected = { language ->
+                currentLanguage = language
+                LocaleManager.setLocale(context, language)
+                showLanguageDialog = false
+                activity?.recreate()
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
 
     LaunchedEffect(onboardingComplete) {
         if (onboardingComplete) {
@@ -44,6 +70,36 @@ fun OnboardingScreen(
             .fillMaxSize()
             .background(themeColors.background)
     ) {
+        // Sol üst - Dil değiştirme butonu
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(AppDimensions.spacingMedium)
+                .zIndex(10f)
+                .clickable { showLanguageDialog = true }
+                .background(
+                    color = themeColors.surface.copy(alpha = 0.9f),
+                    shape = MaterialTheme.shapes.small
+                )
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Language,
+                contentDescription = stringResource(R.string.language),
+                tint = themeColors.primary,
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text = currentLanguage.code.uppercase(),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = themeColors.text
+            )
+        }
+        
         // Sağ üst - Atlama butonu
         IconButton(
             onClick = { viewModel.completeOnboarding() },
@@ -54,7 +110,7 @@ fun OnboardingScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Skip",
+                contentDescription = stringResource(R.string.skip),
                 tint = themeColors.textSecondary,
                 modifier = Modifier.size(24.dp)
             )
@@ -142,7 +198,7 @@ fun OnboardingScreen(
                             .weight(1f)
                             .height(48.dp)
                     ) {
-                        Text("Back")
+                        Text(stringResource(R.string.back))
                     }
                 } else {
                     Spacer(modifier = Modifier.weight(1f))
@@ -155,7 +211,7 @@ fun OnboardingScreen(
                             .weight(1f)
                             .height(48.dp)
                     ) {
-                        Text("Next")
+                        Text(stringResource(R.string.next))
                     }
                 } else {
                     Button(
@@ -164,7 +220,7 @@ fun OnboardingScreen(
                             .weight(1f)
                             .height(48.dp)
                     ) {
-                        Text("Get Started")
+                        Text(stringResource(R.string.get_started))
                     }
                 }
             }
@@ -176,6 +232,8 @@ fun OnboardingScreen(
 @Composable
 private fun OnboardingPage1() {
     val themeColors = LocalThemeColors.current
+    val appName = stringResource(R.string.splash_title)
+    val welcomeTitle = stringResource(R.string.onboarding_welcome_title, appName)
 
     Column(
         modifier = Modifier
@@ -192,7 +250,7 @@ private fun OnboardingPage1() {
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
-                    text = "9×9",
+                    text = stringResource(R.string.splash_logo_text),
                     fontSize = 44.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = themeColors.primary
@@ -203,7 +261,7 @@ private fun OnboardingPage1() {
         Spacer(modifier = Modifier.height(AppDimensions.spacingExtraLarge))
 
         Text(
-            text = "Welcome to\nExtreme Sudoku",
+            text = welcomeTitle,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = themeColors.text,
@@ -213,7 +271,7 @@ private fun OnboardingPage1() {
         Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
 
         Text(
-            text = "The ultimate puzzle game that challenges your mind and improves your logical thinking skills.",
+            text = stringResource(R.string.onboarding_welcome_message),
             fontSize = 15.sp,
             color = themeColors.textSecondary,
             textAlign = TextAlign.Center,
@@ -234,7 +292,7 @@ private fun OnboardingPage1() {
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "Swipe to explore features",
+                text = stringResource(R.string.onboarding_swipe_hint),
                 fontSize = 13.sp,
                 color = themeColors.textSecondary,
                 fontWeight = FontWeight.Medium
@@ -259,7 +317,7 @@ private fun OnboardingPage2() {
 
         // Başlık
         Text(
-            text = "How to Play",
+            text = stringResource(R.string.onboarding_how_to_play_title),
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             color = themeColors.text
@@ -272,27 +330,27 @@ private fun OnboardingPage2() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             InstructionItem(
-                number = "1",
-                title = "Select a Cell",
-                description = "Tap any empty cell in the 9×9 grid to select it"
+                number = 1,
+                title = stringResource(R.string.onboarding_step_select_title),
+                description = stringResource(R.string.onboarding_step_select_description)
             )
 
             InstructionItem(
-                number = "2",
-                title = "Enter Numbers",
-                description = "Use the number pad to enter numbers 1-9"
+                number = 2,
+                title = stringResource(R.string.onboarding_step_enter_title),
+                description = stringResource(R.string.onboarding_step_enter_description)
             )
 
             InstructionItem(
-                number = "3",
-                title = "Follow Rules",
-                description = "Each row, column, and 3×3 box must contain 1-9"
+                number = 3,
+                title = stringResource(R.string.onboarding_step_rules_title),
+                description = stringResource(R.string.onboarding_step_rules_description)
             )
 
             InstructionItem(
-                number = "4",
-                title = "Complete Puzzle",
-                description = "Fill all cells correctly to solve the puzzle"
+                number = 4,
+                title = stringResource(R.string.onboarding_step_complete_title),
+                description = stringResource(R.string.onboarding_step_complete_description)
             )
         }
 
@@ -315,7 +373,7 @@ private fun OnboardingPage3() {
         Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
 
         Text(
-            text = "Smart Features",
+            text = stringResource(R.string.onboarding_smart_features_title),
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             color = themeColors.text
@@ -328,22 +386,22 @@ private fun OnboardingPage3() {
         ) {
             FeatureCard(
                 icon = Icons.Default.LightbulbCircle,
-                title = "Hints",
-                description = "Get hints when you're stuck. Choose to reveal a number or highlight cells",
+                title = stringResource(R.string.onboarding_feature_hints_title),
+                description = stringResource(R.string.onboarding_feature_hints_description),
                 color = themeColors.secondary
             )
 
             FeatureCard(
                 icon = Icons.Default.Notes,
-                title = "Candidate Numbers",
-                description = "Toggle note mode to write small candidate numbers in cells",
+                title = stringResource(R.string.onboarding_feature_candidates_title),
+                description = stringResource(R.string.onboarding_feature_candidates_description),
                 color = themeColors.tertiary
             )
 
             FeatureCard(
                 icon = Icons.Default.Undo,
-                title = "Undo & Redo",
-                description = "Made a mistake? Undo your moves or redo them anytime",
+                title = stringResource(R.string.onboarding_feature_undo_title),
+                description = stringResource(R.string.onboarding_feature_undo_description),
                 color = themeColors.primary
             )
         }
@@ -367,7 +425,7 @@ private fun OnboardingPage4() {
         Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
 
         Text(
-            text = "Game Modes",
+            text = stringResource(R.string.onboarding_game_modes_title),
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             color = themeColors.text
@@ -379,20 +437,20 @@ private fun OnboardingPage4() {
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             ModeCard(
-                title = "Classic Sudoku",
-                description = "Traditional 9×9 puzzle\nMultiple difficulty levels",
+                title = stringResource(R.string.onboarding_mode_classic_title),
+                description = stringResource(R.string.onboarding_mode_classic_description),
                 icon = Icons.Default.GridView
             )
 
             ModeCard(
-                title = "Daily Challenge",
-                description = "New puzzle every day\nCompete with others",
+                title = stringResource(R.string.onboarding_mode_daily_title),
+                description = stringResource(R.string.onboarding_mode_daily_description),
                 icon = Icons.Default.Today
             )
 
             ModeCard(
-                title = "PvP Modes",
-                description = "Battle players online\nRank up and earn badges",
+                title = stringResource(R.string.onboarding_mode_pvp_title),
+                description = stringResource(R.string.onboarding_mode_pvp_description),
                 icon = Icons.Default.People
             )
         }
@@ -425,7 +483,7 @@ private fun OnboardingPage5() {
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
-                        text = "🎮",
+                        text = stringResource(R.string.onboarding_ready_icon),
                         fontSize = 48.sp
                     )
                 }
@@ -434,7 +492,7 @@ private fun OnboardingPage5() {
             Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
 
             Text(
-                text = "Ready to Play?",
+                text = stringResource(R.string.onboarding_ready_title),
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
                 color = themeColors.text
@@ -443,7 +501,7 @@ private fun OnboardingPage5() {
             Spacer(modifier = Modifier.height(AppDimensions.spacingSmall))
 
             Text(
-                text = "You're all set to dive into the world of Extreme Sudoku. Start with an easy puzzle and challenge yourself!",
+                text = stringResource(R.string.onboarding_ready_message, stringResource(R.string.splash_title)),
                 fontSize = 15.sp,
                 color = themeColors.textSecondary,
                 textAlign = TextAlign.Center,
@@ -466,13 +524,13 @@ private fun OnboardingPage5() {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "💡 Quick Tips",
+                        text = stringResource(R.string.onboarding_quick_tips_title),
                         fontWeight = FontWeight.Bold,
                         color = themeColors.text,
                         fontSize = 14.sp
                     )
                     Text(
-                        text = "• Swipe cells for faster navigation\n• Use hints strategically\n• Practice different difficulty levels\n• Check your accuracy stats",
+                        text = stringResource(R.string.onboarding_quick_tips_list),
                         fontSize = 13.sp,
                         color = themeColors.textSecondary,
                         lineHeight = 18.sp
@@ -489,7 +547,7 @@ private fun OnboardingPage5() {
 
 @Composable
 private fun InstructionItem(
-    number: String,
+    number: Int,
     title: String,
     description: String
 ) {
@@ -514,7 +572,7 @@ private fun InstructionItem(
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
-                    text = number,
+                    text = number.toString(),
                     fontWeight = FontWeight.Bold,
                     color = themeColors.primary,
                     fontSize = 18.sp
@@ -639,4 +697,73 @@ private fun ModeCard(
             }
         }
     }
+}
+
+@Composable
+private fun LanguageSelectionDialog(
+    currentLanguage: LocaleManager.Language,
+    onLanguageSelected: (LocaleManager.Language) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val themeColors = LocalThemeColors.current
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.language_selection_title),
+                color = themeColors.text
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(AppDimensions.spacingSmall)
+            ) {
+                LocaleManager.Language.values().forEach { language ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onLanguageSelected(language) },
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (currentLanguage == language) 
+                                themeColors.primary.copy(alpha = 0.1f) 
+                            else 
+                                themeColors.cardBackground
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(AppDimensions.spacingMedium),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = language.displayName,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = themeColors.text
+                            )
+                            
+                            if (currentLanguage == language) {
+                                Icon(
+                                    Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = themeColors.primary
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    color = themeColors.primary
+                )
+            }
+        },
+        containerColor = themeColors.surface
+    )
 }

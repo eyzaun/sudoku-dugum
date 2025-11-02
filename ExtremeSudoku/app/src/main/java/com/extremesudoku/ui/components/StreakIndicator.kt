@@ -14,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.extremesudoku.R
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.AppShapes
 import com.extremesudoku.presentation.theme.LocalThemeColors
@@ -111,7 +113,7 @@ fun StreakIndicator(
             ) {
                 if (showLabel) {
                     Text(
-                        text = "Streak",
+                        text = stringResource(R.string.streak_label_short),
                         style = MaterialTheme.typography.labelSmall,
                         color = themeColors.highlightText.copy(alpha = 0.9f),
                         fontWeight = FontWeight.Medium
@@ -147,7 +149,7 @@ fun StreakIndicator(
                     // Best streak indicator
                     if (currentStreak < maxStreak && maxStreak > 0) {
                         Text(
-                            text = "/ $maxStreak",
+                            text = stringResource(R.string.game_complete_max_streak_format, maxStreak),
                             style = MaterialTheme.typography.bodySmall,
                             color = themeColors.highlightText.copy(alpha = 0.7f),
                             modifier = Modifier.padding(bottom = AppDimensions.spacingExtraSmall / 2)

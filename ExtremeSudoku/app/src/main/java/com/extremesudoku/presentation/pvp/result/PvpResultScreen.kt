@@ -13,11 +13,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import com.extremesudoku.data.models.pvp.PvpMode
 import com.extremesudoku.presentation.theme.LocalThemeColors
 import com.extremesudoku.utils.formatTime
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.AppTypography
+import com.extremesudoku.R
 
 /**
  * PvP Match Result Screen
@@ -88,53 +90,50 @@ fun ResultContent(
         when {
             // İPTAL EDİLDİYSE: Skordan bağımsız sadece kazandınız/kaybettiniz
             result.isCancelled -> {
+                val symbolRes: Int
+                val titleRes: Int
+                val messageRes: Int
+                val titleColor: Color
+
                 if (result.isWinner) {
-                    Text(
-                        text = "★",
-                        fontSize = AppTypography.fontSizeDisplay * 2.5f
-                    )
-                    Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
-                    Text(
-                        text = "KAZANDIN!",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = themeColors.achievementGold
-                    )
-                    Spacer(modifier = Modifier.height(AppDimensions.spacingSmall))
-                    Text(
-                        text = "Rakip oyundan ayrıldı",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
+                    symbolRes = R.string.pvp_game_status_symbol_win
+                    titleRes = R.string.pvp_game_status_win
+                    messageRes = R.string.pvp_result_opponent_left
+                    titleColor = themeColors.achievementGold
                 } else {
-                    Text(
-                        text = "X",
-                        fontSize = AppTypography.fontSizeDisplay * 2.5f
-                    )
-                    Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
-                    Text(
-                        text = "Kaybettin",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                    Spacer(modifier = Modifier.height(AppDimensions.spacingSmall))
-                    Text(
-                        text = "Oyundan ayrıldınız",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
+                    symbolRes = R.string.pvp_game_status_symbol_loss
+                    titleRes = R.string.pvp_game_status_loss
+                    messageRes = R.string.pvp_result_player_left
+                    titleColor = MaterialTheme.colorScheme.error
                 }
-            }
-            // NORMAL BİTİŞ: Skordan bak
-            result.isDraw -> {
+
                 Text(
-                    text = "=",
+                    text = stringResource(symbolRes),
                     fontSize = AppTypography.fontSizeDisplay * 2.5f
                 )
                 Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
                 Text(
-                    text = "BERABERE!",
+                    text = stringResource(titleRes),
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = titleColor
+                )
+                Spacer(modifier = Modifier.height(AppDimensions.spacingSmall))
+                Text(
+                    text = stringResource(messageRes),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            }
+            // NORMAL BİTİŞ: Skordan bak
+            result.isDraw -> {
+                Text(
+                    text = stringResource(R.string.pvp_result_symbol_draw),
+                    fontSize = AppTypography.fontSizeDisplay * 2.5f
+                )
+                Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
+                Text(
+                    text = stringResource(R.string.pvp_game_status_draw),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -142,12 +141,12 @@ fun ResultContent(
             }
             result.isWinner -> {
                 Text(
-                    text = "★",
+                    text = stringResource(R.string.pvp_game_status_symbol_win),
                     fontSize = AppTypography.fontSizeDisplay * 2.5f
                 )
                 Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
                 Text(
-                    text = "KAZANDIN!",
+                    text = stringResource(R.string.pvp_game_status_win),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     color = themeColors.achievementGold
@@ -155,12 +154,12 @@ fun ResultContent(
             }
             else -> {
                 Text(
-                    text = "X",
+                    text = stringResource(R.string.pvp_game_status_symbol_loss),
                     fontSize = AppTypography.fontSizeDisplay * 2.5f
                 )
                 Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
                 Text(
-                    text = "Kaybettin",
+                    text = stringResource(R.string.pvp_game_status_loss),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.error
@@ -172,7 +171,10 @@ fun ResultContent(
         
         // Mode bilgisi
         Text(
-            text = result.mode.displayName,
+            text = when (result.mode) {
+                PvpMode.BLIND_RACE -> stringResource(R.string.pvp_mode_blind_race_title)
+                PvpMode.LIVE_BATTLE -> stringResource(R.string.pvp_mode_live_battle_title)
+            },
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -196,7 +198,7 @@ fun ResultContent(
             
             // VS
             Text(
-                text = "VS",
+                text = stringResource(R.string.pvp_result_vs_label),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.CenterVertically)
@@ -227,7 +229,7 @@ fun ResultContent(
         ) {
             Icon(Icons.Default.Refresh, contentDescription = null)
             Spacer(modifier = Modifier.width(AppDimensions.spacingSmall))
-            Text("Tekrar Oyna")
+            Text(stringResource(R.string.play_again))
         }
         
         Spacer(modifier = Modifier.height(AppDimensions.spacingSmall))
@@ -238,7 +240,7 @@ fun ResultContent(
         ) {
             Icon(Icons.Default.Home, contentDescription = null)
             Spacer(modifier = Modifier.width(AppDimensions.spacingSmall))
-            Text("Ana Menü")
+            Text(stringResource(R.string.home))
         }
     }
 }
@@ -300,7 +302,7 @@ fun PlayerStatsCard(
             )
             
             Text(
-                text = "puan",
+                text = stringResource(R.string.points),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -320,7 +322,7 @@ fun DetailedStatsSection(result: PvpResultState.Success) {
             modifier = Modifier.padding(AppDimensions.spacingMedium)
         ) {
             Text(
-                text = "Detaylı İstatistikler",
+                text = stringResource(R.string.detailed_stats),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -330,7 +332,7 @@ fun DetailedStatsSection(result: PvpResultState.Success) {
             // Time comparison
             StatRow(
                 icon = Icons.Default.Timer,
-                label = "Süre",
+                label = stringResource(R.string.stat_time),
                 myValue = formatTime(result.myTime / 1000),
                 opponentValue = formatTime(result.opponentTime / 1000),
                 myIsBetter = result.myTime < result.opponentTime
@@ -341,7 +343,7 @@ fun DetailedStatsSection(result: PvpResultState.Success) {
             // Score comparison
             StatRow(
                 icon = Icons.Default.Star,
-                label = "Skor",
+                label = stringResource(R.string.score),
                 myValue = "${result.myScore}",
                 opponentValue = "${result.opponentScore}",
                 myIsBetter = result.myScore > result.opponentScore
@@ -352,7 +354,7 @@ fun DetailedStatsSection(result: PvpResultState.Success) {
             // Accuracy comparison
             StatRow(
                 icon = Icons.Default.CheckCircle,
-                label = "Doğruluk",
+                label = stringResource(R.string.accuracy),
                 myValue = "${result.myAccuracy.toInt()}%",
                 opponentValue = "${result.opponentAccuracy.toInt()}%",
                 myIsBetter = result.myAccuracy > result.opponentAccuracy
@@ -433,7 +435,7 @@ fun ErrorContent(
         Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
         
         Text(
-            text = "Hata",
+            text = stringResource(R.string.error_generic_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
@@ -450,7 +452,7 @@ fun ErrorContent(
         Spacer(modifier = Modifier.height(AppDimensions.dialogPadding))
         
         Button(onClick = onNavigateToHome) {
-            Text("Ana Menüye Dön")
+            Text(stringResource(R.string.return_to_home))
         }
     }
 }

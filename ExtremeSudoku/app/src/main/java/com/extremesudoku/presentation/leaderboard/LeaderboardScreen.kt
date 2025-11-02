@@ -11,9 +11,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.extremesudoku.R
 import com.extremesudoku.data.models.LeaderboardEntry
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.LocalThemeColors
@@ -31,15 +33,15 @@ fun LeaderboardScreen(
         containerColor = themeColors.background,
         topBar = {
             TopAppBar(
-                title = { Text("Leaderboard") },
+                title = { Text(stringResource(R.string.leaderboard)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.onRefresh() }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                        Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.refresh))
                     }
                 }
             )
@@ -61,7 +63,7 @@ fun LeaderboardScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No leaderboard data yet")
+                Text(stringResource(R.string.leaderboard_empty_state))
             }
         } else {
             LazyColumn(
@@ -128,13 +130,19 @@ fun LeaderboardItem(
         
         // User info
         Column(modifier = Modifier.weight(1f)) {
+            val displayName = if (entry.username.isBlank()) {
+                stringResource(R.string.leaderboard_default_player_name, rank)
+            } else {
+                entry.username
+            }
+            val gamesCompletedText = stringResource(R.string.leaderboard_games_completed, entry.gamesCompleted)
             Text(
-                text = entry.username.ifEmpty { "Player $rank" },
+                text = displayName,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${entry.gamesCompleted} games completed",
+                text = gamesCompletedText,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -149,7 +157,7 @@ fun LeaderboardItem(
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "best time",
+                text = stringResource(R.string.leaderboard_best_time_label),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

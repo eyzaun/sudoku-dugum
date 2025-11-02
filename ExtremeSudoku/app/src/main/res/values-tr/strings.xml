@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sudoku Düğüm</string>
+    
+    <!-- Home Screen -->
+    <string name="new_game">Yeni Oyun</string>
+    <string name="continue_playing">Devam Et</string>
+    <string name="daily_challenge">Günlük Meydan Okuma</string>
+    <string name="daily_challenge_description">Bugünün özel bulmacasını tamamla</string>
+    <string name="leaderboard">Lider Tablosu</string>
+
+    <!-- Leaderboard Screen -->
+    <string name="refresh">Yenile</string>
+    <string name="leaderboard_empty_state">Henüz lider tablosu verisi yok</string>
+    <string name="leaderboard_default_player_name">Oyuncu %1$d</string>
+    <string name="leaderboard_games_completed">%1$d oyun tamamlandı</string>
+    <string name="leaderboard_best_time_label">en iyi süre</string>
+    <string name="settings">Ayarlar</string>
+    <string name="profile">Profil</string>
+    <string name="show_less">Daha az göster</string>
+    <string name="show_all_saved_games">Tüm %1$d kayıtlı oyunu gör</string>
+    <string name="difficulty_easy">Kolay</string>
+    <string name="difficulty_medium">Orta</string>
+    <string name="difficulty_hard">Zor</string>
+    <string name="difficulty_expert">Uzman</string>
+    <string name="pvp_mode">PvP Modu</string>
+    <string name="pvp_mode_home_description">Çevrimiçi oyunculara meydan oku!</string>
+    <string name="saved_game_in_progress">Devam eden oyun</string>
+    <string name="saved_game_moves">%1$d hamle</string>
+    <string name="delete">Sil</string>
+    <string name="continue_label">Devam Et</string>
+    <string name="your_stats">İstatistikleriniz</string>
+    <string name="stats_played">Oynanan</string>
+    <string name="stats_completed">Tamamlanan</string>
+    <string name="stats_streak">Seri</string>
+    
+    <!-- Game Screen -->
+    <string name="game_title">Sudoku</string>
+    <string name="hint">İpucu</string>
+    <string name="undo">Geri Al</string>
+    <string name="redo">İleri Al</string>
+    <string name="notes">Notlar</string>
+    <string name="erase">Sil</string>
+    <string name="pause">Duraklat</string>
+    <string name="back">Geri</string>
+    <string name="score_label">Puan:</string>
+    <string name="streak_label_short">S:</string>
+    <string name="streak_value">%1$d Seri</string>
+    <string name="stat_time">Süre</string>
+    <string name="stat_moves">Hamle</string>
+    <string name="stat_hints">İpucu</string>
+    <string name="stat_hints_value">%1$d/%2$d</string>
+    <string name="error_loading_sudoku">Sudoku yüklenirken hata</string>
+    <string name="close">Kapat</string>
+    <string name="pause_dialog_message">Bir mola ver veya oynamaya devam et</string>
+    <string name="resume">Devam Et</string>
+    <string name="quit">Çık</string>
+    <string name="cancel">İptal</string>
+    <string name="completion_dialog_title">Tebrikler!</string>
+    <string name="completion_dialog_message">Bulmacayı tamamladın!</string>
+    <string name="home">Ana Sayfa</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_section_appearance">Görünüm</string>
+    <string name="settings_section_sound">Ses &amp; Titreşim</string>
+    <string name="settings_section_visual_helpers">Görsel Yardımcılar</string>
+    <string name="settings_section_advanced">Gelişmiş</string>
+    <string name="settings_section_about">Hakkında</string>
+    <string name="settings_version_label">Sürüm</string>
+    <string name="settings_puzzles_available_label">Mevcut Bulmacalar</string>
+    <string name="settings_version_value">1.0.5</string>
+    <string name="settings_puzzles_available_value">3.8M+</string>
+    <string name="settings_theme_gazete_name">Gazete Teması</string>
+    <string name="settings_theme_gazete_description">Gazete kağıdı görünümü - Krem, Siyah, Gri (Klasik)</string>
+    <string name="settings_theme_light_name">Aydınlık Tema</string>
+    <string name="settings_theme_light_description">Modern, parlak ve temiz - Mavi, Yeşil, Mor (WCAG AA Uyumlu)</string>
+    <string name="settings_theme_dark_name">Karanlık Tema</string>
+    <string name="settings_theme_dark_description">AMOLED Optimize Edilmiş - Açık Mavi, Yeşil, Mor (Göz Rahatlığı)</string>
+    <string name="settings_theme_monochrome_name">Monokrom Tema</string>
+    <string name="settings_theme_monochrome_description">Saf siyah-beyaz - Net kontrast, basit tasarım</string>
+
+    <!-- Splash Screen -->
+    <string name="splash_logo_text">9×9</string>
+    <string name="splash_title">Sudoku Düğüm</string>
+    <string name="splash_tagline">Bulmacada ustalaş. Kendine meydan oku.</string>
+
+    <!-- Onboarding -->
+    <string name="skip">Atla</string>
+    <string name="next">İleri</string>
+    <string name="get_started">Başla</string>
+    <string name="onboarding_welcome_title">%1$s\'e
+Hoş Geldin</string>
+    <string name="onboarding_welcome_message">Zihninize meydan okuyan ve mantıksal düşünme becerilerinizi geliştiren nihai bulmaca oyunu.</string>
+    <string name="onboarding_swipe_hint">Özellikleri keşfetmek için kaydır</string>
+    <string name="onboarding_how_to_play_title">Nasıl Oynanır</string>
+    <string name="onboarding_step_select_title">Hücre Seç</string>
+    <string name="onboarding_step_select_description">9×9 ızgarada boş bir hücreye dokunarak seçin</string>
+    <string name="onboarding_step_enter_title">Sayı Gir</string>
+    <string name="onboarding_step_enter_description">1-9 arası sayıları girmek için sayı panosunu kullan</string>
+    <string name="onboarding_step_rules_title">Kuralları Takip Et</string>
+    <string name="onboarding_step_rules_description">Her satır, sütun ve 3×3 kutu 1-9 arası sayıları içermeli</string>
+    <string name="onboarding_step_complete_title">Bulmacayı Tamamla</string>
+    <string name="onboarding_step_complete_description">Bulmacayı çözmek için tüm hücreleri doğru doldur</string>
+    <string name="onboarding_smart_features_title">Akıllı Özellikler</string>
+    <string name="onboarding_feature_hints_title">İpuçları</string>
+    <string name="onboarding_feature_hints_description">Takıldığında ipucu al. Bir sayıyı göstermeyi veya hücreleri vurgulamayı seç</string>
+    <string name="onboarding_feature_candidates_title">Aday Sayılar</string>
+    <string name="onboarding_feature_candidates_description">Hücrelere küçük aday sayılar yazmak için not modunu aç</string>
+    <string name="onboarding_feature_undo_title">Geri Al &amp; İleri Al</string>
+    <string name="onboarding_feature_undo_description">Hata mı yaptın? Hamlelerini istediğin zaman geri al veya ileri al</string>
+    <string name="onboarding_game_modes_title">Oyun Modları</string>
+    <string name="onboarding_mode_classic_title">Klasik Sudoku</string>
+    <string name="onboarding_mode_classic_description">Geleneksel 9×9 bulmaca
+Çoklu zorluk seviyeleri</string>
+    <string name="onboarding_mode_daily_title">Günlük Meydan Okuma</string>
+    <string name="onboarding_mode_daily_description">Her gün yeni bulmaca
+Diğerleriyle yarış</string>
+    <string name="onboarding_mode_pvp_title">PvP Modları</string>
+    <string name="onboarding_mode_pvp_description">Çevrimiçi oyuncularla savaş
+Sırala ve rozet kazan</string>
+    <string name="onboarding_ready_icon">🎮</string>
+    <string name="onboarding_ready_title">Oynamaya Hazır mısın?</string>
+    <string name="onboarding_ready_message">%1$s dünyasına dalmaya hazırsın. Kolay bir bulmacayla başla ve kendine meydan oku!</string>
+    <string name="onboarding_quick_tips_title">💡 Hızlı İpuçları</string>
+    <string name="onboarding_quick_tips_list">• Daha hızlı gezinmek için hücreleri kaydır
+• İpuçlarını stratejik kullan
+• Farklı zorluk seviyelerinde pratik yap
+• Doğruluk istatistiklerini kontrol et</string>
+
+    <!-- PvP Mode Selection -->
+    <string name="pvp_mode_select_title">PvP Modu Seç</string>
+    <string name="pvp_mode_heading">PvP Modu</string>
+    <string name="pvp_mode_select_description">Nasıl yarışmak istediğini seç!</string>
+    <string name="pvp_mode_blind_race_title">Kör Yarış</string>
+    <string name="pvp_mode_blind_race_description">Rakibini görmeden yarış!\nAynı bulmacayı kim daha hızlı çözer?</string>
+    <string name="pvp_mode_blind_feature_same_puzzle">Aynı bulmaca</string>
+    <string name="pvp_mode_blind_feature_progress">Rakibinin ilerlemesini gör (%)</string>
+    <string name="pvp_mode_blind_feature_first_finish">İlk bitiren kazanır</string>
+    <string name="pvp_mode_live_battle_title">⚔️ Canlı Savaş</string>
+    <string name="pvp_mode_live_battle_description">Rakibinin hamlelerini izle!\nDoğru +1, Yanlış -1 puan!</string>
+    <string name="pvp_mode_live_feature_same_puzzle">Aynı bulmaca</string>
+    <string name="pvp_mode_live_feature_opponent_moves">Rakibin doğru hamlelerini anında gör</string>
+    <string name="pvp_mode_live_feature_high_score">En yüksek puan kazanır (10 dk)</string>
+
+    <!-- PvP Lobby -->
+    <string name="pvp_lobby_topbar_title">Rakip Aranıyor...</string>
+    <string name="pvp_lobby_vs_label">KARŞI</string>
+    <string name="pvp_lobby_mode_label">Mod: %1$s</string>
+    <string name="pvp_lobby_searching_title">Rakip Aranıyor...</string>
+    <string name="pvp_lobby_searching_message">Seviyene uygun bir oyuncu arıyoruz...</string>
+    <string name="pvp_lobby_cancel_search">Aramayı İptal Et</string>
+    <string name="pvp_lobby_match_found_title">Rakip Bulundu!</string>
+    <string name="pvp_lobby_match_found_message">Oyuna yönlendiriliyorsun...</string>
+    <string name="pvp_lobby_error_title">Bir şeyler yanlış gitti</string>
+    <string name="pvp_lobby_error_cancel">İptal</string>
+    <string name="pvp_lobby_error_retry">Tekrar Dene</string>
+
+    <!-- PvP Live Battle -->
+    <string name="pvp_live_battle_title">Canlı Savaş</string>
+    <string name="pvp_live_battle_exit_title">Oyundan Çıkılsın mı?</string>
+    <string name="pvp_live_battle_exit_message">Oyundan çıkmak yenilgi sayılır. Emin misin?</string>
+    <string name="pvp_live_battle_exit_confirm">Çık</string>
+    <string name="pvp_live_battle_default_player_name">Sen</string>
+    <string name="pvp_live_battle_default_opponent_name">Rakip</string>
+    <string name="pvp_live_battle_my_score_label">👤 %1$s</string>
+    <string name="pvp_live_battle_opponent_label">vs %1$s</string>
+    <string name="pvp_live_battle_score_separator">⚔️</string>
+    <string name="pvp_connection_disconnected">Bağlantı kesildi</string>
+    <string name="pvp_connection_reconnecting">Yeniden bağlanıyor...</string>
+    <string name="pvp_live_battle_stat_icon_moves">H</string>
+    <string name="pvp_live_battle_stat_icon_time">S</string>
+    <string name="pvp_stat_icon_hints">İ</string>
+
+    <!-- PvP Blind Race -->
+    <string name="pvp_blind_race_title">Kör Yarış</string>
+    <string name="pvp_blind_race_opponent_progress_title">Rakip İlerlemesi</string>
+    <string name="pvp_vs_prefix">vs</string>
+    <string name="pvp_progress_percent">%%1$d</string>
+    <string name="pvp_blind_race_player_one_label">O1</string>
+    <string name="pvp_blind_race_player_two_label">O2</string>
+
+    <!-- Shared PvP Components -->
+    <string name="pvp_controls_undo">Geri Al</string>
+    <string name="pvp_controls_redo">İleri Al</string>
+    <string name="pvp_controls_clear">Temizle</string>
+    <string name="pvp_game_status_symbol_win">★</string>
+    <string name="pvp_game_status_symbol_loss">X</string>
+    <string name="pvp_game_status_symbol_draw">B</string>
+    <string name="pvp_game_status_win">KAZANDIN!</string>
+    <string name="pvp_game_status_loss">KAYBETTİN</string>
+    <string name="pvp_game_status_draw">BERABERLİK</string>
+    <string name="pvp_game_time_label">Süre: %1$s</string>
+
+    <!-- Shared Dialogs & Feedback -->
+    <string name="loading_message">Yükleniyor...</string>
+    <string name="ok">TAMAM</string>
+    <string name="pvp_exit_dialog_title">Maçtan ayrıl?</string>
+    <string name="pvp_exit_dialog_message">Ayrılmak yenilgi sayılır. Emin misin?</string>
+    <string name="pvp_exit_dialog_confirm">Ayrıl ve yenilgiyi kabul et</string>
+
+    <!-- PvP Results -->
+    <string name="pvp_result_symbol_draw">=</string>
+    <string name="pvp_result_opponent_left">Rakip maçtan ayrıldı</string>
+    <string name="pvp_result_player_left">Maçtan ayrıldın</string>
+    <string name="pvp_result_vs_label">KARŞI</string>
+    <string name="play_again">Tekrar Oyna</string>
+    <string name="return_to_home">Ana Sayfaya Dön</string>
+    <string name="points">puan</string>
+    <string name="detailed_stats">Detaylı İstatistikler</string>
+    <string name="score">Puan</string>
+    <string name="accuracy">Doğruluk</string>
+    <string name="error_generic_title">Hata</string>
+
+    <!-- Game Settings -->
+    <string name="game_settings_title">Oyun Ayarları</string>
+    <string name="game_settings_show_timer_title">Zamanlayıcıyı Göster</string>
+    <string name="game_settings_show_timer_description">Geçen oyun süresini göster</string>
+    <string name="game_settings_auto_check_mistakes_title">Hataları Otomatik Kontrol Et</string>
+    <string name="game_settings_auto_check_mistakes_description">Yanlış sayı yerleştirmeyi engelle (yakında)</string>
+    <string name="game_settings_highlight_conflicts_title">Çakışmaları Vurgula</string>
+    <string name="game_settings_highlight_conflicts_description">Çakışan sayıları kırmızı göster</string>
+    <string name="game_settings_highlight_same_numbers_title">Aynı Sayıları Vurgula</string>
+    <string name="game_settings_highlight_same_numbers_description">Seçili sayıya sahip tüm hücreleri vurgula</string>
+    <string name="game_settings_show_remaining_numbers_title">Kalan Sayıları Göster</string>
+    <string name="game_settings_show_remaining_numbers_description">Her sayı düğmesinin altında kalan miktarı göster</string>
+    <string name="game_settings_vibration_title">Titreşim</string>
+    <string name="game_settings_vibration_description">Etkileşimler için dokunsal geri bildirim</string>
+    <string name="game_settings_show_selected_area_title">Seçili Alanı Göster</string>
+    <string name="game_settings_show_selected_area_description">Seçili hücrenin satırını, sütununu ve kutusunu vurgula</string>
+    <string name="game_settings_show_affected_areas_title">Etkilenen Alanları Göster</string>
+    <string name="game_settings_show_affected_areas_description">Sayı panosuna dokunurken etkilenen tüm hücreleri göster</string>
+    <string name="game_settings_auto_remove_notes_title">Notları Otomatik Kaldır</string>
+    <string name="game_settings_auto_remove_notes_description">Bir sayı yerleştirirken notları otomatik temizle</string>
+    <string name="game_settings_show_score_and_streak_title">Puan &amp; Seriyi Göster</string>
+    <string name="game_settings_show_score_and_streak_description">Oyun sırasında puan ve seri sayacını göster</string>
+    <string name="game_settings_colorize_numbers_title">Sayıları Renklendir</string>
+    <string name="game_settings_colorize_numbers_description">Doğru sayıları yeşil, yanlışları kırmızı göster</string>
+    <string name="game_settings_sound_effects_title">Ses Efektleri</string>
+    <string name="game_settings_sound_effects_description">Hamleler, ipuçları ve tamamlama için ses çal</string>
+    
+    <!-- Stats -->
+    <string name="games_played">Oynanan Oyunlar</string>
+    <string name="games_completed">Tamamlanan Oyunlar</string>
+    <string name="best_time">En İyi Süre</string>
+    <string name="average_time">Ortalama Süre</string>
+    <string name="current_streak">Güncel Seri</string>
+    <string name="total_time">Toplam Süre</string>
+
+    <!-- Profile -->
+    <string name="profile_guest_mode_title">! Misafir Modu</string>
+    <string name="profile_guest_mode_message">İlerlemeniz yerel olarak kaydedilir. Cihazlar arası senkronizasyon için hesap oluşturun!</string>
+    <string name="profile_guest_mode_action">Hesap Oluştur / Giriş Yap</string>
+    <string name="profile_default_display_name">Oyuncu</string>
+    <string name="profile_statistics_title">İstatistikler</string>
+    <string name="profile_statistics_games_title">Oyunlar</string>
+    <string name="profile_completion_rate_label">Tamamlanma Oranı</string>
+    <string name="profile_completion_rate_value">%%1$d</string>
+    <string name="profile_statistics_time_title">Süre</string>
+    
+    <!-- Messages -->
+    <string name="puzzle_complete">Tebrikler! Bulmaca Tamamlandı!</string>
+    <string name="game_paused">Oyun Duraklatıldı</string>
+    <string name="error_loading">Oyun yüklenirken hata</string>
+
+    <!-- Errors & Notifications -->
+    <string name="error_email_required">E-posta gerekli</string>
+    <string name="error_invalid_email_format">Geçersiz e-posta formatı</string>
+    <string name="error_password_too_short">Şifre en az 6 karakter olmalı</string>
+    <string name="error_sign_in_failed">Giriş başarısız</string>
+    <string name="error_sign_up_failed">Kayıt başarısız</string>
+    <string name="error_guest_mode_failed">Misafir olarak devam edilemedi</string>
+    <string name="error_game_parameters">Geçersiz oyun parametreleri</string>
+    <string name="error_game_not_found">Oyun bulunamadı</string>
+    <string name="error_max_hints_reached">Maksimum ipucu sayısına ulaşıldı</string>
+    <string name="error_select_cell">Lütfen bir hücre seçin</string>
+    <string name="error_hint_not_available">Bu hücre için ipucu mevcut değil</string>
+    <string name="error_connection_lost">Bağlantı kesildi</string>
+    <string name="error_matchmaking_failed">Eşleştirmeye katılınamadı</string>
+    <string name="error_matchmaking_timeout">Eşleşme bulunamadı (zaman aşımı)</string>
+    <string name="error_matchmaking_cancel_failed">Arama iptal edilemedi</string>
+    <string name="error_player_data_missing">Oyuncu verisi bulunamadı</string>
+    <string name="error_results_not_ready">Sonuçlar henüz hazır değil</string>
+    <string name="error_results_load_failed">Sonuçlar yüklenemedi</string>
+
+    <!-- PvP Messages -->
+    <string name="pvp_opponent_left_win">Rakip oyundan ayrıldı. Kazandın!</string>
+    <string name="pvp_player_left_loss">Oyundan ayrıldın. Kaybettin!</string>
+    <string name="pvp_searching_match">Seviyene uygun bir oyuncu aranıyor...</string>
+    <string name="pvp_first_to_finish_bonus">İLK BİTİREN!</string>
+
+    <!-- Game Complete Dialog -->
+    <string name="game_complete_final_score">NİHAİ PUAN</string>
+    <string name="game_complete_difficulty_multiplier">×%1$.1f Zorluk Çarpanı</string>
+    <string name="game_complete_score_breakdown">Puan Detayı</string>
+    <string name="game_complete_correct_moves">Doğru Hamleler</string>
+    <string name="game_complete_streak_bonus">Seri Bonusu (Maks: %1$d)</string>
+    <string name="game_complete_speed_bonus">Hız Bonusu</string>
+    <string name="game_complete_completion_bonuses">Tamamlama Bonusları</string>
+    <string name="game_complete_perfect_game">Kusursuz Oyun</string>
+    <string name="game_complete_no_notes">Not Kullanılmadı</string>
+    <string name="game_complete_penalties">Cezalar</string>
+    <string name="game_complete_badges_earned">★ Kazanılan Rozetler</string>
+    <string name="game_complete_play_again">Tekrar Oyna</string>
+    <string name="game_complete_share">Paylaş</string>
+    <string name="game_complete_menu">Menü</string>
+    <string name="game_complete_accuracy_label">Doğruluk</string>
+    <string name="game_complete_time_label">Süre</string>
+    <string name="game_complete_best_streak_label">En İyi Seri</string>
+    <string name="game_complete_streak_max_label">S</string>
+    <string name="game_complete_max_streak_format">/ %1$d</string>
+    <string name="game_complete_combo_format">×%1$dx KOMBO!</string>
+    <string name="game_complete_points_format">+%1$d puan</string>
+    
+    <!-- Game Bonuses -->
+    <string name="bonus_box_complete">KUTU TAMAMLANDI!</string>
+    <string name="bonus_row_complete">SATIR TAMAMLANDI!</string>
+    <string name="bonus_column_complete">SÜTUN TAMAMLANDI!</string>
+    <string name="bonus_completion_popup">%1$s +%2$d</string>
+    <string name="bonus_points_gain">+%1$d</string>
+    <string name="bonus_points_loss">%1$d</string>
+    <string name="bonus_hint_used">İPUCU KULLANILDI -1.000</string>
+    <string name="bonus_perfect_game">KUSURSUZ OYUN! +10.000</string>
+    <string name="bonus_no_notes">NOT YOK! +5.000</string>
+    <string name="bonus_speed">HIZ BONUSU! +3.000</string>
+    
+    <!-- Language Selection -->
+    <string name="language">Dil</string>
+    <string name="language_english">English</string>
+    <string name="language_turkish">Türkçe</string>
+    <string name="language_selection_title">Dil Seçin</string>
+    <string name="language_changed">Dil değiştirildi</string>
+    
+    <!-- Auth -->
+    <string name="email">E-posta</string>
+    <string name="password">Şifre</string>
+    <string name="sign_in">Giriş Yap</string>
+    <string name="sign_up">Kayıt Ol</string>
+    <string name="sign_out">Çıkış Yap</string>
+    <string name="auth_create_account_title">Hesabını oluştur</string>
+    <string name="auth_welcome_back_title">Tekrar hoş geldin</string>
+    <string name="auth_email_placeholder">ornek@email.com</string>
+    <string name="auth_password_placeholder">••••••••</string>
+    <string name="auth_create_account_button">Hesap Oluştur</string>
+    <string name="auth_play_as_guest">Misafir Olarak Oyna</string>
+    <string name="auth_already_have_account">Zaten hesabın var mı?</string>
+    <string name="auth_dont_have_account">Hesabın yok mu?</string>
+</resources>

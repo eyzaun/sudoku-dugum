@@ -17,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.extremesudoku.R
 import com.extremesudoku.data.models.scoring.GameScore
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.AppShapes
@@ -228,7 +230,7 @@ private fun MainScoreDisplay(
             .padding(AppDimensions.dialogPadding)
     ) {
         Text(
-            text = "FINAL SCORE",
+            text = stringResource(R.string.game_complete_final_score),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
@@ -244,7 +246,7 @@ private fun MainScoreDisplay(
         // Difficulty multiplier indicator
         if (score.difficultyMultiplier > 1.0f) {
             Text(
-                text = "×${score.difficultyMultiplier} Difficulty Multiplier",
+                text = stringResource(R.string.game_complete_difficulty_multiplier, score.difficultyMultiplier),
                 style = MaterialTheme.typography.bodyMedium,
                 color = themeColors.achievementGold
             )
@@ -260,7 +262,7 @@ private fun ScoreBreakdown(score: GameScore) {
         verticalArrangement = Arrangement.spacedBy(AppDimensions.spacingMedium)
     ) {
         Text(
-            text = "Score Breakdown",
+            text = stringResource(R.string.game_complete_score_breakdown),
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Bold
             )
@@ -268,7 +270,7 @@ private fun ScoreBreakdown(score: GameScore) {
         
         // Base points
         BreakdownRow(
-            label = "Correct Moves",
+            label = stringResource(R.string.game_complete_correct_moves),
             value = score.basePoints,
             icon = "✓",
             color = themeColors.accuracyHigh
@@ -277,7 +279,7 @@ private fun ScoreBreakdown(score: GameScore) {
         // Streak bonus
         if (score.streakBonus > 0) {
             BreakdownRow(
-                label = "Streak Bonus (Max: ${score.maxStreak})",
+                label = stringResource(R.string.game_complete_streak_bonus, score.maxStreak),
                 value = score.streakBonus,
                 icon = "S",
                 color = themeColors.streakOrange
@@ -287,7 +289,7 @@ private fun ScoreBreakdown(score: GameScore) {
         // Time bonus
         if (score.timeBonus > 0) {
             BreakdownRow(
-                label = "Speed Bonus",
+                label = stringResource(R.string.game_complete_speed_bonus),
                 value = score.timeBonus,
                 icon = "T",
                 color = themeColors.streakCyan
@@ -298,7 +300,7 @@ private fun ScoreBreakdown(score: GameScore) {
         val totalCompletionBonus = score.completionBonuses
         if (totalCompletionBonus > 0) {
             BreakdownRow(
-                label = "Completion Bonuses",
+                label = stringResource(R.string.game_complete_completion_bonuses),
                 value = totalCompletionBonus,
                 icon = "B",
                 color = themeColors.streakPurple
@@ -308,7 +310,7 @@ private fun ScoreBreakdown(score: GameScore) {
         // Special bonuses
         if (score.perfectGame) {
             BreakdownRow(
-                label = "Perfect Game",
+                label = stringResource(R.string.game_complete_perfect_game),
                 value = 10000,
                 icon = "★",
                 color = themeColors.achievementGold
@@ -317,7 +319,7 @@ private fun ScoreBreakdown(score: GameScore) {
         
         if (score.playedWithoutNotes) {
             BreakdownRow(
-                label = "No Notes Used",
+                label = stringResource(R.string.game_complete_no_notes),
                 value = 5000,
                 icon = "N",
                 color = themeColors.accuracyMedium
@@ -327,7 +329,7 @@ private fun ScoreBreakdown(score: GameScore) {
         // Penalties
         if (score.penalties < 0) {
             BreakdownRow(
-                label = "Penalties",
+                label = stringResource(R.string.game_complete_penalties),
                 value = score.penalties,
                 icon = "X",
                 color = themeColors.accuracyLow
@@ -380,21 +382,21 @@ private fun GameStatistics(score: GameScore) {
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         StatCard(
-            label = "Accuracy",
+            label = stringResource(R.string.game_complete_accuracy_label),
             value = "${(score.accuracy * 100).toInt()}%",
             icon = "A",
             color = if (score.accuracy >= 0.9f) themeColors.accuracyHigh else themeColors.accuracyMedium
         )
         
         StatCard(
-            label = "Time",
+            label = stringResource(R.string.game_complete_time_label),
             value = formatTime(score.elapsedTimeMs),
             icon = "T",
             color = MaterialTheme.colorScheme.primary
         )
         
         StatCard(
-            label = "Best Streak",
+            label = stringResource(R.string.game_complete_best_streak_label),
             value = "${score.maxStreak}",
             icon = "S",
             color = themeColors.streakHotOrange
@@ -441,7 +443,7 @@ private fun EarnedBadgesSection(badges: List<Badge>) {
         verticalArrangement = Arrangement.spacedBy(AppDimensions.spacingMedium)
     ) {
         Text(
-            text = "★ Badges Earned",
+            text = stringResource(R.string.game_complete_badges_earned),
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Bold
             )
@@ -505,7 +507,7 @@ private fun ActionButtons(
                 containerColor = MaterialTheme.colorScheme.primary
             )
         ) {
-            Text("Play Again", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.game_complete_play_again), style = MaterialTheme.typography.titleMedium)
         }
         
         Row(
@@ -516,14 +518,14 @@ private fun ActionButtons(
                 onClick = onShare,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Share")
+                Text(stringResource(R.string.game_complete_share))
             }
             
             OutlinedButton(
                 onClick = onMainMenu,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Menu")
+                Text(stringResource(R.string.game_complete_menu))
             }
         }
     }

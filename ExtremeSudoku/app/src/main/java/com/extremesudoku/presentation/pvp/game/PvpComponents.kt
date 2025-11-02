@@ -15,11 +15,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.extremesudoku.data.models.Cell
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.AppShapes
 import com.extremesudoku.presentation.theme.AppTypography
 import com.extremesudoku.presentation.theme.LocalThemeColors
+import com.extremesudoku.utils.formatTime
+import com.extremesudoku.R
 
 /**
  * Shared PvP Game Components
@@ -71,7 +74,7 @@ fun PvpGameControls(
         IconButton(onClick = onUndo, enabled = canUndo) {
             Icon(
                 Icons.Default.Undo,
-                contentDescription = "Geri Al",
+                contentDescription = stringResource(R.string.pvp_controls_undo),
                 tint = if (canUndo) MaterialTheme.colorScheme.primary 
                       else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
             )
@@ -79,13 +82,17 @@ fun PvpGameControls(
         IconButton(onClick = onRedo, enabled = canRedo) {
             Icon(
                 Icons.Default.Redo,
-                contentDescription = "İleri Al",
+                contentDescription = stringResource(R.string.pvp_controls_redo),
                 tint = if (canRedo) MaterialTheme.colorScheme.primary 
                       else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
             )
         }
         IconButton(onClick = onErase) {
-            Icon(Icons.Default.Clear, contentDescription = "Sil", tint = MaterialTheme.colorScheme.error)
+            Icon(
+                Icons.Default.Clear,
+                contentDescription = stringResource(R.string.pvp_controls_clear),
+                tint = MaterialTheme.colorScheme.error
+            )
         }
     }
 }
@@ -118,21 +125,23 @@ fun PvpGameFinishedOverlay(
                 modifier = Modifier.padding(AppDimensions.dialogPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                val symbolRes = when (isWinner) {
+                    true -> R.string.pvp_game_status_symbol_win
+                    false -> R.string.pvp_game_status_symbol_loss
+                    null -> R.string.pvp_game_status_symbol_draw
+                }
+                val statusTextRes = when (isWinner) {
+                    true -> R.string.pvp_game_status_win
+                    false -> R.string.pvp_game_status_loss
+                    null -> R.string.pvp_game_status_draw
+                }
                 Text(
-                    text = when (isWinner) {
-                        true -> "★"
-                        false -> "X"
-                        null -> "T"
-                    },
+                    text = stringResource(symbolRes),
                     fontSize = AppTypography.fontSizeDisplay
                 )
                 Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
                 Text(
-                    text = when (isWinner) {
-                        true -> "KAZANDIN!"
-                        false -> "KAYBETTİN"
-                        null -> "BERABERE"
-                    },
+                    text = stringResource(statusTextRes),
                     fontSize = AppTypography.fontSizeExtraLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -144,13 +153,13 @@ fun PvpGameFinishedOverlay(
                         text = reason,
                         fontSize = AppTypography.fontSizeMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        textAlign = TextAlign.Center
                     )
                 }
                 
                 Spacer(modifier = Modifier.height(AppDimensions.spacingSmall))
                 Text(
-                    text = "Süre: ${com.extremesudoku.utils.formatTime(elapsedTime)}",
+                    text = stringResource(R.string.pvp_game_time_label, formatTime(elapsedTime)),
                     fontSize = AppTypography.fontSizeLarge
                 )
             }

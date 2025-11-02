@@ -1,5 +1,6 @@
 package com.extremesudoku
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,7 @@ import com.extremesudoku.presentation.navigation.SudokuNavigation
 import com.extremesudoku.presentation.theme.ExtremeSudokuTheme
 import com.extremesudoku.presentation.theme.LocalThemeColors
 import com.extremesudoku.presentation.theme.getColorPalette
+import com.extremesudoku.util.LocaleManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -25,13 +27,17 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var themeManager: ThemeManager
     
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleManager.applyStoredLocale(newBase))
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         enableEdgeToEdge()
         
         setContent {
-            val currentThemeType by themeManager.themeType.collectAsState(initial = com.extremesudoku.presentation.theme.ThemeType.LIGHT)
+            val currentThemeType by themeManager.themeType.collectAsState(initial = com.extremesudoku.presentation.theme.ThemeType.GAZETE)
             val themeColors = getColorPalette(currentThemeType)
             
             CompositionLocalProvider(LocalThemeColors provides themeColors) {

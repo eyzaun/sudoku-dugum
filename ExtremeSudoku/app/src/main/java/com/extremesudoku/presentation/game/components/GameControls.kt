@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Edit
+import androidx.annotation.StringRes
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.LocalThemeColors
+import com.extremesudoku.R
 
 @Composable
 fun GameControls(
@@ -34,34 +37,34 @@ fun GameControls(
     ) {
         ControlButton(
             icon = Icons.Default.Undo,
-            label = "Undo",
+            labelRes = R.string.undo,
             onClick = onUndoClick,
             enabled = canUndo
         )
         
         ControlButton(
             icon = Icons.Default.Redo,
-            label = "Redo",
+            labelRes = R.string.redo,
             onClick = onRedoClick,
             enabled = canRedo
         )
         
         ControlButton(
             icon = Icons.Default.Delete,
-            label = "Erase",
+            labelRes = R.string.erase,
             onClick = onDeleteClick
         )
         
         ControlButton(
             icon = if (isNoteMode) Icons.Default.Edit else Icons.Outlined.Edit,
-            label = "Notes",
+            labelRes = R.string.notes,
             onClick = onNoteModeToggle,
             isSelected = isNoteMode
         )
         
         ControlButton(
             icon = Icons.Default.Lightbulb,
-            label = "Hint",
+            labelRes = R.string.hint,
             onClick = onHintClick
         )
     }
@@ -70,12 +73,13 @@ fun GameControls(
 @Composable
 fun ControlButton(
     icon: ImageVector,
-    label: String,
+    @StringRes labelRes: Int,
     onClick: () -> Unit,
     isSelected: Boolean = false,
     enabled: Boolean = true
 ) {
     val themeColors = LocalThemeColors.current
+    val label = stringResource(labelRes)
     
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

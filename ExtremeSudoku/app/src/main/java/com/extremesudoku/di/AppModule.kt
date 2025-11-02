@@ -11,6 +11,8 @@ import com.extremesudoku.domain.repository.PvpMatchRepository
 import com.extremesudoku.utils.NetworkMonitor
 import com.extremesudoku.utils.HapticFeedback
 import com.extremesudoku.utils.SoundEffects
+import com.extremesudoku.utils.AndroidResourceProvider
+import com.extremesudoku.utils.ResourceProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
@@ -92,10 +94,16 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideResourceProvider(
+        @ApplicationContext context: Context
+    ): ResourceProvider = AndroidResourceProvider(context)
+
+    @Provides
+    @Singleton
     fun provideSharedPreferences(
         @ApplicationContext context: Context
     ): SharedPreferences = context.getSharedPreferences(
-        "extreme_sudoku_prefs",
+        "sudoku_dugum_prefs",
         Context.MODE_PRIVATE
     )
 }

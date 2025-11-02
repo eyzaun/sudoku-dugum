@@ -2,6 +2,7 @@ package com.extremesudoku.presentation.pvp.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.extremesudoku.R
 import com.extremesudoku.data.models.Cell
 import com.extremesudoku.data.models.pvp.*
 import com.extremesudoku.data.models.scoring.BonusEvent
@@ -17,6 +18,7 @@ import com.extremesudoku.utils.SoundEffects
 import com.extremesudoku.utils.NetworkMonitor
 import com.extremesudoku.utils.NetworkStatus
 import com.extremesudoku.utils.ErrorMessages
+import com.extremesudoku.utils.ResourceProvider
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -42,7 +44,8 @@ class PvpLiveBattleViewModel @Inject constructor(
     private val networkMonitor: NetworkMonitor,
     private val calculateMoveScoreUseCase: CalculateMoveScoreUseCase,
     private val checkCompletionBonusUseCase: CheckCompletionBonusUseCase,
-    private val calculateFinalScoreUseCase: CalculateFinalScoreUseCase
+    private val calculateFinalScoreUseCase: CalculateFinalScoreUseCase,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _gameState = MutableStateFlow(LiveBattleGameState())
@@ -71,6 +74,8 @@ class PvpLiveBattleViewModel @Inject constructor(
 
     private var matchId: String = ""
     private var hasLeftGame: Boolean = false  // Kullanıcı oyundan çıktı mı?
+    private var hasSubmittedResult: Boolean = false
+    private var isSubmittingResult: Boolean = false
     private var startTime: Long = 0
     private var timerJob: Job? = null
     private var moveCounter = 0
@@ -161,7 +166,7 @@ class PvpLiveBattleViewModel @Inject constructor(
                             // Rakip offline oldu - match'i iptal et
                             if (!_gameState.value.isFinished) {
                                 android.util.Log.w("PvpLiveBattle", "❌ Rakip offline - Match iptal ediliyor")
-                                repository.cancelMatch(matchId)
+                                repository.cancelMatch(matchId, forfeitedByCurrentUser = false)
                             }
                         }
                     }
@@ -185,7 +190,7 @@ class PvpLiveBattleViewModel @Inject constructor(
                         is NetworkStatus.Disconnected -> {
                             _connectionState.value = ConnectionState.Disconnected
                             _gameState.value = _gameState.value.copy(
-                                error = "Bağlantı kesildi"
+                                error = resourceProvider.getString(R.string.error_connection_lost)
                             )
                         }
                     }
@@ -218,6 +223,8 @@ class PvpLiveBattleViewModel @Inject constructor(
 
     private fun startGame() {
         startTime = System.currentTimeMillis()
+        hasSubmittedResult = false
+        isSubmittingResult = false
         startTimer()
         
         // Match status'ü güncelle
@@ -243,6 +250,7 @@ class PvpLiveBattleViewModel @Inject constructor(
         // Eğer oyun zaten bittiyse, başka güncelleme yapma!
         if (_gameState.value.isFinished) {
             android.util.Log.d("PvpLiveBattle", "⏭️ Oyun zaten bitmiş, güncelleme atlanıyor")
+            ensureFinalResultSubmitted(match)
             return
         }
         
@@ -256,7 +264,11 @@ class PvpLiveBattleViewModel @Inject constructor(
                 grid = grid,
                 solution = solution,
                 initialPuzzle = match.puzzle.puzzleString,
-                remainingNumbers = remaining
+                remainingNumbers = remaining,
+                resultMessage = null,
+                error = null,
+                isFinished = false,
+                isCancelled = false
             )
         }
         
@@ -281,21 +293,29 @@ class PvpLiveBattleViewModel @Inject constructor(
             val isCancelled = match.status == MatchStatus.CANCELLED
             
             if (isCancelled) {
-                // CANCELLED: Eğer hasLeftGame=false ise, BU KULLANICI OYUNDA KALDI (kazandı)
-                // Eğer hasLeftGame=true ise, BU KULLANICI ÇIKTI (kaybetti)
-                val isWinner = !hasLeftGame
-                
-                android.util.Log.w("PvpLiveBattle", "🏁 OYUN İPTAL EDİLDİ! isWinner=$isWinner (hasLeftGame=$hasLeftGame)")
-                
+                val winnerId = match.winnerId
+                val isWinner = when {
+                    winnerId != null -> winnerId == currentUserId
+                    else -> !hasLeftGame
+                }
+
+                val resultMessage = if (isWinner) {
+                    resourceProvider.getString(R.string.pvp_opponent_left_win)
+                } else {
+                    resourceProvider.getString(R.string.pvp_player_left_loss)
+                }
+
+                android.util.Log.w(
+                    "PvpLiveBattle",
+                    "🏁 OYUN İPTAL EDİLDİ! isWinner=$isWinner (winnerId=$winnerId, hasLeftGame=$hasLeftGame)"
+                )
+
                 _gameState.value = _gameState.value.copy(
                     isFinished = true,
                     isWinner = isWinner,
                     isCancelled = true,  // İptal bayrağını set et
-                    error = if (isWinner) {
-                        "Rakip oyundan ayrıldı. Kazandınız!"
-                    } else {
-                        "Oyundan ayrıldınız. Kaybettiniz!"
-                    }
+                    error = resultMessage,
+                    resultMessage = resultMessage
                 )
             } else {
                 // COMPLETED: Normal bitiş - winnerId'ye bak
@@ -308,11 +328,14 @@ class PvpLiveBattleViewModel @Inject constructor(
                     isFinished = true,
                     isWinner = isWinner,
                     isCancelled = false,  // Normal bitiş
-                    error = null
+                    error = null,
+                    resultMessage = null
                 )
             }
             
             android.util.Log.d("PvpLiveBattle", "✅ GameState güncellendi - error: ${_gameState.value.error}")
+
+            ensureFinalResultSubmitted(match)
         }
     }
 
@@ -408,28 +431,9 @@ class PvpLiveBattleViewModel @Inject constructor(
     fun onCellSelected(row: Int, col: Int) {
         val currentState = _gameState.value
         val cell = currentState.grid[row][col]
-        
-        // Fixed hücre seçilemez
-        if (cell.isFixed) {
-            hapticFeedback.error()
-            soundEffects.playError()
-            _gameState.value = currentState.copy(
-                error = "Bu hücre değiştirilemez!"
-            )
-            return
-        }
-        
-        // Rakip hücresi seçilemez - FEEDBACK EKLE!
-        if (currentState.opponentCells.containsKey(row to col)) {
-            hapticFeedback.error()
-            soundEffects.playError()
-            _gameState.value = currentState.copy(
-                error = "Rakip bu hücreyi zaten doldurdu!"
-            )
-            return
-        }
-        
-        // Normal selection
+        val opponentValue = currentState.opponentCells[row to col]
+        val displayValue = opponentValue ?: cell.value
+
         // Hücreye tıklandığında:
         // 1. Hücreyi seç
         // 2. Eğer hücrede sayı varsa, o sayıyı highlight et
@@ -437,8 +441,9 @@ class PvpLiveBattleViewModel @Inject constructor(
         hapticFeedback.lightClick()
         _gameState.value = currentState.copy(
             selectedCell = row to col,
-            highlightedNumber = if (cell.value != 0) cell.value else null,
-            showAffectedAreas = false // Grid'den geldiği için false
+            highlightedNumber = if (displayValue != 0) displayValue else null,
+            showAffectedAreas = false, // Grid'den geldiği için false
+            error = null
         )
     }
 
@@ -574,19 +579,25 @@ class PvpLiveBattleViewModel @Inject constructor(
             
             // Show bonus popups - Convert CompletionEvent to BonusEvent
             completionEvents.forEach { event ->
-                viewModelScope.launch {
-                    _bonusEvents.send(
-                        BonusEvent(
-                            type = BonusType.COMPLETION,
-                            message = when (event.type) {
-                                CompletionType.BOX -> "BOX COMPLETE!"
-                                CompletionType.ROW -> "ROW COMPLETE!"
-                                CompletionType.COLUMN -> "COLUMN COMPLETE!"
-                            },
-                            points = event.bonusEarned,
-                            position = row to col
-                        )
+                    val completionMessage = when (event.type) {
+                        CompletionType.BOX -> resourceProvider.getString(R.string.bonus_box_complete)
+                        CompletionType.ROW -> resourceProvider.getString(R.string.bonus_row_complete)
+                        CompletionType.COLUMN -> resourceProvider.getString(R.string.bonus_column_complete)
+                    }
+                    val formattedCompletionMessage = resourceProvider.getString(
+                        R.string.bonus_completion_popup,
+                        completionMessage,
+                        event.bonusEarned
                     )
+                    viewModelScope.launch {
+                        _bonusEvents.send(
+                            BonusEvent(
+                                type = BonusType.COMPLETION,
+                                message = formattedCompletionMessage,
+                                points = event.bonusEarned,
+                                position = row to col
+                            )
+                        )
                 }
             }
         } else {
@@ -599,7 +610,11 @@ class PvpLiveBattleViewModel @Inject constructor(
                 _bonusEvents.send(
                     BonusEvent(
                         type = if (isCorrect) BonusType.STREAK else BonusType.SPECIAL,
-                        message = if (isCorrect) "+${pointsEarned}" else "${pointsEarned}",
+                        message = if (isCorrect) {
+                            resourceProvider.getString(R.string.bonus_points_gain, pointsEarned)
+                        } else {
+                            resourceProvider.getString(R.string.bonus_points_loss, pointsEarned)
+                        },
                         points = pointsEarned,
                         position = row to col
                     )
@@ -709,20 +724,18 @@ class PvpLiveBattleViewModel @Inject constructor(
         }
         
         val currentState = _gameState.value
-        val timeElapsed = ((System.currentTimeMillis() - startTime) / 1000).toInt()
+        val elapsedMs = if (startTime != 0L) System.currentTimeMillis() - startTime else 0L
         
         // **FINAL SCORE CALCULATION**
         val matchData = _matchData.value
         val finalScore = calculateFinalScoreUseCase(
             gameScore = _gameScore.value,
-            elapsedTimeMs = timeElapsed * 1000L,
+            elapsedTimeMs = elapsedMs,
             difficulty = matchData?.puzzle?.difficulty ?: "MEDIUM",
             usedNotes = false // PVP'de notes disabled
         )
         
         _gameScore.value = finalScore
-        
-        val accuracy = finalScore.accuracy
         
         _gameState.value = currentState.copy(
             isFinished = true,
@@ -731,27 +744,19 @@ class PvpLiveBattleViewModel @Inject constructor(
         
         // Final result'u gönder
         viewModelScope.launch {
-            val result = PlayerResult(
-                completedAt = System.currentTimeMillis(),
-                score = finalScore.finalScore,
-                timeElapsed = (timeElapsed * 1000L), // Convert back to milliseconds
-                accuracy = accuracy,
-                // Enhanced scoring details
-                finalScore = finalScore.finalScore,
-                basePoints = finalScore.basePoints,
-                streakBonus = finalScore.streakBonus,
-                timeBonus = finalScore.timeBonus,
-                completionBonuses = finalScore.completionBonuses,
-                totalCompletionBonus = finalScore.completionBonuses,
-                maxStreak = finalScore.maxStreak,
-                totalMoves = finalScore.totalMoves,
-                correctMoves = finalScore.correctMoves,
-                wrongMoves = finalScore.wrongMoves,
-                isPerfectGame = finalScore.perfectGame
-            )
-            
-            repository.submitPlayerResult(matchId, result)
-            repository.updatePlayerStatus(matchId, PlayerStatus.FINISHED)
+            isSubmittingResult = true
+            try {
+                val result = buildPlayerResult(finalScore, elapsedMs)
+                val submitResult = repository.submitPlayerResult(matchId, result)
+                if (submitResult.isSuccess) {
+                    hasSubmittedResult = true
+                    repository.updatePlayerStatus(matchId, PlayerStatus.FINISHED)
+                } else {
+                    hasSubmittedResult = false
+                }
+            } finally {
+                isSubmittingResult = false
+            }
         }
     }
 
@@ -911,13 +916,75 @@ class PvpLiveBattleViewModel @Inject constructor(
                 _gameState.value = _gameState.value.copy(
                     isCancelled = true,  // Overlay gösterilsin
                     isWinner = false,
-                    error = "Oyundan ayrıldınız. Kaybettiniz!"
+                    error = resourceProvider.getString(R.string.pvp_player_left_loss),
+                    resultMessage = resourceProvider.getString(R.string.pvp_player_left_loss)
                 )
                 
                 // Firebase'e de bildir (rakip kazanacak)
-                repository.cancelMatch(matchId)
+                repository.cancelMatch(matchId, forfeitedByCurrentUser = true)
             }
         }
+    }
+
+    private fun ensureFinalResultSubmitted(match: PvpMatch) {
+        val myData = match.players[currentUserId] ?: return
+
+        if (myData.result != null) {
+            hasSubmittedResult = true
+            return
+        }
+
+        if (hasSubmittedResult || isSubmittingResult) {
+            return
+        }
+
+        val elapsedMs = if (startTime != 0L) System.currentTimeMillis() - startTime else 0L
+        val finalScore = calculateFinalScoreUseCase(
+            gameScore = _gameScore.value,
+            elapsedTimeMs = elapsedMs,
+            difficulty = match.puzzle.difficulty,
+            usedNotes = false
+        )
+
+        _gameScore.value = finalScore
+        _gameState.value = _gameState.value.copy(myScore = finalScore.finalScore)
+
+        viewModelScope.launch {
+            isSubmittingResult = true
+            try {
+                val result = buildPlayerResult(finalScore, elapsedMs)
+                val submitResult = repository.submitPlayerResult(matchId, result)
+                if (submitResult.isSuccess) {
+                    hasSubmittedResult = true
+                    repository.updatePlayerStatus(matchId, PlayerStatus.FINISHED)
+                } else {
+                    hasSubmittedResult = false
+                }
+            } finally {
+                isSubmittingResult = false
+            }
+        }
+    }
+
+    private fun buildPlayerResult(finalScore: GameScore, elapsedMs: Long): PlayerResult {
+        return PlayerResult(
+            completedAt = System.currentTimeMillis(),
+            score = finalScore.finalScore,
+            timeElapsed = elapsedMs,
+            accuracy = finalScore.accuracy,
+            finalScore = finalScore.finalScore,
+            basePoints = finalScore.basePoints,
+            streakBonus = finalScore.streakBonus,
+            timeBonus = finalScore.timeBonus,
+            completionBonuses = finalScore.completionBonuses,
+            totalCompletionBonus = finalScore.completionBonuses,
+            maxStreak = finalScore.maxStreak,
+            totalMoves = finalScore.totalMoves,
+            correctMoves = finalScore.correctMoves,
+            wrongMoves = finalScore.wrongMoves,
+            hintsUsed = finalScore.hintsUsed,
+            isPerfectGame = finalScore.perfectGame
+        )
     }
     
     override fun onCleared() {
@@ -929,7 +996,8 @@ class PvpLiveBattleViewModel @Inject constructor(
         // ViewModel yok edilirken oyun bitmemişse - oyundan ayrıldı sayılır
         if (!_gameState.value.isFinished) {
             viewModelScope.launch {
-                repository.cancelMatch(matchId)
+                hasLeftGame = true
+                repository.cancelMatch(matchId, forfeitedByCurrentUser = true)
             }
         }
     }
@@ -964,5 +1032,6 @@ data class LiveBattleGameState(
     val isCancelled: Boolean = false,  // Oyun iptal edildi mi (birisi çıktı)?
     val canUndo: Boolean = false,
     val canRedo: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val resultMessage: String? = null
 )

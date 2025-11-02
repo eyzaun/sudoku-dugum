@@ -4,6 +4,9 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.extremesudoku.data.models.GameState
+import com.extremesudoku.data.models.scoring.GameScore
+import com.extremesudoku.data.models.scoring.ScoringConstants
+import com.extremesudoku.data.models.scoring.toJsonString
 
 @Entity(
     tableName = "game_states",
@@ -42,20 +45,23 @@ data class GameStateEntity(
 )
 
 fun GameStateEntity.toDomain(): GameState {
-    // Build scoreDetails as JSON string
-    val scoreDetailsJson = """
-        {
-            "basePoints": $basePoints,
-            "streakBonus": $streakBonus,
-            "timeBonus": $timeBonus,
-            "completionBonus": $completionBonus,
-            "currentStreak": $currentStreak,
-            "maxStreak": $maxStreak,
-            "correctMoves": $correctMoves,
-            "wrongMoves": $wrongMoves,
-            "accuracy": $accuracy
-        }
-    """.trimIndent()
+    val scoreSnapshot = GameScore(
+        finalScore = score,
+        basePoints = basePoints,
+        streakBonus = streakBonus,
+        timeBonus = timeBonus,
+        completionBonuses = completionBonus,
+        difficultyMultiplier = ScoringConstants.getDifficultyMultiplier(difficulty),
+        currentStreak = currentStreak,
+        maxStreak = maxStreak,
+        correctMoves = correctMoves,
+        wrongMoves = wrongMoves,
+        totalMoves = correctMoves + wrongMoves,
+        accuracy = accuracy,
+        hintsUsed = hintsUsed,
+        elapsedTimeMs = elapsedTime * 1000,
+        difficulty = difficulty
+    )
     
     return GameState(
         gameId = gameId,
@@ -72,13 +78,26 @@ fun GameStateEntity.toDomain(): GameState {
         lastPlayedAt = lastPlayedAt,
         createdAt = createdAt,
         score = score,
-        scoreDetails = scoreDetailsJson
+        scoreDetails = scoreSnapshot.toJsonString()
     )
 }
 
 fun GameState.toEntity(userId: String? = null): GameStateEntity {
-    // Simple parsing for scoreDetails - assumes empty or simple values
-    // In production, use proper JSON parsing library
+    val parsedScore = GameScore.fromJsonString(scoreDetails)
+    val resolvedFinalScore = if (score != 0) score else parsedScore.finalScore
+    val resolvedTotalMoves = if (parsedScore.totalMoves != 0) parsedScore.totalMoves else moves
+    val resolvedElapsedTimeMs = if (parsedScore.elapsedTimeMs != 0L) parsedScore.elapsedTimeMs else elapsedTime * 1000
+    val resolvedAccuracy = if (parsedScore.totalMoves > 0) parsedScore.calculateAccuracy() else parsedScore.accuracy
+    val resolvedScore = parsedScore.copy(
+        finalScore = resolvedFinalScore,
+        totalMoves = resolvedTotalMoves,
+        elapsedTimeMs = resolvedElapsedTimeMs,
+        difficulty = difficulty,
+        difficultyMultiplier = ScoringConstants.getDifficultyMultiplier(difficulty),
+        hintsUsed = hintsUsed,
+        accuracy = resolvedAccuracy
+    )
+    
     return GameStateEntity(
         gameId = gameId,
         userId = userId ?: this.userId, // Parameter varsa onu kullan, yoksa GameState'teki userId'yi al
@@ -93,15 +112,15 @@ fun GameState.toEntity(userId: String? = null): GameStateEntity {
         isAbandoned = isAbandoned,
         lastPlayedAt = lastPlayedAt,
         createdAt = createdAt,
-        score = score,
-        basePoints = 0, // These would be parsed from scoreDetails JSON in production
-        streakBonus = 0,
-        timeBonus = 0,
-        completionBonus = 0,
-        currentStreak = 0,
-        maxStreak = 0,
-        correctMoves = 0,
-        wrongMoves = 0,
-        accuracy = 0f
+        score = resolvedScore.finalScore,
+        basePoints = resolvedScore.basePoints,
+        streakBonus = resolvedScore.streakBonus,
+        timeBonus = resolvedScore.timeBonus,
+        completionBonus = resolvedScore.completionBonuses,
+        currentStreak = resolvedScore.currentStreak,
+        maxStreak = resolvedScore.maxStreak,
+        correctMoves = resolvedScore.correctMoves,
+        wrongMoves = resolvedScore.wrongMoves,
+        accuracy = resolvedScore.accuracy
     )
 }

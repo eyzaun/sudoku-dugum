@@ -302,17 +302,17 @@ object GazetteColors {
 
     // ===== SUDOKU GRID RENKLERİ (Net ve Belirgin) =====
     val gridBackground = Color(0xFFD0CCC2)       // Grid arka plan (koyu gazete)
-    val gridLine = Color(0xFFB0ACA1)             // İnce çizgiler (daha koyu bej - 3:1 kontrast)
+    val gridLine = Color(0xFF4F4740)             // İnce çizgiler (koyu kahverengi-siyah - belirgin kontrast)
     val gridThickLine = Color(0xFF1A1815)        // Kalın çizgiler (siyah - 11:1 kontrast)
 
     // ===== SUDOKU HÜCRE RENKLERİ (Net ve Belirgin - Yüksek Kontrast) =====
     val cellBackground = Color(0xFFD0CCC2)       // Hücre arka plan (koyu gazete)
     val selectedCell = Color(0xFF8B7A75)         // Seçili hücre (koyu kahve) - 6:1 kontrast
-    val selectedCellRow = Color(0xFFBCB7AC)      // Seçili satır/sütun (koyu bej) - 3:1 kontrast
-    val selectedCellBox = Color(0xFFC4BFB4)      // Seçili 3x3 kutu (orta bej) - 3:1 kontrast
+    val selectedCellRow = Color(0xFFB2A99B)      // Seçili satır/sütun (etkilenen alanla aynı koyuluk)
+    val selectedCellBox = Color(0xFFB2A99B)      // Seçili 3x3 kutu (etkilenen alanla aynı koyuluk)
     val sameNumberCell = Color(0xFFA8988D)       // Aynı sayı (daha koyu bej) - 5:1 kontrast
     val conflictCell = Color(0xFF6F5F54)         // Çakışma (çok koyu kahve) - 8:1 kontrast
-    val affectedAreaCell = Color(0xFFC4BFB4)     // Etkilenen alanlar (açık bej) - 3:1 kontrast
+    val affectedAreaCell = Color(0xFFB2A99B)     // Etkilenen alanlar (bir ton koyu bej) - 3:1 kontrast
 
     // ===== SUDOKU SAYI RENKLERİ (Net ve Görünür) =====
     val initialNumberText = Color(0xFF1A1815)    // Başlangıç sayıları (siyah) - 12:1 kontrast

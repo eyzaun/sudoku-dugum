@@ -1,20 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Extreme Sudoku</string>
+    <string name="app_name">Sudoku Düğüm</string>
     
     <!-- Home Screen -->
     <string name="new_game">New Game</string>
     <string name="continue_playing">Continue Playing</string>
     <string name="daily_challenge">Daily Challenge</string>
+    <string name="daily_challenge_description">Complete today\'s special puzzle</string>
     <string name="leaderboard">Leaderboard</string>
+
+    <!-- Leaderboard Screen -->
+    <string name="refresh">Refresh</string>
+    <string name="leaderboard_empty_state">No leaderboard data yet</string>
+    <string name="leaderboard_default_player_name">Player %1$d</string>
+    <string name="leaderboard_games_completed">%1$d games completed</string>
+    <string name="leaderboard_best_time_label">best time</string>
+    <string name="settings">Settings</string>
+    <string name="profile">Profile</string>
+    <string name="show_less">Show less</string>
+    <string name="show_all_saved_games">See all %1$d saved games</string>
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_medium">Medium</string>
+    <string name="difficulty_hard">Hard</string>
+    <string name="difficulty_expert">Expert</string>
+    <string name="pvp_mode">PvP Mode</string>
+    <string name="pvp_mode_home_description">Challenge players online!</string>
+    <string name="saved_game_in_progress">Game in progress</string>
+    <string name="saved_game_moves">%1$d moves</string>
+    <string name="delete">Delete</string>
+    <string name="continue_label">Continue</string>
+    <string name="your_stats">Your Stats</string>
+    <string name="stats_played">Played</string>
+    <string name="stats_completed">Completed</string>
+    <string name="stats_streak">Streak</string>
     
     <!-- Game Screen -->
+    <string name="game_title">Sudoku</string>
     <string name="hint">Hint</string>
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
     <string name="notes">Notes</string>
     <string name="erase">Erase</string>
     <string name="pause">Pause</string>
+    <string name="back">Back</string>
+    <string name="score_label">Score:</string>
+    <string name="streak_label_short">S:</string>
+    <string name="streak_value">%1$d Streak</string>
+    <string name="stat_time">Time</string>
+    <string name="stat_moves">Moves</string>
+    <string name="stat_hints">Hints</string>
+    <string name="stat_hints_value">%1$d/%2$d</string>
+    <string name="error_loading_sudoku">Error loading sudoku</string>
+    <string name="close">Close</string>
+    <string name="pause_dialog_message">Take a break or continue playing</string>
+    <string name="resume">Resume</string>
+    <string name="quit">Quit</string>
+    <string name="cancel">Cancel</string>
+    <string name="completion_dialog_title">Congratulations!</string>
+    <string name="completion_dialog_message">You completed the puzzle!</string>
+    <string name="home">Home</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_section_sound">Sound &amp; Haptics</string>
+    <string name="settings_section_visual_helpers">Visual Helpers</string>
+    <string name="settings_section_advanced">Advanced</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_version_label">Version</string>
+    <string name="settings_puzzles_available_label">Puzzles Available</string>
+    <string name="settings_version_value">1.0.5</string>
+    <string name="settings_puzzles_available_value">3.8M+</string>
+    <string name="settings_theme_gazete_name">Gazete Teması</string>
+    <string name="settings_theme_gazete_description">Gazete kağıdı görünümü - Krem, Siyah, Gri (Klasik)</string>
+    <string name="settings_theme_light_name">Aydınlık Tema</string>
+    <string name="settings_theme_light_description">Modern, parlak ve temiz - Mavi, Yeşil, Mor (WCAG AA Uyumlu)</string>
+    <string name="settings_theme_dark_name">Karanlık Tema</string>
+    <string name="settings_theme_dark_description">AMOLED Optimized - Açık Mavi, Yeşil, Mor (Göz Rahatlığı)</string>
+    <string name="settings_theme_monochrome_name">Monokrom Tema</string>
+    <string name="settings_theme_monochrome_description">Saf siyah-beyaz - Net kontrast, basit tasarım</string>
+
+    <!-- Splash Screen -->
+    <string name="splash_logo_text">9×9</string>
+    <string name="splash_title">Sudoku Düğüm</string>
+    <string name="splash_tagline">Master the puzzle. Challenge yourself.</string>
+
+    <!-- Onboarding -->
+    <string name="skip">Skip</string>
+    <string name="next">Next</string>
+    <string name="get_started">Get Started</string>
+    <string name="onboarding_welcome_title">Welcome to
+%1$s</string>
+    <string name="onboarding_welcome_message">The ultimate puzzle game that challenges your mind and improves your logical thinking skills.</string>
+    <string name="onboarding_swipe_hint">Swipe to explore features</string>
+    <string name="onboarding_how_to_play_title">How to Play</string>
+    <string name="onboarding_step_select_title">Select a Cell</string>
+    <string name="onboarding_step_select_description">Tap any empty cell in the 9×9 grid to select it</string>
+    <string name="onboarding_step_enter_title">Enter Numbers</string>
+    <string name="onboarding_step_enter_description">Use the number pad to enter numbers 1-9</string>
+    <string name="onboarding_step_rules_title">Follow Rules</string>
+    <string name="onboarding_step_rules_description">Each row, column, and 3×3 box must contain 1-9</string>
+    <string name="onboarding_step_complete_title">Complete Puzzle</string>
+    <string name="onboarding_step_complete_description">Fill all cells correctly to solve the puzzle</string>
+    <string name="onboarding_smart_features_title">Smart Features</string>
+    <string name="onboarding_feature_hints_title">Hints</string>
+    <string name="onboarding_feature_hints_description">Get hints when you\'re stuck. Choose to reveal a number or highlight cells</string>
+    <string name="onboarding_feature_candidates_title">Candidate Numbers</string>
+    <string name="onboarding_feature_candidates_description">Toggle note mode to write small candidate numbers in cells</string>
+    <string name="onboarding_feature_undo_title">Undo &amp; Redo</string>
+    <string name="onboarding_feature_undo_description">Made a mistake? Undo your moves or redo them anytime</string>
+    <string name="onboarding_game_modes_title">Game Modes</string>
+    <string name="onboarding_mode_classic_title">Classic Sudoku</string>
+    <string name="onboarding_mode_classic_description">Traditional 9×9 puzzle
+Multiple difficulty levels</string>
+    <string name="onboarding_mode_daily_title">Daily Challenge</string>
+    <string name="onboarding_mode_daily_description">New puzzle every day
+Compete with others</string>
+    <string name="onboarding_mode_pvp_title">PvP Modes</string>
+    <string name="onboarding_mode_pvp_description">Battle players online
+Rank up and earn badges</string>
+    <string name="onboarding_ready_icon">🎮</string>
+    <string name="onboarding_ready_title">Ready to Play?</string>
+    <string name="onboarding_ready_message">You\'re all set to dive into the world of %1$s. Start with an easy puzzle and challenge yourself!</string>
+    <string name="onboarding_quick_tips_title">💡 Quick Tips</string>
+    <string name="onboarding_quick_tips_list">• Swipe cells for faster navigation
+• Use hints strategically
+• Practice different difficulty levels
+• Check your accuracy stats</string>
+
+    <!-- PvP Mode Selection -->
+    <string name="pvp_mode_select_title">Select PvP Mode</string>
+    <string name="pvp_mode_heading">PvP Mode</string>
+    <string name="pvp_mode_select_description">Choose how you want to compete!</string>
+    <string name="pvp_mode_blind_race_title">Blind Race</string>
+    <string name="pvp_mode_blind_race_description">Race without seeing your opponent!\nWho solves the same puzzle faster?</string>
+    <string name="pvp_mode_blind_feature_same_puzzle">Same puzzle</string>
+    <string name="pvp_mode_blind_feature_progress">See your opponent\'s progress (%)</string>
+    <string name="pvp_mode_blind_feature_first_finish">First to finish wins</string>
+    <string name="pvp_mode_live_battle_title">⚔️ Live Battle</string>
+    <string name="pvp_mode_live_battle_description">Watch your opponent\'s moves!\nCorrect +1, Wrong -1 point!</string>
+    <string name="pvp_mode_live_feature_same_puzzle">Same puzzle</string>
+    <string name="pvp_mode_live_feature_opponent_moves">See opponent\'s correct moves instantly</string>
+    <string name="pvp_mode_live_feature_high_score">Highest score wins (10 min)</string>
+
+    <!-- PvP Lobby -->
+    <string name="pvp_lobby_topbar_title">Searching for Opponent...</string>
+    <string name="pvp_lobby_vs_label">VS</string>
+    <string name="pvp_lobby_mode_label">Mode: %1$s</string>
+    <string name="pvp_lobby_searching_title">Searching for Opponent...</string>
+    <string name="pvp_lobby_searching_message">We\'re looking for a player at your level...</string>
+    <string name="pvp_lobby_cancel_search">Cancel Search</string>
+    <string name="pvp_lobby_match_found_title">Opponent Found!</string>
+    <string name="pvp_lobby_match_found_message">You\'re being routed to the game...</string>
+    <string name="pvp_lobby_error_title">Something went wrong</string>
+    <string name="pvp_lobby_error_cancel">Cancel</string>
+    <string name="pvp_lobby_error_retry">Try Again</string>
+
+    <!-- PvP Live Battle -->
+    <string name="pvp_live_battle_title">Live Battle</string>
+    <string name="pvp_live_battle_exit_title">Leave Game?</string>
+    <string name="pvp_live_battle_exit_message">Leaving the game counts as a loss. Are you sure?</string>
+    <string name="pvp_live_battle_exit_confirm">Leave</string>
+    <string name="pvp_live_battle_default_player_name">You</string>
+    <string name="pvp_live_battle_default_opponent_name">Opponent</string>
+    <string name="pvp_live_battle_my_score_label">👤 %1$s</string>
+    <string name="pvp_live_battle_opponent_label">vs %1$s</string>
+    <string name="pvp_live_battle_score_separator">⚔️</string>
+    <string name="pvp_connection_disconnected">Connection lost</string>
+    <string name="pvp_connection_reconnecting">Reconnecting...</string>
+    <string name="pvp_live_battle_stat_icon_moves">M</string>
+    <string name="pvp_live_battle_stat_icon_time">T</string>
+    <string name="pvp_stat_icon_hints">H</string>
+
+    <!-- PvP Blind Race -->
+    <string name="pvp_blind_race_title">Blind Race</string>
+    <string name="pvp_blind_race_opponent_progress_title">Opponent Progress</string>
+    <string name="pvp_vs_prefix">vs</string>
+    <string name="pvp_progress_percent">%1$d%%</string>
+    <string name="pvp_blind_race_player_one_label">P1</string>
+    <string name="pvp_blind_race_player_two_label">P2</string>
+
+    <!-- Shared PvP Components -->
+    <string name="pvp_controls_undo">Undo</string>
+    <string name="pvp_controls_redo">Redo</string>
+    <string name="pvp_controls_clear">Clear</string>
+    <string name="pvp_game_status_symbol_win">★</string>
+    <string name="pvp_game_status_symbol_loss">X</string>
+    <string name="pvp_game_status_symbol_draw">T</string>
+    <string name="pvp_game_status_win">YOU WIN!</string>
+    <string name="pvp_game_status_loss">YOU LOSE</string>
+    <string name="pvp_game_status_draw">DRAW</string>
+    <string name="pvp_game_time_label">Time: %1$s</string>
+
+    <!-- Shared Dialogs & Feedback -->
+    <string name="loading_message">Loading...</string>
+    <string name="ok">OK</string>
+    <string name="pvp_exit_dialog_title">Leave the match?</string>
+    <string name="pvp_exit_dialog_message">Leaving will count as a loss. Are you sure?</string>
+    <string name="pvp_exit_dialog_confirm">Leave and accept loss</string>
+
+    <!-- PvP Results -->
+    <string name="pvp_result_symbol_draw">=</string>
+    <string name="pvp_result_opponent_left">Opponent left the match</string>
+    <string name="pvp_result_player_left">You left the match</string>
+    <string name="pvp_result_vs_label">VS</string>
+    <string name="play_again">Play Again</string>
+    <string name="return_to_home">Return to Home</string>
+    <string name="points">points</string>
+    <string name="detailed_stats">Detailed Stats</string>
+    <string name="score">Score</string>
+    <string name="accuracy">Accuracy</string>
+    <string name="error_generic_title">Error</string>
+
+    <!-- Game Settings -->
+    <string name="game_settings_title">Game Settings</string>
+    <string name="game_settings_show_timer_title">Show Timer</string>
+    <string name="game_settings_show_timer_description">Display elapsed game time</string>
+    <string name="game_settings_auto_check_mistakes_title">Auto-check Mistakes</string>
+    <string name="game_settings_auto_check_mistakes_description">Prevent placing wrong numbers (coming soon)</string>
+    <string name="game_settings_highlight_conflicts_title">Highlight Conflicts</string>
+    <string name="game_settings_highlight_conflicts_description">Show conflicting numbers in red</string>
+    <string name="game_settings_highlight_same_numbers_title">Highlight Same Numbers</string>
+    <string name="game_settings_highlight_same_numbers_description">Highlight all cells with the selected number</string>
+    <string name="game_settings_show_remaining_numbers_title">Show Remaining Numbers</string>
+    <string name="game_settings_show_remaining_numbers_description">Display count below each number button</string>
+    <string name="game_settings_vibration_title">Vibration</string>
+    <string name="game_settings_vibration_description">Haptic feedback for interactions</string>
+    <string name="game_settings_show_selected_area_title">Show Selected Area</string>
+    <string name="game_settings_show_selected_area_description">Highlight row, column, and box of the selected cell</string>
+    <string name="game_settings_show_affected_areas_title">Show Affected Areas</string>
+    <string name="game_settings_show_affected_areas_description">Show all affected cells when tapping the number pad</string>
+    <string name="game_settings_auto_remove_notes_title">Auto-Remove Notes</string>
+    <string name="game_settings_auto_remove_notes_description">Automatically clear notes when placing a number</string>
+    <string name="game_settings_show_score_and_streak_title">Show Score &amp; Streak</string>
+    <string name="game_settings_show_score_and_streak_description">Display score and streak counter during gameplay</string>
+    <string name="game_settings_colorize_numbers_title">Colorize Numbers</string>
+    <string name="game_settings_colorize_numbers_description">Show correct numbers in green, wrong in red</string>
+    <string name="game_settings_sound_effects_title">Sound Effects</string>
+    <string name="game_settings_sound_effects_description">Play sounds for moves, hints, and completion</string>
     
     <!-- Stats -->
     <string name="games_played">Games Played</string>
@@ -22,11 +245,91 @@
     <string name="best_time">Best Time</string>
     <string name="average_time">Average Time</string>
     <string name="current_streak">Current Streak</string>
+    <string name="total_time">Total Time</string>
+
+    <!-- Profile -->
+    <string name="profile_guest_mode_title">! Guest Mode</string>
+    <string name="profile_guest_mode_message">Your progress is saved locally. Create an account to sync across devices!</string>
+    <string name="profile_guest_mode_action">Create Account / Sign In</string>
+    <string name="profile_default_display_name">Player</string>
+    <string name="profile_statistics_title">Statistics</string>
+    <string name="profile_statistics_games_title">Games</string>
+    <string name="profile_completion_rate_label">Completion Rate</string>
+    <string name="profile_completion_rate_value">%1$d%%</string>
+    <string name="profile_statistics_time_title">Time</string>
     
     <!-- Messages -->
     <string name="puzzle_complete">Congratulations! Puzzle Complete!</string>
     <string name="game_paused">Game Paused</string>
     <string name="error_loading">Error loading game</string>
+
+    <!-- Errors & Notifications -->
+    <string name="error_email_required">Email is required</string>
+    <string name="error_invalid_email_format">Invalid email format</string>
+    <string name="error_password_too_short">Password must be at least 6 characters</string>
+    <string name="error_sign_in_failed">Sign in failed</string>
+    <string name="error_sign_up_failed">Sign up failed</string>
+    <string name="error_guest_mode_failed">Failed to continue as guest</string>
+    <string name="error_game_parameters">Invalid game parameters</string>
+    <string name="error_game_not_found">Game not found</string>
+    <string name="error_max_hints_reached">Maximum hints reached</string>
+    <string name="error_select_cell">Please select a cell</string>
+    <string name="error_hint_not_available">Hint not available for this cell</string>
+    <string name="error_connection_lost">Connection lost</string>
+    <string name="error_matchmaking_failed">Failed to join matchmaking</string>
+    <string name="error_matchmaking_timeout">No match found (timeout)</string>
+    <string name="error_matchmaking_cancel_failed">Failed to cancel search</string>
+    <string name="error_player_data_missing">Player data not found</string>
+    <string name="error_results_not_ready">Results are not ready yet</string>
+    <string name="error_results_load_failed">Failed to load results</string>
+
+    <!-- PvP Messages -->
+    <string name="pvp_opponent_left_win">Opponent left the game. You win!</string>
+    <string name="pvp_player_left_loss">You left the game. You lose!</string>
+    <string name="pvp_searching_match">Searching for a player at your level...</string>
+    <string name="pvp_first_to_finish_bonus">FIRST TO FINISH!</string>
+
+    <!-- Game Complete Dialog -->
+    <string name="game_complete_final_score">FINAL SCORE</string>
+    <string name="game_complete_difficulty_multiplier">×%1$.1f Difficulty Multiplier</string>
+    <string name="game_complete_score_breakdown">Score Breakdown</string>
+    <string name="game_complete_correct_moves">Correct Moves</string>
+    <string name="game_complete_streak_bonus">Streak Bonus (Max: %1$d)</string>
+    <string name="game_complete_speed_bonus">Speed Bonus</string>
+    <string name="game_complete_completion_bonuses">Completion Bonuses</string>
+    <string name="game_complete_perfect_game">Perfect Game</string>
+    <string name="game_complete_no_notes">No Notes Used</string>
+    <string name="game_complete_penalties">Penalties</string>
+    <string name="game_complete_badges_earned">★ Badges Earned</string>
+    <string name="game_complete_play_again">Play Again</string>
+    <string name="game_complete_share">Share</string>
+    <string name="game_complete_menu">Menu</string>
+    <string name="game_complete_accuracy_label">Accuracy</string>
+    <string name="game_complete_time_label">Time</string>
+    <string name="game_complete_best_streak_label">Best Streak</string>
+    <string name="game_complete_streak_max_label">S</string>
+    <string name="game_complete_max_streak_format">/ %1$d</string>
+    <string name="game_complete_combo_format">×%1$dx COMBO!</string>
+    <string name="game_complete_points_format">+%1$d pts</string>
+    
+    <!-- Game Bonuses -->
+    <string name="bonus_box_complete">BOX COMPLETE!</string>
+    <string name="bonus_row_complete">ROW COMPLETE!</string>
+    <string name="bonus_column_complete">COLUMN COMPLETE!</string>
+    <string name="bonus_completion_popup">%1$s +%2$d</string>
+    <string name="bonus_points_gain">+%1$d</string>
+    <string name="bonus_points_loss">%1$d</string>
+    <string name="bonus_hint_used">HINT USED -1,000</string>
+    <string name="bonus_perfect_game">PERFECT GAME! +10,000</string>
+    <string name="bonus_no_notes">NO NOTES! +5,000</string>
+    <string name="bonus_speed">SPEED BONUS! +3,000</string>
+    
+    <!-- Language Selection -->
+    <string name="language">Language</string>
+    <string name="language_english">English</string>
+    <string name="language_turkish">Türkçe</string>
+    <string name="language_selection_title">Select Language</string>
+    <string name="language_changed">Language changed</string>
     
     <!-- Auth -->
     <string name="email">Email</string>
@@ -34,4 +337,12 @@
     <string name="sign_in">Sign In</string>
     <string name="sign_up">Sign Up</string>
     <string name="sign_out">Sign Out</string>
+    <string name="auth_create_account_title">Create your account</string>
+    <string name="auth_welcome_back_title">Welcome back</string>
+    <string name="auth_email_placeholder">example@email.com</string>
+    <string name="auth_password_placeholder">••••••••</string>
+    <string name="auth_create_account_button">Create Account</string>
+    <string name="auth_play_as_guest">Play as Guest</string>
+    <string name="auth_already_have_account">Already have an account?</string>
+    <string name="auth_dont_have_account">Don\'t have an account?</string>
 </resources>

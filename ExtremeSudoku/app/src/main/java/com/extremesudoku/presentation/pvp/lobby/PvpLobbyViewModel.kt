@@ -2,8 +2,10 @@ package com.extremesudoku.presentation.pvp.lobby
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.extremesudoku.R
 import com.extremesudoku.data.models.pvp.PvpMode
 import com.extremesudoku.domain.repository.PvpMatchRepository
+import com.extremesudoku.utils.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,7 +22,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class PvpLobbyViewModel @Inject constructor(
-    private val repository: PvpMatchRepository
+    private val repository: PvpMatchRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PvpLobbyState>(PvpLobbyState.Idle)
@@ -61,7 +64,7 @@ class PvpLobbyViewModel @Inject constructor(
                 onFailure = { error ->
                     android.util.Log.e("PvpLobby", "❌ Kuyruğa katılım hatası: ${error.message}", error)
                     _uiState.value = PvpLobbyState.Error(
-                        error.message ?: "Matchmaking'e katılırken hata oluştu"
+                        error.message ?: resourceProvider.getString(R.string.error_matchmaking_failed)
                     )
                 }
             )
@@ -124,9 +127,11 @@ class PvpLobbyViewModel @Inject constructor(
             }
 
             // Timeout kontrolü
-            if (isActiveMatchmakingRunning && timeoutSeconds >= maxTimeoutSeconds) {
-                android.util.Log.w("PvpLobby", "⏱️ TIMEOUT! 3 dakika sonra matchmaking iptal edildi")
-                _uiState.value = PvpLobbyState.Error("Eşleşme bulunamadı (zaman aşımı)")
+                if (isActiveMatchmakingRunning && timeoutSeconds >= maxTimeoutSeconds) {
+                    android.util.Log.w("PvpLobby", "⏱️ TIMEOUT! 3 dakika sonra matchmaking iptal edildi")
+                    _uiState.value = PvpLobbyState.Error(
+                        resourceProvider.getString(R.string.error_matchmaking_timeout)
+                    )
                 isActiveMatchmakingRunning = false  // ⚡ FIX: Flag'i sıfırla
             }
 
@@ -184,7 +189,7 @@ class PvpLobbyViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     _uiState.value = PvpLobbyState.Error(
-                        error.message ?: "İptal edilirken hata oluştu"
+                        error.message ?: resourceProvider.getString(R.string.error_matchmaking_cancel_failed)
                     )
                 }
             )

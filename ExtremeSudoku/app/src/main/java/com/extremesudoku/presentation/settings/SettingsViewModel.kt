@@ -23,7 +23,7 @@ data class SettingsUiState(
     val showAffectedAreas: Boolean = true,  // Show affected areas from number pad
     val showScoreAndStreak: Boolean = true,  // NEW: Show score and streak
     val colorizeNumbers: Boolean = true,  // NEW: Colorize numbers
-    val currentTheme: ThemeType = ThemeType.LIGHT
+    val currentTheme: ThemeType = ThemeType.GAZETE
 )
 
 @HiltViewModel

@@ -147,8 +147,8 @@ class PvpMatchRepositoryImpl @Inject constructor(
         return pvpDataSource.endMatch(matchId, winnerId)
     }
     
-    override suspend fun cancelMatch(matchId: String): Result<Unit> {
-        return pvpDataSource.cancelMatch(matchId)
+    override suspend fun cancelMatch(matchId: String, forfeitedByCurrentUser: Boolean): Result<Unit> {
+        return pvpDataSource.cancelMatch(matchId, forfeitedByCurrentUser)
     }
     
     // ========== Presence Management ==========

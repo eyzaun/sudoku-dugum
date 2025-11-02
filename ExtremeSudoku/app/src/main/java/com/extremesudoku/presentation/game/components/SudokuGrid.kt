@@ -41,6 +41,7 @@ fun SudokuGrid(
     colorizeNumbers: Boolean = true  // NEW: Colorize correct/wrong numbers
 ) {
     val themeColors = LocalThemeColors.current
+    fun cellValueAt(row: Int, col: Int): Int = opponentCells[row to col] ?: grid[row][col].value
     
     BoxWithConstraints(
         modifier = modifier
@@ -113,8 +114,8 @@ fun SudokuGrid(
                         val affectedCells = mutableSetOf<Pair<Int, Int>>()
                         
                         grid.forEachIndexed { row, cells ->
-                            cells.forEachIndexed { col, cell ->
-                                if (cell.value == num) {
+                            cells.forEachIndexed { col, _ ->
+                                if (cellValueAt(row, col) == num) {
                                     // Bu hücrenin satırı, sütunu ve box'ını ekle
                                     for (i in 0..8) {
                                         affectedCells.add(Pair(row, i)) // Satır
@@ -143,8 +144,8 @@ fun SudokuGrid(
                     } else {
                         // Grid'den geliyorsa, sadece seçili hücrenin etkilediği alanları göster
                         selectedCell?.let { (selRow, selCol) ->
-                            val selCell = grid[selRow][selCol]
-                            if (selCell.value == num) {
+                            val selectedValue = cellValueAt(selRow, selCol)
+                            if (selectedValue == num) {
                                 // Sadece seçili hücrenin satır, sütun ve box'ı - özel renk ile
                                 for (i in 0..8) {
                                     drawRect(
@@ -172,8 +173,8 @@ fun SudokuGrid(
                     
                     // Sonra aynı sayıları daha belirgin highlight et (her durumda)
                     grid.forEachIndexed { row, cells ->
-                        cells.forEachIndexed { col, cell ->
-                            if (cell.value == num) {
+                        cells.forEachIndexed { col, _ ->
+                            if (cellValueAt(row, col) == num) {
                                 drawRect(
                                     color = themeColors.sameNumberCell,
                                     topLeft = Offset(col * cellSize.toPx(), row * cellSize.toPx()),

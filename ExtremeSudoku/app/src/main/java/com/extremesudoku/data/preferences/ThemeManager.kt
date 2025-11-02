@@ -28,11 +28,11 @@ class ThemeManager @Inject constructor(
      */
     val themeType: Flow<ThemeType> = context.dataStore.data
         .map { preferences ->
-            val themeName = preferences[PreferencesKeys.THEME_TYPE] ?: ThemeType.LIGHT.name
+            val themeName = preferences[PreferencesKeys.THEME_TYPE] ?: ThemeType.GAZETE.name
             try {
                 ThemeType.valueOf(themeName)
             } catch (e: IllegalArgumentException) {
-                ThemeType.LIGHT
+                ThemeType.GAZETE
             }
         }
     

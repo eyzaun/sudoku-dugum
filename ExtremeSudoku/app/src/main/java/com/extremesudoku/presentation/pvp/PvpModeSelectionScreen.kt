@@ -1,7 +1,9 @@
 package com.extremesudoku.presentation.pvp
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -10,10 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.extremesudoku.presentation.theme.LocalThemeColors
+import com.extremesudoku.R
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.AppShapes
 
@@ -30,32 +32,34 @@ fun PvpModeSelectionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("PvP Modu Seç") },
+                title = { Text(stringResource(R.string.pvp_mode_select_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
         }
     ) { paddingValues ->
+        val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(AppDimensions.dialogPadding),
+                .padding(AppDimensions.dialogPadding)
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.dialogPadding, Alignment.CenterVertically)
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.spacingLarge)
         ) {
             // Başlık
             Text(
-                text = "PvP Modu",
+                text = stringResource(R.string.pvp_mode_heading),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold
             )
             
             Text(
-                text = "Rakibinle kapışacağın modu seç!",
+                text = stringResource(R.string.pvp_mode_select_description),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
@@ -65,28 +69,28 @@ fun PvpModeSelectionScreen(
             
             // Blind Race Mode Card
             ModeCard(
-                title = "Kör Yarış",
-                description = "Rakibi görmeden yarış!\nAynı sudoku'yu kim daha hızlı çözer?",
+                titleRes = R.string.pvp_mode_blind_race_title,
+                descriptionRes = R.string.pvp_mode_blind_race_description,
                 icon = Icons.Default.Timer,
                 color = MaterialTheme.colorScheme.primary,
-                features = listOf(
-                    "Aynı puzzle",
-                    "Rakibin ilerlemesini görürsün (%)",
-                    "İlk tamamlayan kazanır"
+                featureResIds = listOf(
+                    R.string.pvp_mode_blind_feature_same_puzzle,
+                    R.string.pvp_mode_blind_feature_progress,
+                    R.string.pvp_mode_blind_feature_first_finish
                 ),
                 onClick = { onModeSelected("BLIND_RACE") }  // Enum name
             )
             
             // Live Battle Mode Card
             ModeCard(
-                title = "⚔️ Canlı Savaş",
-                description = "Rakibin hamlelerini görürsün!\nDoğru +1, Yanlış -1 puan!",
+                titleRes = R.string.pvp_mode_live_battle_title,
+                descriptionRes = R.string.pvp_mode_live_battle_description,
                 icon = Icons.Default.Visibility,
                 color = MaterialTheme.colorScheme.secondary,
-                features = listOf(
-                    "Aynı puzzle",
-                    "Rakibin DOĞRU hamlelerini anlık görürsün",
-                    "En yüksek skor kazanır (10 dk)"
+                featureResIds = listOf(
+                    R.string.pvp_mode_live_feature_same_puzzle,
+                    R.string.pvp_mode_live_feature_opponent_moves,
+                    R.string.pvp_mode_live_feature_high_score
                 ),
                 onClick = { onModeSelected("LIVE_BATTLE") }  // Enum name
             )
@@ -97,18 +101,18 @@ fun PvpModeSelectionScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModeCard(
-    title: String,
-    description: String,
+    @StringRes titleRes: Int,
+    @StringRes descriptionRes: Int,
     icon: ImageVector,
     color: Color,
-    features: List<String>,
+    featureResIds: List<Int>,
     onClick: () -> Unit
 ) {
     Card(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(AppDimensions.homeCardHeight + AppDimensions.iconSizeSmall),
+            .wrapContentHeight(),
         shape = AppShapes.card,
         colors = CardDefaults.cardColors(
             containerColor = color.copy(alpha = 0.1f)
@@ -133,7 +137,7 @@ fun ModeCard(
                 )
                 
                 Text(
-                    text = title,
+                    text = stringResource(titleRes),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = color
@@ -142,7 +146,7 @@ fun ModeCard(
             
             // Açıklama
             Text(
-                text = description,
+                text = stringResource(descriptionRes),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -150,7 +154,7 @@ fun ModeCard(
             Divider(modifier = Modifier.padding(vertical = AppDimensions.spacingExtraSmall))
             
             // Özellikler
-            features.forEach { feature ->
+            featureResIds.forEach { featureRes ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(AppDimensions.spacingSmall)
@@ -162,7 +166,7 @@ fun ModeCard(
                         modifier = Modifier.size(AppDimensions.iconSizeSmall)
                     )
                     Text(
-                        text = feature,
+                        text = stringResource(featureRes),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )

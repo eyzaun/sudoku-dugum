@@ -588,9 +588,12 @@ class PvpFirebaseDataSource @Inject constructor(
         }
     }
     
-    suspend fun cancelMatch(matchId: String): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun cancelMatch(matchId: String, forfeitedByCurrentUser: Boolean): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            android.util.Log.d("PvpFirebase", "🚫 cancelMatch çağrıldı - MatchID: $matchId, User: $currentUserId")
+            android.util.Log.d(
+                "PvpFirebase",
+                "🚫 cancelMatch çağrıldı - MatchID: $matchId, User: $currentUserId, forfeitedByCurrentUser=$forfeitedByCurrentUser"
+            )
             
             // Match'i önce al - ama sadece status ve players field'larını oku
             val matchDoc = matchesCollection.document(matchId).get().await()
@@ -605,17 +608,21 @@ class PvpFirebaseDataSource @Inject constructor(
                     return@withContext Result.success(Unit)
                 }
                 
-                // Players map'inden kalan oyuncuyu bul
+                // Players map'inden rakip oyuncuyu bul
                 val playersMap = matchDoc.get("players") as? Map<*, *>
-                val remainingPlayerId = playersMap?.keys?.firstOrNull { it != currentUserId }?.toString()
+                val opponentId = playersMap?.keys?.firstOrNull { it != currentUserId }?.toString()
+                val winnerId = if (forfeitedByCurrentUser) opponentId else currentUserId
                 
-                android.util.Log.d("PvpFirebase", "🎯 Kalan oyuncu: $remainingPlayerId (kazanacak)")
-                android.util.Log.d("PvpFirebase", "📝 Firestore'a yazılacak: status=CANCELLED, winnerId=$remainingPlayerId")
+                android.util.Log.d("PvpFirebase", "🎯 Rakip oyuncu: $opponentId")
+                android.util.Log.d(
+                    "PvpFirebase",
+                    "📝 Firestore'a yazılacak: status=CANCELLED, winnerId=$winnerId"
+                )
                 
-                // Match'i iptal et ve kalan oyuncuyu kazanan yap
+                // Match'i iptal et ve kazananı belirle
                 val updateData = mapOf(
                     "status" to MatchStatus.CANCELLED.name,
-                    "winnerId" to remainingPlayerId, // Kalan oyuncu kazanır
+                    "winnerId" to winnerId,
                     "endedAt" to System.currentTimeMillis()
                 )
                 
@@ -624,7 +631,10 @@ class PvpFirebaseDataSource @Inject constructor(
                     .update(updateData)
                     .await()
                 
-                android.util.Log.d("PvpFirebase", "✅ Match başarıyla iptal edildi! WinnerId: $remainingPlayerId yazıldı")
+                android.util.Log.d(
+                    "PvpFirebase",
+                    "✅ Match başarıyla iptal edildi! WinnerId: $winnerId yazıldı"
+                )
             } else {
                 android.util.Log.e("PvpFirebase", "❌ Match bulunamadı!")
             }

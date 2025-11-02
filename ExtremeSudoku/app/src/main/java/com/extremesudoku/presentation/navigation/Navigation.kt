@@ -35,7 +35,7 @@ fun SudokuNavigation() {
     val auth = Firebase.auth
     // SharedPreferences'ı Context'ten al
     val sharedPrefs = androidx.compose.ui.platform.LocalContext.current.getSharedPreferences(
-        "extreme_sudoku_prefs",
+        "sudoku_dugum_prefs",
         android.content.Context.MODE_PRIVATE
     )
     // Onboarding tamamlanmış mı kontrol et

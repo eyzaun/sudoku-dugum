@@ -8,9 +8,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.extremesudoku.R
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.LocalThemeColors
 import com.extremesudoku.utils.formatTime
@@ -35,10 +37,10 @@ fun ProfileScreen(
         containerColor = themeColors.background,
         topBar = {
             TopAppBar(
-                title = { Text("Profile") },
+                title = { Text(stringResource(R.string.profile)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -66,14 +68,14 @@ fun ProfileScreen(
                             modifier = Modifier.padding(AppDimensions.spacingMedium)
                         ) {
                             Text(
-                                text = "! Guest Mode",
+                                text = stringResource(R.string.profile_guest_mode_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             Spacer(modifier = Modifier.height(AppDimensions.spacingSmall))
                             Text(
-                                text = "Your progress is saved locally. Create an account to sync across devices!",
+                                text = stringResource(R.string.profile_guest_mode_message),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
@@ -82,7 +84,7 @@ fun ProfileScreen(
                                 onClick = onNavigateToAuth,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("Create Account / Sign In")
+                                Text(stringResource(R.string.profile_guest_mode_action))
                             }
                         }
                     }
@@ -106,7 +108,7 @@ fun ProfileScreen(
                         )
                         Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
                         Text(
-                            text = uiState.user?.displayName ?: "Player",
+                            text = uiState.user?.displayName ?: stringResource(R.string.profile_default_display_name),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold
                         )
@@ -126,29 +128,38 @@ fun ProfileScreen(
                 // User Stats
                 uiState.userStats?.let { stats ->
                     Text(
-                        text = "Statistics",
+                        text = stringResource(R.string.profile_statistics_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
+
+                    val completionRate = if (stats.gamesPlayed > 0) {
+                        (stats.gamesCompleted * 100 / stats.gamesPlayed)
+                    } else {
+                        0
+                    }
                     
                     DetailedStatCard(
-                        title = "Games",
+                        title = stringResource(R.string.profile_statistics_games_title),
                         items = listOf(
-                            "Played" to stats.gamesPlayed.toString(),
-                            "Completed" to stats.gamesCompleted.toString(),
-                            "Completion Rate" to "${if (stats.gamesPlayed > 0) (stats.gamesCompleted * 100 / stats.gamesPlayed) else 0}%"
+                            stringResource(R.string.games_played) to stats.gamesPlayed.toString(),
+                            stringResource(R.string.games_completed) to stats.gamesCompleted.toString(),
+                            stringResource(R.string.profile_completion_rate_label) to stringResource(
+                                R.string.profile_completion_rate_value,
+                                completionRate
+                            )
                         )
                     )
                     
                     Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
                     
                     DetailedStatCard(
-                        title = "Time",
+                        title = stringResource(R.string.profile_statistics_time_title),
                         items = listOf(
-                            "Best Time" to formatTime(stats.bestTime),
-                            "Average Time" to formatTime(stats.averageTime),
-                            "Total Time" to formatTime(stats.totalTime)
+                            stringResource(R.string.best_time) to formatTime(stats.bestTime),
+                            stringResource(R.string.average_time) to formatTime(stats.averageTime),
+                            stringResource(R.string.total_time) to formatTime(stats.totalTime)
                         )
                     )
                 }
@@ -162,7 +173,7 @@ fun ProfileScreen(
                     containerColor = MaterialTheme.colorScheme.error
                 )
             ) {
-                Text("Sign Out")
+                Text(stringResource(R.string.sign_out))
             }
         }
     }

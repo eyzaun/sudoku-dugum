@@ -65,7 +65,7 @@ interface PvpMatchRepository {
     /**
      * Match'i iptal et
      */
-    suspend fun cancelMatch(matchId: String): Result<Unit>
+    suspend fun cancelMatch(matchId: String, forfeitedByCurrentUser: Boolean): Result<Unit>
     
     // ========== Presence Management ==========
     

@@ -3,6 +3,7 @@ package com.extremesudoku.presentation.game
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.extremesudoku.R
 import com.extremesudoku.data.models.Cell
 import com.extremesudoku.data.models.GameState
 import com.extremesudoku.data.models.Sudoku
@@ -10,11 +11,14 @@ import com.extremesudoku.data.models.scoring.BonusEvent
 import com.extremesudoku.data.models.scoring.BonusType
 import com.extremesudoku.data.models.scoring.CompletionEvent
 import com.extremesudoku.data.models.scoring.GameScore
+import com.extremesudoku.data.models.scoring.ScoringConstants
+import com.extremesudoku.data.models.scoring.toJsonString
 import com.extremesudoku.domain.usecase.*
 import com.extremesudoku.domain.usecase.scoring.*
 import com.extremesudoku.utils.Constants.MAX_HINTS
 import com.extremesudoku.utils.HapticFeedback
 import com.extremesudoku.utils.SoundEffects
+import com.extremesudoku.utils.ResourceProvider
 import com.extremesudoku.utils.applyNotesFromJson
 import com.extremesudoku.utils.notesToJson
 import com.extremesudoku.utils.toCellGrid
@@ -45,6 +49,7 @@ class GameViewModel @Inject constructor(
     private val calculatePenaltyUseCase: CalculatePenaltyUseCase,
     private val checkCompletionBonusUseCase: CheckCompletionBonusUseCase,
     private val calculateFinalScoreUseCase: CalculateFinalScoreUseCase,
+    private val resourceProvider: ResourceProvider,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     
@@ -87,11 +92,11 @@ class GameViewModel @Inject constructor(
             loadSavedGame(gameId)
         } else {
             // Fallback - hata durumu
-            _uiState.update { 
+            _uiState.update {
                 it.copy(
                     isLoading = false,
-                    error = "Invalid game parameters"
-                ) 
+                    error = resourceProvider.getString(R.string.error_game_parameters)
+                )
             }
         }
     }
@@ -108,6 +113,17 @@ class GameViewModel @Inject constructor(
             val result = getSudokuUseCase(sudokuId)
             result.onSuccess { sudoku ->
                 val grid = sudoku.puzzle.toCellGrid()
+                resetCompletionTracking(grid)
+                moveHistory.clear()
+                redoStack.clear()
+                _bonusEvents.value = emptyList()
+                hasUsedNotes = false
+                val multiplier = ScoringConstants.getDifficultyMultiplier(sudoku.difficulty)
+                _gameScore.value = GameScore(
+                    difficultyMultiplier = multiplier,
+                    difficulty = sudoku.difficulty
+                )
+                
                 _uiState.update {
                     it.copy(
                         sudoku = sudoku,
@@ -120,10 +136,11 @@ class GameViewModel @Inject constructor(
                 }
                 startTimer()
             }.onFailure { error ->
+                val message = error.message ?: resourceProvider.getString(R.string.error_loading)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = error.message
+                        error = message
                     )
                 }
             }
@@ -145,7 +162,7 @@ class GameViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = "Game not found"
+                        error = resourceProvider.getString(R.string.error_game_not_found)
                     )
                 }
                 return@launch
@@ -181,6 +198,27 @@ class GameViewModel @Inject constructor(
                 val gridWithNotes = if (savedState.notes.isNotBlank()) {
                     grid.applyNotesFromJson(savedState.notes)
                 } else grid
+
+                resetCompletionTracking(gridWithNotes)
+                moveHistory.clear()
+                redoStack.clear()
+                _bonusEvents.value = emptyList()
+                hasUsedNotes = savedState.notes.isNotBlank()
+
+                val rawScore = GameScore.fromJsonString(savedState.scoreDetails)
+                val multiplier = ScoringConstants.getDifficultyMultiplier(sudoku.difficulty)
+                val restoredScore = rawScore.copy(
+                    finalScore = if (savedState.score != 0) savedState.score else rawScore.finalScore,
+                    difficulty = sudoku.difficulty,
+                    difficultyMultiplier = multiplier,
+                    elapsedTimeMs = savedState.elapsedTime * 1000,
+                    totalMoves = if (rawScore.totalMoves != 0) rawScore.totalMoves else savedState.moves,
+                    hintsUsed = savedState.hintsUsed
+                )
+                _gameScore.value = restoredScore
+
+                val isCompleted = savedState.isCompleted ||
+                    checkCompletionUseCase(savedState.currentState, sudoku.solution)
                 
                 _uiState.update {
                     it.copy(
@@ -193,15 +231,29 @@ class GameViewModel @Inject constructor(
                         moves = savedState.moves,
                         hintsUsed = savedState.hintsUsed,
                         createdAt = savedState.createdAt,
+                        isCompleted = isCompleted,
                         isLoading = false
                     )
                 }
-                startTimer()
+
+                if (isCompleted) {
+                    stopTimer()
+                    if (!savedState.isCompleted) {
+                        val completedState = savedState.copy(
+                            isCompleted = true,
+                            lastPlayedAt = System.currentTimeMillis()
+                        )
+                        saveGameStateUseCase(completedState)
+                    }
+                } else {
+                    startTimer()
+                }
             }.onFailure { error ->
+                val message = error.message ?: resourceProvider.getString(R.string.error_loading)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = error.message
+                        error = message
                     )
                 }
             }
@@ -326,7 +378,7 @@ class GameViewModel @Inject constructor(
             // Bonus popup göster (pozitif puan için)
             if (pointsEarned > 0) {
                 showBonusPopup(
-                    message = "+$pointsEarned",
+                    message = resourceProvider.getString(R.string.bonus_points_gain, pointsEarned),
                     points = pointsEarned,
                     position = row to col,
                     type = BonusType.STREAK
@@ -376,13 +428,18 @@ class GameViewModel @Inject constructor(
                 )
                 
                 // Bonus popup göster
-                val message = when (event.type) {
-                    com.extremesudoku.data.models.scoring.CompletionType.BOX -> "BOX COMPLETE!"
-                    com.extremesudoku.data.models.scoring.CompletionType.ROW -> "ROW COMPLETE!"
-                    com.extremesudoku.data.models.scoring.CompletionType.COLUMN -> "COLUMN COMPLETE!"
+                val baseMessage = when (event.type) {
+                    com.extremesudoku.data.models.scoring.CompletionType.BOX -> resourceProvider.getString(R.string.bonus_box_complete)
+                    com.extremesudoku.data.models.scoring.CompletionType.ROW -> resourceProvider.getString(R.string.bonus_row_complete)
+                    com.extremesudoku.data.models.scoring.CompletionType.COLUMN -> resourceProvider.getString(R.string.bonus_column_complete)
                 }
+                val formattedMessage = resourceProvider.getString(
+                    R.string.bonus_completion_popup,
+                    baseMessage,
+                    event.bonusEarned
+                )
                 showBonusPopup(
-                    message = "$message +${event.bonusEarned}",
+                    message = formattedMessage,
                     points = event.bonusEarned,
                     position = null,
                     type = BonusType.COMPLETION
@@ -494,6 +551,39 @@ class GameViewModel @Inject constructor(
         }
         return counts
     }
+
+    private fun resetCompletionTracking(grid: Array<Array<Cell>>) {
+        completedBoxes.clear()
+        completedRows.clear()
+        completedColumns.clear()
+
+        for (index in 0..8) {
+            if ((0..8).all { col -> grid[index][col].value != 0 }) {
+                completedRows.add(index)
+            }
+            if ((0..8).all { row -> grid[row][index].value != 0 }) {
+                completedColumns.add(index)
+            }
+        }
+
+        for (box in 0..8) {
+            val startRow = (box / 3) * 3
+            val startCol = (box % 3) * 3
+            var isComplete = true
+            for (row in startRow until startRow + 3) {
+                for (col in startCol until startCol + 3) {
+                    if (grid[row][col].value == 0) {
+                        isComplete = false
+                        break
+                    }
+                }
+                if (!isComplete) break
+            }
+            if (isComplete) {
+                completedBoxes.add(box)
+            }
+        }
+    }
     
     fun onDeletePressed() {
         val selectedCellPos = _uiState.value.selectedCell ?: return
@@ -545,7 +635,7 @@ class GameViewModel @Inject constructor(
     
     fun onHintRequested() {
         if (_uiState.value.hintsUsed >= MAX_HINTS) {
-            _uiState.update { it.copy(error = "Maximum hints reached") }
+            _uiState.update { it.copy(error = resourceProvider.getString(R.string.error_max_hints_reached)) }
             return
         }
         
@@ -564,7 +654,7 @@ class GameViewModel @Inject constructor(
         
         // Ceza popup'ı göster
         showBonusPopup(
-            message = "HINT USED -1,000",
+            message = resourceProvider.getString(R.string.bonus_hint_used),
             points = -1000,
             position = row to col,
             type = BonusType.SPECIAL
@@ -714,7 +804,7 @@ class GameViewModel @Inject constructor(
             // Özel bonuslar için popup'lar göster
             if (finalScore.perfectGame) {
                 showBonusPopup(
-                    message = "PERFECT GAME! +10,000",
+                    message = resourceProvider.getString(R.string.bonus_perfect_game),
                     points = 10000,
                     position = null,
                     type = BonusType.PERFECT
@@ -723,7 +813,7 @@ class GameViewModel @Inject constructor(
             
             if (finalScore.playedWithoutNotes) {
                 showBonusPopup(
-                    message = "NO NOTES! +5,000",
+                    message = resourceProvider.getString(R.string.bonus_no_notes),
                     points = 5000,
                     position = null,
                     type = BonusType.SPECIAL
@@ -732,7 +822,7 @@ class GameViewModel @Inject constructor(
             
             if (finalScore.speedBonus) {
                 showBonusPopup(
-                    message = "SPEED BONUS! +3,000",
+                    message = resourceProvider.getString(R.string.bonus_speed),
                     points = 3000,
                     position = null,
                     type = BonusType.TIME
@@ -751,6 +841,7 @@ class GameViewModel @Inject constructor(
             // gameId yoksa kaydetme (henüz yüklenmemiş)
             val uniqueGameId = state.gameId ?: return@launch
             val sudoku = state.sudoku ?: return@launch
+            val scoreSnapshot = _gameScore.value
             
             val gameState = GameState(
                 gameId = uniqueGameId,  // ← Unique gameId kullan
@@ -765,7 +856,9 @@ class GameViewModel @Inject constructor(
                 isCompleted = state.isCompleted,
                 isAbandoned = false,
                 lastPlayedAt = System.currentTimeMillis(),
-                createdAt = state.createdAt
+                createdAt = state.createdAt,
+                score = scoreSnapshot.finalScore,
+                scoreDetails = scoreSnapshot.toJsonString()
             )
             saveGameStateUseCase(gameState)
         }

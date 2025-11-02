@@ -2,7 +2,9 @@ package com.extremesudoku.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.extremesudoku.R
 import com.extremesudoku.data.repository.UserRepository
+import com.extremesudoku.utils.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -43,8 +46,9 @@ class AuthViewModel @Inject constructor(
                     it.copy(isLoading = false, navigateToHome = true)
                 }
             }.onFailure { error ->
+                val message = error.message ?: resourceProvider.getString(R.string.error_sign_in_failed)
                 _uiState.update {
-                    it.copy(isLoading = false, error = error.message ?: "Sign in failed")
+                    it.copy(isLoading = false, error = message)
                 }
             }
         }
@@ -66,8 +70,9 @@ class AuthViewModel @Inject constructor(
                     it.copy(isLoading = false, navigateToHome = true)
                 }
             }.onFailure { error ->
+                val message = error.message ?: resourceProvider.getString(R.string.error_sign_up_failed)
                 _uiState.update {
-                    it.copy(isLoading = false, error = error.message ?: "Sign up failed")
+                    it.copy(isLoading = false, error = message)
                 }
             }
         }
@@ -84,8 +89,9 @@ class AuthViewModel @Inject constructor(
                     it.copy(isLoading = false, navigateToHome = true)
                 }
             }.onFailure { error ->
+                val message = error.message ?: resourceProvider.getString(R.string.error_guest_mode_failed)
                 _uiState.update {
-                    it.copy(isLoading = false, error = error.message ?: "Failed to continue as guest")
+                    it.copy(isLoading = false, error = message)
                 }
             }
         }
@@ -105,15 +111,15 @@ class AuthViewModel @Inject constructor(
         
         when {
             email.isBlank() -> {
-                _uiState.update { it.copy(error = "Email is required") }
+                _uiState.update { it.copy(error = resourceProvider.getString(R.string.error_email_required)) }
                 return false
             }
             !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                _uiState.update { it.copy(error = "Invalid email format") }
+                _uiState.update { it.copy(error = resourceProvider.getString(R.string.error_invalid_email_format)) }
                 return false
             }
             password.length < 6 -> {
-                _uiState.update { it.copy(error = "Password must be at least 6 characters") }
+                _uiState.update { it.copy(error = resourceProvider.getString(R.string.error_password_too_short)) }
                 return false
             }
         }

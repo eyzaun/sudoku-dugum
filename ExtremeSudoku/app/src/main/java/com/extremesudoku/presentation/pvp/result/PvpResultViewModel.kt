@@ -2,8 +2,10 @@ package com.extremesudoku.presentation.pvp.result
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.extremesudoku.data.models.pvp.PvpMatch
+import com.extremesudoku.R
+import com.extremesudoku.data.models.pvp.PlayerResult
 import com.extremesudoku.domain.repository.PvpMatchRepository
+import com.extremesudoku.utils.ResourceProvider
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PvpResultViewModel @Inject constructor(
     private val repository: PvpMatchRepository,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _resultState = MutableStateFlow<PvpResultState>(PvpResultState.Loading)
@@ -32,19 +35,32 @@ class PvpResultViewModel @Inject constructor(
                     val opponentData = match.getOpponentData(currentUserId)
                     
                     if (myData == null || opponentData == null) {
-                        _resultState.value = PvpResultState.Error("Oyuncu verileri bulunamadı")
-                        return@onSuccess
-                    }
-                    
-                    val myResult = myData.result
-                    val opponentResult = opponentData.result
-                    
-                    if (myResult == null || opponentResult == null) {
-                        _resultState.value = PvpResultState.Error("Sonuçlar henüz tamamlanmadı")
+                        _resultState.value = PvpResultState.Error(
+                            resourceProvider.getString(R.string.error_player_data_missing)
+                        )
                         return@onSuccess
                     }
                     
                     val isCancelled = match.status == com.extremesudoku.data.models.pvp.MatchStatus.CANCELLED
+                    
+                    val myResult = myData.result ?: if (isCancelled) {
+                        PlayerResult()
+                    } else {
+                        null
+                    }
+
+                    val opponentResult = opponentData.result ?: if (isCancelled) {
+                        PlayerResult()
+                    } else {
+                        null
+                    }
+
+                    if (myResult == null || opponentResult == null) {
+                        _resultState.value = PvpResultState.Error(
+                            resourceProvider.getString(R.string.error_results_not_ready)
+                        )
+                        return@onSuccess
+                    }
                     
                     // CANCELLED durumunda winnerId'den bak (çünkü zaten doğru set edildi)
                     // Normal durumda da winnerId'den bak
@@ -68,7 +84,7 @@ class PvpResultViewModel @Inject constructor(
                 }
                 .onFailure { error ->
                     _resultState.value = PvpResultState.Error(
-                        error.message ?: "Sonuçlar yüklenirken hata oluştu"
+                        error.message ?: resourceProvider.getString(R.string.error_results_load_failed)
                     )
                 }
         }

@@ -2,10 +2,12 @@ package com.extremesudoku.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.extremesudoku.R
 import com.extremesudoku.data.models.GameState
 import com.extremesudoku.data.models.UserStats
 import com.extremesudoku.data.repository.SudokuRepository
 import com.extremesudoku.data.repository.UserRepository
+import com.extremesudoku.utils.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val sudokuRepository: SudokuRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -78,10 +81,11 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             }.onFailure { error ->
+                val message = error.message ?: resourceProvider.getString(R.string.error_loading)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = error.message
+                        error = message
                     )
                 }
             }

@@ -1,5 +1,8 @@
 package com.extremesudoku.data.models.scoring
 
+import org.json.JSONException
+import org.json.JSONObject
+
 /**
  * Oyun puanlama sistemi - Tetris tabanlı rekabetçi model
  * 
@@ -79,6 +82,76 @@ data class GameScore(
             correctMoves.toFloat() / (streakBroken + 1).toFloat()
         } else correctMoves.toFloat()
     }
+
+    companion object {
+        fun fromJsonString(jsonString: String?): GameScore {
+            if (jsonString.isNullOrBlank()) {
+                return GameScore()
+            }
+            return try {
+                val json = JSONObject(jsonString)
+                GameScore(
+                    finalScore = json.optInt("finalScore", 0),
+                    basePoints = json.optInt("basePoints", 0),
+                    streakBonus = json.optInt("streakBonus", 0),
+                    timeBonus = json.optInt("timeBonus", 0),
+                    completionBonuses = json.optInt("completionBonuses", 0),
+                    specialBonuses = json.optInt("specialBonuses", 0),
+                    penalties = json.optInt("penalties", 0),
+                    difficultyMultiplier = json.optDouble("difficultyMultiplier", 1.0).toFloat(),
+                    currentStreak = json.optInt("currentStreak", 0),
+                    maxStreak = json.optInt("maxStreak", 0),
+                    streakBroken = json.optInt("streakBroken", 0),
+                    correctMoves = json.optInt("correctMoves", 0),
+                    wrongMoves = json.optInt("wrongMoves", 0),
+                    totalMoves = json.optInt("totalMoves", 0),
+                    accuracy = json.optDouble("accuracy", 0.0).toFloat(),
+                    hintsUsed = json.optInt("hintsUsed", 0),
+                    errorChecksUsed = json.optInt("errorChecksUsed", 0),
+                    boxesCompleted = json.optInt("boxesCompleted", 0),
+                    rowsCompleted = json.optInt("rowsCompleted", 0),
+                    columnsCompleted = json.optInt("columnsCompleted", 0),
+                    playedWithoutNotes = json.optBoolean("playedWithoutNotes", false),
+                    perfectGame = json.optBoolean("perfectGame", false),
+                    speedBonus = json.optBoolean("speedBonus", false),
+                    elapsedTimeMs = json.optLong("elapsedTimeMs", 0L),
+                    difficulty = json.optString("difficulty", "medium")
+                )
+            } catch (e: JSONException) {
+                GameScore()
+            }
+        }
+    }
+}
+
+fun GameScore.toJsonString(): String {
+    val json = JSONObject()
+    json.put("finalScore", finalScore)
+    json.put("basePoints", basePoints)
+    json.put("streakBonus", streakBonus)
+    json.put("timeBonus", timeBonus)
+    json.put("completionBonuses", completionBonuses)
+    json.put("specialBonuses", specialBonuses)
+    json.put("penalties", penalties)
+    json.put("difficultyMultiplier", difficultyMultiplier.toDouble())
+    json.put("currentStreak", currentStreak)
+    json.put("maxStreak", maxStreak)
+    json.put("streakBroken", streakBroken)
+    json.put("correctMoves", correctMoves)
+    json.put("wrongMoves", wrongMoves)
+    json.put("totalMoves", totalMoves)
+    json.put("accuracy", accuracy.toDouble())
+    json.put("hintsUsed", hintsUsed)
+    json.put("errorChecksUsed", errorChecksUsed)
+    json.put("boxesCompleted", boxesCompleted)
+    json.put("rowsCompleted", rowsCompleted)
+    json.put("columnsCompleted", columnsCompleted)
+    json.put("playedWithoutNotes", playedWithoutNotes)
+    json.put("perfectGame", perfectGame)
+    json.put("speedBonus", speedBonus)
+    json.put("elapsedTimeMs", elapsedTimeMs)
+    json.put("difficulty", difficulty)
+    return json.toString()
 }
 
 /**

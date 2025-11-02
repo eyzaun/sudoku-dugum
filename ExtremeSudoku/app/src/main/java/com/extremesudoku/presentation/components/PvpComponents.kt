@@ -12,8 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import com.extremesudoku.data.models.pvp.ConnectionState
 import com.extremesudoku.presentation.theme.LocalThemeColors
+import com.extremesudoku.R
 
 /**
  * Connection Status Banner
@@ -60,7 +62,7 @@ fun DisconnectedBanner() {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "İnternet Bağlantısı Yok",
+                text = stringResource(R.string.pvp_connection_disconnected),
                 color = MaterialTheme.colorScheme.onError,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyMedium
@@ -99,7 +101,7 @@ fun ReconnectingBanner() {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Yeniden Bağlanıyor...",
+                text = stringResource(R.string.pvp_connection_reconnecting),
                 color = MaterialTheme.colorScheme.onTertiary,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyMedium
@@ -122,10 +124,10 @@ fun ExitConfirmationDialog(
             Icon(Icons.Default.Warning, contentDescription = null)
         },
         title = {
-            Text(text = "Oyundan Çıkmak İstiyor Musun?")
+            Text(text = stringResource(R.string.pvp_exit_dialog_title))
         },
         text = {
-            Text(text = "Oyundan çıkarsanız maçı kaybedersiniz. Emin misiniz?")
+            Text(text = stringResource(R.string.pvp_exit_dialog_message))
         },
         confirmButton = {
             TextButton(
@@ -134,12 +136,12 @@ fun ExitConfirmationDialog(
                     contentColor = MaterialTheme.colorScheme.error
                 )
             ) {
-                Text("Çık ve Kaybı Kabul Et")
+                Text(stringResource(R.string.pvp_exit_dialog_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("İptal")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -150,7 +152,7 @@ fun ExitConfirmationDialog(
  */
 @Composable
 fun LoadingOverlay(
-    message: String = "Yükleniyor...",
+    message: String? = null,
     modifier: Modifier = Modifier
 ) {
     val themeColors = LocalThemeColors.current
@@ -169,7 +171,7 @@ fun LoadingOverlay(
                 CircularProgressIndicator()
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = message,
+                    text = message ?: stringResource(R.string.loading_message),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -190,7 +192,7 @@ fun ErrorSnackbar(
         modifier = modifier.padding(16.dp),
         action = {
             TextButton(onClick = onDismiss) {
-                Text("Tamam")
+                Text(stringResource(R.string.ok))
             }
         },
         containerColor = MaterialTheme.colorScheme.errorContainer,
@@ -221,7 +223,7 @@ fun SuccessSnackbar(
         modifier = modifier.padding(16.dp),
         action = {
             TextButton(onClick = onDismiss) {
-                Text("Tamam")
+                Text(stringResource(R.string.ok))
             }
         },
         containerColor = MaterialTheme.colorScheme.primaryContainer,

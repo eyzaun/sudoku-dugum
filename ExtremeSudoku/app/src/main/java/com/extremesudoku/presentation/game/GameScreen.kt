@@ -5,15 +5,8 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.extremesudoku.R
 import com.extremesudoku.presentation.game.components.*
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.AppShapes
@@ -131,7 +126,7 @@ fun GameScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "Score:",
+                                    text = stringResource(R.string.score_label),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = LocalThemeColors.current.text.copy(alpha = 0.7f)
                                 )
@@ -151,7 +146,7 @@ fun GameScreen(
                                 ) {
                                     currentBonus?.let { bonus ->
                                         Text(
-                                            text = "+${bonus.points}",
+                                            text = stringResource(R.string.bonus_points_gain, bonus.points),
                                             style = MaterialTheme.typography.titleSmall.copy(
                                                 fontWeight = FontWeight.Bold
                                             ),
@@ -174,11 +169,11 @@ fun GameScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "S:",
+                                        text = stringResource(R.string.streak_label_short),
                                         style = MaterialTheme.typography.labelMedium
                                     )
                                     Text(
-                                        text = "${gameScore.currentStreak} Streak",
+                                        text = stringResource(R.string.streak_value, gameScore.currentStreak),
                                         style = MaterialTheme.typography.labelLarge.copy(
                                             fontWeight = FontWeight.Bold
                                         ),
@@ -238,7 +233,7 @@ fun GameScreen(
                         .padding(padding),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Error loading sudoku")
+                    Text(stringResource(R.string.error_loading_sudoku))
                 }
             }
         
@@ -293,22 +288,22 @@ fun GameTopBar(
     TopAppBar(
         title = {
             Text(
-                text = "Sudoku",
+                text = stringResource(R.string.game_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
         },
         navigationIcon = {
             IconButton(onClick = onBackClick) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
             }
         },
         actions = {
             IconButton(onClick = onSettingsClick) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings")
+                Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings))
             }
             IconButton(onClick = onPauseClick) {
-                Icon(Icons.Default.Pause, contentDescription = "Pause")
+                Icon(Icons.Default.Pause, contentDescription = stringResource(R.string.pause))
             }
         }
     )
@@ -328,19 +323,19 @@ fun GameStatsRow(
         if (elapsedTime != null) {
             StatItem(
                 icon = Icons.Default.Timer,
-                label = "Time",
+                label = stringResource(R.string.stat_time),
                 value = formatTime(elapsedTime)
             )
         }
         StatItem(
             icon = Icons.Default.Edit,
-            label = "Moves",
+            label = stringResource(R.string.stat_moves),
             value = moves.toString()
         )
         StatItem(
             icon = Icons.Default.Lightbulb,
-            label = "Hints",
-            value = "$hintsUsed/$maxHints"
+            label = stringResource(R.string.stat_hints),
+            value = stringResource(R.string.stat_hints_value, hintsUsed, maxHints)
         )
     }
 }
@@ -393,7 +388,7 @@ fun InGameSettingsDialog(
             ) {
                 // Title
                 Text(
-                    text = "Game Settings",
+                    text = stringResource(R.string.game_settings_title),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(AppDimensions.spacingMedium)
@@ -412,96 +407,96 @@ fun InGameSettingsDialog(
                 ) {
                     SettingToggle(
                         icon = Icons.Default.Timer,
-                        title = "Show Timer",
-                        subtitle = "Display elapsed game time",
+                        title = stringResource(R.string.game_settings_show_timer_title),
+                        subtitle = stringResource(R.string.game_settings_show_timer_description),
                         checked = preferences.showTimer,
                         onCheckedChange = { preferencesViewModel.toggleShowTimer() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.Lightbulb,
-                        title = "Auto-check Mistakes",
-                        subtitle = "Prevent placing wrong numbers (Coming soon)",
+                        title = stringResource(R.string.game_settings_auto_check_mistakes_title),
+                        subtitle = stringResource(R.string.game_settings_auto_check_mistakes_description),
                         checked = preferences.autoCheckMistakes,
                         onCheckedChange = { preferencesViewModel.toggleAutoCheckMistakes() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.Warning,
-                        title = "Highlight Conflicts",
-                        subtitle = "Show conflicting numbers in red",
+                        title = stringResource(R.string.game_settings_highlight_conflicts_title),
+                        subtitle = stringResource(R.string.game_settings_highlight_conflicts_description),
                         checked = preferences.highlightConflicts,
                         onCheckedChange = { preferencesViewModel.toggleHighlightConflicts() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.Visibility,
-                        title = "Highlight Same Numbers",
-                        subtitle = "Highlight all cells with selected number",
+                        title = stringResource(R.string.game_settings_highlight_same_numbers_title),
+                        subtitle = stringResource(R.string.game_settings_highlight_same_numbers_description),
                         checked = preferences.highlightSameNumbers,
                         onCheckedChange = { preferencesViewModel.toggleHighlightSameNumbers() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.FormatListNumbered,
-                        title = "Show Remaining Numbers",
-                        subtitle = "Display count below each number button",
+                        title = stringResource(R.string.game_settings_show_remaining_numbers_title),
+                        subtitle = stringResource(R.string.game_settings_show_remaining_numbers_description),
                         checked = preferences.showRemainingNumbers,
                         onCheckedChange = { preferencesViewModel.toggleShowRemainingNumbers() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.VolumeUp,
-                        title = "Vibration",
-                        subtitle = "Haptic feedback for interactions",
+                        title = stringResource(R.string.game_settings_vibration_title),
+                        subtitle = stringResource(R.string.game_settings_vibration_description),
                         checked = preferences.vibrationEnabled,
                         onCheckedChange = { preferencesViewModel.toggleVibration() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.GridOn,
-                        title = "Show Selected Area",
-                        subtitle = "Highlight row, column and box of selected cell",
+                        title = stringResource(R.string.game_settings_show_selected_area_title),
+                        subtitle = stringResource(R.string.game_settings_show_selected_area_description),
                         checked = preferences.highlightSelectedArea,
                         onCheckedChange = { preferencesViewModel.toggleHighlightSelectedArea() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.TouchApp,
-                        title = "Show Affected Areas",
-                        subtitle = "Show all affected cells when tapping number pad",
+                        title = stringResource(R.string.game_settings_show_affected_areas_title),
+                        subtitle = stringResource(R.string.game_settings_show_affected_areas_description),
                         checked = preferences.showAffectedAreas,
                         onCheckedChange = { preferencesViewModel.toggleShowAffectedAreas() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.Edit,
-                        title = "Auto-Remove Notes",
-                        subtitle = "Automatically clear notes when placing a number",
+                        title = stringResource(R.string.game_settings_auto_remove_notes_title),
+                        subtitle = stringResource(R.string.game_settings_auto_remove_notes_description),
                         checked = preferences.autoRemoveNotes,
                         onCheckedChange = { preferencesViewModel.toggleAutoRemoveNotes() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.Star,
-                        title = "Show Score & Streak",
-                        subtitle = "Display score and streak counter during gameplay",
+                        title = stringResource(R.string.game_settings_show_score_and_streak_title),
+                        subtitle = stringResource(R.string.game_settings_show_score_and_streak_description),
                         checked = preferences.showScoreAndStreak,
                         onCheckedChange = { preferencesViewModel.toggleShowScoreAndStreak() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.Palette,
-                        title = "Colorize Numbers",
-                        subtitle = "Show correct numbers in green, wrong in red",
+                        title = stringResource(R.string.game_settings_colorize_numbers_title),
+                        subtitle = stringResource(R.string.game_settings_colorize_numbers_description),
                         checked = preferences.colorizeNumbers,
                         onCheckedChange = { preferencesViewModel.toggleColorizeNumbers() }
                     )
 
                     SettingToggle(
                         icon = Icons.Default.MusicNote,
-                        title = "Sound Effects",
-                        subtitle = "Play sounds for moves, hints, and completion",
+                        title = stringResource(R.string.game_settings_sound_effects_title),
+                        subtitle = stringResource(R.string.game_settings_sound_effects_description),
                         checked = preferences.soundEnabled,
                         onCheckedChange = { preferencesViewModel.toggleSound() }
                     )
@@ -517,7 +512,7 @@ fun InGameSettingsDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Close")
+                        Text(stringResource(R.string.close))
                     }
                 }
             }

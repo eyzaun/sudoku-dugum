@@ -1,5 +1,6 @@
 package com.extremesudoku.presentation.home
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,9 +10,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.extremesudoku.R
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.AppShapes
 import com.extremesudoku.presentation.theme.LocalThemeColors
@@ -62,13 +64,13 @@ fun HomeScreen(
         containerColor = themeColors.background,
         topBar = {
             TopAppBar(
-                title = { Text("Extreme Sudoku") },
+                title = { Text(stringResource(R.string.app_name)) },
                 actions = {
                     IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings))
                     }
                     IconButton(onClick = onNavigateToProfile) {
-                        Icon(Icons.Default.Person, contentDescription = "Profile")
+                        Icon(Icons.Default.Person, contentDescription = stringResource(R.string.profile))
                     }
                 }
             )
@@ -101,7 +103,7 @@ fun HomeScreen(
                 // Active/Saved Games Section
                 if (uiState.activeGames.isNotEmpty()) {
                     Text(
-                        text = "Continue Playing",
+                        text = stringResource(R.string.continue_playing),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -135,11 +137,11 @@ fun HomeScreen(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     if (uiState.showAllGames) {
-                                        Text("Show less")
+                                        Text(stringResource(R.string.show_less))
                                         Spacer(modifier = Modifier.width(AppDimensions.spacingExtraSmall))
                                         Icon(Icons.Default.KeyboardArrowUp, contentDescription = null, modifier = Modifier.size(AppDimensions.iconSizeSmall))
                                     } else {
-                                        Text("See all ${uiState.activeGames.size} saved games")
+                                        Text(stringResource(R.string.show_all_saved_games, uiState.activeGames.size))
                                         Spacer(modifier = Modifier.width(AppDimensions.spacingExtraSmall))
                                         Icon(Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(AppDimensions.iconSizeSmall))
                                     }
@@ -153,7 +155,7 @@ fun HomeScreen(
                 
                 // Difficulty Selection
                 Text(
-                    text = "New Game",
+                    text = stringResource(R.string.new_game),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -163,13 +165,13 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(AppDimensions.spacingSmall)
                 ) {
                     DifficultyButton(
-                        text = "Easy",
+                        textRes = R.string.difficulty_easy,
                         modifier = Modifier.weight(1f),
                         color = themeColors.difficultyEasy,
                         onClick = { viewModel.onNewGameClicked("easy") }
                     )
                     DifficultyButton(
-                        text = "Medium",
+                        textRes = R.string.difficulty_medium,
                         modifier = Modifier.weight(1f),
                         color = themeColors.difficultyMedium,
                         onClick = { viewModel.onNewGameClicked("medium") }
@@ -181,13 +183,13 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(AppDimensions.spacingSmall)
                 ) {
                     DifficultyButton(
-                        text = "Hard",
+                        textRes = R.string.difficulty_hard,
                         modifier = Modifier.weight(1f),
                         color = themeColors.difficultyHard,
                         onClick = { viewModel.onNewGameClicked("hard") }
                     )
                     DifficultyButton(
-                        text = "Expert",
+                        textRes = R.string.difficulty_expert,
                         modifier = Modifier.weight(1f),
                         color = themeColors.difficultyExpert,
                         onClick = { viewModel.onNewGameClicked("expert") }
@@ -218,12 +220,12 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.width(AppDimensions.spacingMedium))
                             Column {
                                 Text(
-                                    text = "Daily Challenge",
+                                    text = stringResource(R.string.daily_challenge),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "Complete today's special puzzle",
+                                    text = stringResource(R.string.daily_challenge_description),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -254,12 +256,12 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(AppDimensions.spacingMedium))
                         Column {
                             Text(
-                                text = "PvP Mode",
+                                text = stringResource(R.string.pvp_mode),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "Challenge players online!",
+                                text = stringResource(R.string.pvp_mode_home_description),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -284,7 +286,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.width(AppDimensions.spacingMedium))
                         Text(
-                            text = "Leaderboard",
+                            text = stringResource(R.string.leaderboard),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
@@ -297,7 +299,7 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DifficultyButton(
-    text: String,
+    @StringRes textRes: Int,
     modifier: Modifier = Modifier,
     color: androidx.compose.ui.graphics.Color,
     onClick: () -> Unit
@@ -312,7 +314,7 @@ fun DifficultyButton(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = text,
+                text = stringResource(textRes),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -328,6 +330,13 @@ fun SavedGameItem(
     onDelete: (() -> Unit)? = null
 ) {
     val themeColors = LocalThemeColors.current
+    val difficultyLabel = when (gameState.difficulty.lowercase()) {
+        "easy" -> stringResource(R.string.difficulty_easy)
+        "medium" -> stringResource(R.string.difficulty_medium)
+        "hard" -> stringResource(R.string.difficulty_hard)
+        "expert" -> stringResource(R.string.difficulty_expert)
+        else -> stringResource(R.string.difficulty_medium)
+    }
     
     Card(
         onClick = onClick,
@@ -351,7 +360,7 @@ fun SavedGameItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Game in progress",
+                        text = stringResource(R.string.saved_game_in_progress),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Medium,
                         color = themeColors.text
@@ -369,7 +378,7 @@ fun SavedGameItem(
                         shape = MaterialTheme.shapes.small
                     ) {
                         Text(
-                            text = gameState.difficulty.uppercase(),
+                            text = difficultyLabel.uppercase(),
                             style = MaterialTheme.typography.labelSmall,
                             color = difficultyColor,
                             fontWeight = FontWeight.Bold,
@@ -408,7 +417,7 @@ fun SavedGameItem(
                             tint = themeColors.iconTint
                         )
                         Text(
-                            text = "${gameState.moves} moves",
+                            text = stringResource(R.string.saved_game_moves, gameState.moves),
                             style = MaterialTheme.typography.bodySmall,
                             color = themeColors.textSecondary
                         )
@@ -423,14 +432,14 @@ fun SavedGameItem(
                     IconButton(onClick = deleteAction) {
                         Icon(
                             Icons.Default.Delete,
-                            contentDescription = "Delete",
+                            contentDescription = stringResource(R.string.delete),
                             tint = themeColors.wrongCell
                         )
                     }
                 }
                 Icon(
                     Icons.Default.PlayArrow,
-                    contentDescription = "Continue",
+                    contentDescription = stringResource(R.string.continue_label),
                     modifier = Modifier.size(AppDimensions.leaderboardIconSize),
                     tint = themeColors.primary
                 )
@@ -453,7 +462,7 @@ fun UserStatsCard(stats: com.extremesudoku.data.models.UserStats) {
             modifier = Modifier.padding(AppDimensions.spacingMedium)
         ) {
             Text(
-                text = "Your Stats",
+                text = stringResource(R.string.your_stats),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = themeColors.text
@@ -463,10 +472,10 @@ fun UserStatsCard(stats: com.extremesudoku.data.models.UserStats) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                StatColumn("Played", stats.gamesPlayed.toString())
-                StatColumn("Completed", stats.gamesCompleted.toString())
-                StatColumn("Best Time", formatTime(stats.bestTime))
-                StatColumn("Streak", "${stats.currentStreak}")
+                StatColumn(stringResource(R.string.stats_played), stats.gamesPlayed.toString())
+                StatColumn(stringResource(R.string.stats_completed), stats.gamesCompleted.toString())
+                StatColumn(stringResource(R.string.best_time), formatTime(stats.bestTime))
+                StatColumn(stringResource(R.string.stats_streak), "${stats.currentStreak}")
             }
         }
     }

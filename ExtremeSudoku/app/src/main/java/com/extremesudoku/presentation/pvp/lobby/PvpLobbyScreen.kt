@@ -10,12 +10,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.extremesudoku.data.models.pvp.PvpMode
-import com.extremesudoku.presentation.theme.LocalThemeColors
+import com.extremesudoku.R
 import com.extremesudoku.presentation.theme.AppDimensions
 
 /**
@@ -50,13 +51,13 @@ fun PvpLobbyScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Rakip Aranıyor...") },
+                title = { Text(stringResource(R.string.pvp_lobby_topbar_title)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         viewModel.cancelMatchmaking()
                         onNavigateBack()
                     }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -146,14 +147,14 @@ fun SearchingContent(
             )
             
             Text(
-                text = "VS",
+                text = stringResource(R.string.pvp_lobby_vs_label),
                 style = MaterialTheme.typography.displayMedium
             )
         }
         
         // Başlık
         Text(
-            text = "Rakip Aranıyor...",
+            text = stringResource(R.string.pvp_lobby_searching_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
@@ -170,7 +171,7 @@ fun SearchingContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Mod: ${mode.displayName}",
+                    text = stringResource(R.string.pvp_lobby_mode_label, mode.displayName),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -188,7 +189,7 @@ fun SearchingContent(
         
         // Bekleme mesajı
         Text(
-            text = "Senin seviyende bir rakip arıyoruz...",
+            text = stringResource(R.string.pvp_lobby_searching_message),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -201,9 +202,9 @@ fun SearchingContent(
             onClick = onCancel,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(Icons.Default.Close, contentDescription = null)
+            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.pvp_lobby_cancel_search))
             Spacer(modifier = Modifier.width(AppDimensions.spacingSmall))
-            Text("Aramayı İptal Et")
+            Text(stringResource(R.string.pvp_lobby_cancel_search))
         }
     }
 }
@@ -225,14 +226,14 @@ fun MatchFoundContent(matchId: String) {
         )
         
         Text(
-            text = "Rakip Bulundu!",
+            text = stringResource(R.string.pvp_lobby_match_found_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         
         Text(
-            text = "Oyuna yönlendiriliyorsun...",
+            text = stringResource(R.string.pvp_lobby_match_found_message),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -260,7 +261,7 @@ fun ErrorContent(
         )
         
         Text(
-            text = "Bir Hata Oluştu",
+            text = stringResource(R.string.pvp_lobby_error_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.error
@@ -281,14 +282,14 @@ fun ErrorContent(
                 onClick = onDismiss,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("İptal")
+                Text(stringResource(R.string.pvp_lobby_error_cancel))
             }
             
             Button(
                 onClick = onRetry,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Tekrar Dene")
+                Text(stringResource(R.string.pvp_lobby_error_retry))
             }
         }
     }

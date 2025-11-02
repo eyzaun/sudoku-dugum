@@ -12,9 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.extremesudoku.R
 import com.extremesudoku.presentation.theme.LocalThemeColors
 import kotlinx.coroutines.delay
 
@@ -72,66 +74,74 @@ fun SplashScreen(
                         themeColors.cardBackground
                     )
                 )
-            ),
-        contentAlignment = Alignment.Center
+            )
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(AppDimensions.spacingExtraLarge)
+                .padding(horizontal = AppDimensions.spacingExtraLarge)
+                .padding(vertical = AppDimensions.spacingLarge)
         ) {
-            // Logo animasyon
-            Box(
-                modifier = Modifier
-                    .size(120.dp)
-                    .background(
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(30.dp),
-                        color = gradientColor.copy(alpha = 0.1f)
-                    ),
-                contentAlignment = Alignment.Center
+            Spacer(modifier = Modifier.height(AppDimensions.topSpacing))
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "9×9",
-                    fontSize = 48.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = gradientColor,
+                // Logo animasyon
+                Box(
                     modifier = Modifier
-                        .graphicsLayer(scaleX = scale, scaleY = scale)
+                        .size(120.dp)
+                        .background(
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(30.dp),
+                            color = gradientColor.copy(alpha = 0.1f)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.splash_logo_text),
+                        fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = gradientColor,
+                        modifier = Modifier
+                            .graphicsLayer(scaleX = scale, scaleY = scale)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(AppDimensions.spacingExtraLarge))
+
+                // Başlık
+                Text(
+                    text = stringResource(R.string.splash_title),
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = themeColors.text,
+                    modifier = Modifier.graphicsLayer(alpha = alpha)
+                )
+
+                Spacer(modifier = Modifier.height(AppDimensions.spacingSmall))
+
+                // Alt başlık
+                Text(
+                    text = stringResource(R.string.splash_tagline),
+                    fontSize = 14.sp,
+                    color = themeColors.textSecondary,
+                    modifier = Modifier.graphicsLayer(alpha = alpha)
                 )
             }
 
-            Spacer(modifier = Modifier.height(AppDimensions.spacingExtraLarge))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Yükleme göstergesi
+                LoadingIndicator(
+                    modifier = Modifier.size(40.dp),
+                    color = gradientColor
+                )
 
-            // Başlık
-            Text(
-                text = "Extreme Sudoku",
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Bold,
-                color = themeColors.text,
-                modifier = Modifier.graphicsLayer(alpha = alpha)
-            )
-
-            Spacer(modifier = Modifier.height(AppDimensions.spacingSmall))
-
-            // Alt başlık
-            Text(
-                text = "Master the puzzle. Challenge yourself.",
-                fontSize = 14.sp,
-                color = themeColors.textSecondary,
-                modifier = Modifier.graphicsLayer(alpha = alpha)
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Yükleme göstergesi
-            LoadingIndicator(
-                modifier = Modifier.size(40.dp),
-                color = gradientColor
-            )
-
-            Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
+                Spacer(modifier = Modifier.height(AppDimensions.spacingMedium))
+            }
         }
     }
 }
@@ -176,5 +186,7 @@ private fun LoadingIndicator(
 private object AppDimensions {
     val spacingSmall = 8.dp
     val spacingMedium = 16.dp
+    val spacingLarge = 24.dp
     val spacingExtraLarge = 32.dp
+    val topSpacing = 48.dp
 }

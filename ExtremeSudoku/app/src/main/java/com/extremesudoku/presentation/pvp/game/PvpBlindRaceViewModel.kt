@@ -2,6 +2,7 @@ package com.extremesudoku.presentation.pvp.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.extremesudoku.R
 import com.extremesudoku.data.models.Cell
 import com.extremesudoku.data.models.pvp.*
 import com.extremesudoku.data.models.scoring.BonusEvent
@@ -17,6 +18,7 @@ import com.extremesudoku.utils.SoundEffects
 import com.extremesudoku.utils.NetworkMonitor
 import com.extremesudoku.utils.NetworkStatus
 import com.extremesudoku.utils.ErrorMessages
+import com.extremesudoku.utils.ResourceProvider
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -41,7 +43,8 @@ class PvpBlindRaceViewModel @Inject constructor(
     private val networkMonitor: NetworkMonitor,
     private val calculateMoveScoreUseCase: CalculateMoveScoreUseCase,
     private val checkCompletionBonusUseCase: CheckCompletionBonusUseCase,
-    private val calculateFinalScoreUseCase: CalculateFinalScoreUseCase
+    private val calculateFinalScoreUseCase: CalculateFinalScoreUseCase,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _gameState = MutableStateFlow(BlindRaceGameState())
@@ -67,6 +70,8 @@ class PvpBlindRaceViewModel @Inject constructor(
 
     private var matchId: String = ""
     private var hasLeftGame: Boolean = false  // Kullanıcı oyundan çıktı mı?
+    private var hasSubmittedResult: Boolean = false
+    private var isSubmittingResult: Boolean = false
     private var startTime: Long = 0
     private var timerJob: Job? = null
     private var progressSyncJob: Job? = null
@@ -101,7 +106,7 @@ class PvpBlindRaceViewModel @Inject constructor(
                             // Rakip offline oldu - match'i iptal et
                             if (!_gameState.value.isFinished) {
                                 android.util.Log.w("PvpBlindRace", "❌ Rakip offline - Match iptal ediliyor")
-                                repository.cancelMatch(matchId)
+                                repository.cancelMatch(matchId, forfeitedByCurrentUser = false)
                             }
                         }
                     }
@@ -195,6 +200,8 @@ class PvpBlindRaceViewModel @Inject constructor(
 
     private fun startGame() {
         startTime = System.currentTimeMillis()
+        hasSubmittedResult = false
+        isSubmittingResult = false
         startTimer()
         startProgressSync()
         
@@ -222,6 +229,7 @@ class PvpBlindRaceViewModel @Inject constructor(
         // Eğer oyun zaten bittiyse, başka güncelleme yapma!
         if (_gameState.value.isFinished) {
             android.util.Log.d("PvpBlindRace", "⏭️ Oyun zaten bitmiş, güncelleme atlanıyor")
+            ensureFinalResultSubmitted(match)
             return
         }
         
@@ -235,7 +243,11 @@ class PvpBlindRaceViewModel @Inject constructor(
                 grid = grid,
                 solution = solution,
                 initialPuzzle = match.puzzle.puzzleString,
-                remainingNumbers = remaining
+                remainingNumbers = remaining,
+                resultMessage = null,
+                error = null,
+                isCancelled = false,
+                isFinished = false
             )
         }
         
@@ -252,21 +264,29 @@ class PvpBlindRaceViewModel @Inject constructor(
             val isCancelled = match.status == MatchStatus.CANCELLED
             
             if (isCancelled) {
-                // CANCELLED: Eğer hasLeftGame=false ise, BU KULLANICI OYUNDA KALDI (kazandı)
-                // Eğer hasLeftGame=true ise, BU KULLANICI ÇIKTI (kaybetti)
-                val isWinner = !hasLeftGame
-                
-                android.util.Log.w("PvpBlindRace", "🏁 OYUN İPTAL EDİLDİ! isWinner=$isWinner (hasLeftGame=$hasLeftGame)")
-                
+                val winnerId = match.winnerId
+                val isWinner = when {
+                    winnerId != null -> winnerId == currentUserId
+                    else -> !hasLeftGame
+                }
+
+                val resultMessage = if (isWinner) {
+                    resourceProvider.getString(R.string.pvp_opponent_left_win)
+                } else {
+                    resourceProvider.getString(R.string.pvp_player_left_loss)
+                }
+
+                android.util.Log.w(
+                    "PvpBlindRace",
+                    "🏁 OYUN İPTAL EDİLDİ! isWinner=$isWinner (winnerId=$winnerId, hasLeftGame=$hasLeftGame)"
+                )
+
                 _gameState.value = _gameState.value.copy(
                     isFinished = true,
                     isWinner = isWinner,
                     isCancelled = true,  // İptal bayrağını set et
-                    error = if (isWinner) {
-                        "Rakip oyundan ayrıldı. Kazandınız!"
-                    } else {
-                        "Oyundan ayrıldınız. Kaybettiniz!"
-                    }
+                    error = resultMessage,
+                    resultMessage = resultMessage
                 )
             } else {
                 // COMPLETED: Normal bitiş - winnerId'ye bak
@@ -279,11 +299,14 @@ class PvpBlindRaceViewModel @Inject constructor(
                     isFinished = true,
                     isWinner = isWinner,
                     isCancelled = false,  // Normal bitiş
-                    error = null
+                    error = null,
+                    resultMessage = null
                 )
             }
             
             android.util.Log.d("PvpBlindRace", "✅ GameState güncellendi - error: ${_gameState.value.error}")
+
+            ensureFinalResultSubmitted(match)
         }
     }
 
@@ -377,22 +400,21 @@ class PvpBlindRaceViewModel @Inject constructor(
      * Hücre seçimi
      */
     fun onCellSelected(row: Int, col: Int) {
-        hapticFeedback.lightClick()
-        
         val currentState = _gameState.value
         val cell = currentState.grid[row][col]
-        
-        // Fixed hücre seçilemez
-        if (cell.isFixed) return
-        
+        val displayValue = cell.value
+
+        hapticFeedback.lightClick()
+
         // Hücreye tıklandığında:
         // 1. Hücreyi seç
         // 2. Eğer hücrede sayı varsa, o sayıyı highlight et
         // 3. showAffectedAreas = false (grid'den geldiği için sadece seçili hücrenin alanları gösterilecek)
         _gameState.value = currentState.copy(
             selectedCell = row to col,
-            highlightedNumber = if (cell.value != 0) cell.value else null,
-            showAffectedAreas = false // Grid'den geldiği için false
+            highlightedNumber = if (displayValue != 0) displayValue else null,
+            showAffectedAreas = false, // Grid'den geldiği için false
+            error = null
         )
     }
     
@@ -413,7 +435,7 @@ class PvpBlindRaceViewModel @Inject constructor(
         if (currentState.hintsUsed >= 3) {
             hapticFeedback.error()
             _gameState.value = currentState.copy(
-                error = "Maksimum ipucu sayısına ulaştınız (3/3)"
+                error = resourceProvider.getString(R.string.error_max_hints_reached)
             )
             return
         }
@@ -421,7 +443,7 @@ class PvpBlindRaceViewModel @Inject constructor(
         val (row, col) = currentState.selectedCell ?: run {
             hapticFeedback.error()
             _gameState.value = currentState.copy(
-                error = "Lütfen bir hücre seçin"
+                error = resourceProvider.getString(R.string.error_select_cell)
             )
             return
         }
@@ -430,7 +452,7 @@ class PvpBlindRaceViewModel @Inject constructor(
         if (cell.isFixed || cell.value != 0) {
             hapticFeedback.error()
             _gameState.value = currentState.copy(
-                error = "Bu hücre için ipucu kullanılamaz"
+                error = resourceProvider.getString(R.string.error_hint_not_available)
             )
             return
         }
@@ -594,15 +616,21 @@ class PvpBlindRaceViewModel @Inject constructor(
             
             // Show bonus popups - Convert CompletionEvent to BonusEvent
             completionEvents.forEach { event ->
+                val completionMessage = when (event.type) {
+                    CompletionType.BOX -> resourceProvider.getString(R.string.bonus_box_complete)
+                    CompletionType.ROW -> resourceProvider.getString(R.string.bonus_row_complete)
+                    CompletionType.COLUMN -> resourceProvider.getString(R.string.bonus_column_complete)
+                }
+                val formattedCompletionMessage = resourceProvider.getString(
+                    R.string.bonus_completion_popup,
+                    completionMessage,
+                    event.bonusEarned
+                )
                 viewModelScope.launch {
                     _bonusEvents.send(
                         BonusEvent(
                             type = BonusType.COMPLETION,
-                            message = when (event.type) {
-                                CompletionType.BOX -> "BOX COMPLETE!"
-                                CompletionType.ROW -> "ROW COMPLETE!"
-                                CompletionType.COLUMN -> "COLUMN COMPLETE!"
-                            },
+                            message = formattedCompletionMessage,
                             points = event.bonusEarned,
                             position = row to col
                         )
@@ -622,7 +650,11 @@ class PvpBlindRaceViewModel @Inject constructor(
                 _bonusEvents.send(
                     BonusEvent(
                         type = if (isCorrect) BonusType.STREAK else BonusType.SPECIAL,
-                        message = if (isCorrect) "+${pointsEarned}" else "${pointsEarned}",
+                        message = if (isCorrect) {
+                            resourceProvider.getString(R.string.bonus_points_gain, pointsEarned)
+                        } else {
+                            resourceProvider.getString(R.string.bonus_points_loss, pointsEarned)
+                        },
                         points = pointsEarned,
                         position = row to col
                     )
@@ -672,28 +704,28 @@ class PvpBlindRaceViewModel @Inject constructor(
         soundEffects.playSuccess()
         
         val currentState = _gameState.value
-        val timeElapsed = ((System.currentTimeMillis() - startTime) / 1000).toInt()
+        val elapsedMs = if (startTime != 0L) System.currentTimeMillis() - startTime else 0L
         
         // **FINAL SCORE CALCULATION**
         val matchData = _matchData.value
-        val finalScore = calculateFinalScoreUseCase(
+        val baseFinalScore = calculateFinalScoreUseCase(
             gameScore = _gameScore.value,
-            elapsedTimeMs = timeElapsed * 1000L,
+            elapsedTimeMs = elapsedMs,
             difficulty = matchData?.puzzle?.difficulty ?: "MEDIUM",
             usedNotes = false // Notes allowed in Blind Race but track separately
         )
         
         // **FIRST FINISH BONUS** - Check if this player finished first
-        val opponentFinished = matchData?.players?.values?.any { 
-            it.userId != currentUserId && it.status == PlayerStatus.FINISHED 
+        val opponentFinished = matchData?.players?.values?.any {
+            it.userId != currentUserId && it.status == PlayerStatus.FINISHED
         } ?: false
         
         val isFirstFinish = !opponentFinished
         val firstFinishBonus = if (isFirstFinish) 5000 else 0
         
-        val finalScoreWithRaceBonus = finalScore.copy(
-            finalScore = finalScore.finalScore + firstFinishBonus,
-            specialBonuses = finalScore.specialBonuses + firstFinishBonus
+        val finalScoreWithRaceBonus = baseFinalScore.copy(
+            finalScore = baseFinalScore.finalScore + firstFinishBonus,
+            specialBonuses = baseFinalScore.specialBonuses + firstFinishBonus
         )
         
         _gameScore.value = finalScoreWithRaceBonus
@@ -704,7 +736,7 @@ class PvpBlindRaceViewModel @Inject constructor(
                 _bonusEvents.send(
                     BonusEvent(
                         type = BonusType.SPECIAL,
-                        message = "FIRST TO FINISH!",
+                        message = resourceProvider.getString(R.string.pvp_first_to_finish_bonus),
                         points = firstFinishBonus,
                         position = null
                     )
@@ -712,38 +744,25 @@ class PvpBlindRaceViewModel @Inject constructor(
             }
         }
         
-        val accuracy = finalScoreWithRaceBonus.accuracy
-        
-        _gameScore.value = finalScoreWithRaceBonus
-        
         _gameState.value = currentState.copy(
             isFinished = true
         )
         
         // Final result'u gönder
         viewModelScope.launch {
-            val result = PlayerResult(
-                completedAt = System.currentTimeMillis(),
-                score = finalScoreWithRaceBonus.finalScore,
-                timeElapsed = (timeElapsed * 1000L), // Convert back to milliseconds
-                accuracy = accuracy,
-                // Enhanced scoring details
-                finalScore = finalScoreWithRaceBonus.finalScore,
-                basePoints = finalScoreWithRaceBonus.basePoints,
-                streakBonus = finalScoreWithRaceBonus.streakBonus,
-                timeBonus = finalScoreWithRaceBonus.timeBonus,
-                completionBonuses = finalScoreWithRaceBonus.completionBonuses,
-                totalCompletionBonus = finalScoreWithRaceBonus.completionBonuses,
-                maxStreak = finalScoreWithRaceBonus.maxStreak,
-                totalMoves = finalScoreWithRaceBonus.totalMoves,
-                correctMoves = finalScoreWithRaceBonus.correctMoves,
-                wrongMoves = finalScoreWithRaceBonus.wrongMoves,
-                isPerfectGame = finalScoreWithRaceBonus.perfectGame,
-                isFirstFinish = isFirstFinish
-            )
-            
-            repository.submitPlayerResult(matchId, result)
-            repository.updatePlayerStatus(matchId, PlayerStatus.FINISHED)
+            isSubmittingResult = true
+            try {
+                val result = buildPlayerResult(finalScoreWithRaceBonus, elapsedMs, isFirstFinish)
+                val submitResult = repository.submitPlayerResult(matchId, result)
+                if (submitResult.isSuccess) {
+                    hasSubmittedResult = true
+                    repository.updatePlayerStatus(matchId, PlayerStatus.FINISHED)
+                } else {
+                    hasSubmittedResult = false
+                }
+            } finally {
+                isSubmittingResult = false
+            }
         }
     }
 
@@ -768,6 +787,77 @@ class PvpBlindRaceViewModel @Inject constructor(
         _gameState.value = currentState.copy(
             grid = newGrid,
             conflictCells = emptySet()
+        )
+    }
+
+    private fun ensureFinalResultSubmitted(match: PvpMatch) {
+        val myData = match.players[currentUserId] ?: return
+
+        if (myData.result != null) {
+            hasSubmittedResult = true
+            return
+        }
+
+        if (hasSubmittedResult || isSubmittingResult) {
+            return
+        }
+
+        val elapsedMs = if (startTime != 0L) System.currentTimeMillis() - startTime else 0L
+        val baseFinalScore = calculateFinalScoreUseCase(
+            gameScore = _gameScore.value,
+            elapsedTimeMs = elapsedMs,
+            difficulty = match.puzzle.difficulty,
+            usedNotes = false
+        )
+
+        val opponentFinished = match.players.values.any {
+            it.userId != currentUserId && it.status == PlayerStatus.FINISHED
+        }
+        val isFirstFinish = !opponentFinished && match.status == MatchStatus.COMPLETED
+        val firstFinishBonus = if (isFirstFinish) 5000 else 0
+        val finalScoreWithRaceBonus = baseFinalScore.copy(
+            finalScore = baseFinalScore.finalScore + firstFinishBonus,
+            specialBonuses = baseFinalScore.specialBonuses + firstFinishBonus
+        )
+
+        _gameScore.value = finalScoreWithRaceBonus
+
+        viewModelScope.launch {
+            isSubmittingResult = true
+            try {
+                val result = buildPlayerResult(finalScoreWithRaceBonus, elapsedMs, isFirstFinish)
+                val submitResult = repository.submitPlayerResult(matchId, result)
+                if (submitResult.isSuccess) {
+                    hasSubmittedResult = true
+                    repository.updatePlayerStatus(matchId, PlayerStatus.FINISHED)
+                } else {
+                    hasSubmittedResult = false
+                }
+            } finally {
+                isSubmittingResult = false
+            }
+        }
+    }
+
+    private fun buildPlayerResult(finalScore: GameScore, elapsedMs: Long, isFirstFinish: Boolean): PlayerResult {
+        return PlayerResult(
+            completedAt = System.currentTimeMillis(),
+            score = finalScore.finalScore,
+            timeElapsed = elapsedMs,
+            accuracy = finalScore.accuracy,
+            finalScore = finalScore.finalScore,
+            basePoints = finalScore.basePoints,
+            streakBonus = finalScore.streakBonus,
+            timeBonus = finalScore.timeBonus,
+            completionBonuses = finalScore.completionBonuses,
+            totalCompletionBonus = finalScore.completionBonuses,
+            maxStreak = finalScore.maxStreak,
+            totalMoves = finalScore.totalMoves,
+            correctMoves = finalScore.correctMoves,
+            wrongMoves = finalScore.wrongMoves,
+            hintsUsed = finalScore.hintsUsed,
+            isPerfectGame = finalScore.perfectGame,
+            isFirstFinish = isFirstFinish
         )
     }
 
@@ -903,14 +993,15 @@ class PvpBlindRaceViewModel @Inject constructor(
                 
                 // Oyuncu çıkıyor - SADECE overlay göster, isFinished=true YAPMA!
                 // Firebase'den CANCELLED güncellemesi gelince isFinished=true olacak
-                _gameState.value = _gameState.value.copy(
-                    isCancelled = true,  // Overlay gösterilsin
-                    isWinner = false,
-                    error = "Oyundan ayrıldınız. Kaybettiniz!"
+                    _gameState.value = _gameState.value.copy(
+                        isCancelled = true,  // Overlay gösterilsin
+                        isWinner = false,
+                        error = resourceProvider.getString(R.string.pvp_player_left_loss),
+                        resultMessage = resourceProvider.getString(R.string.pvp_player_left_loss)
                 )
                 
                 // Firebase'e de bildir (rakip kazanacak)
-                repository.cancelMatch(matchId)
+                repository.cancelMatch(matchId, forfeitedByCurrentUser = true)
             }
         }
     }
@@ -925,7 +1016,8 @@ class PvpBlindRaceViewModel @Inject constructor(
         // ViewModel yok edilirken oyun bitmemişse - oyundan ayrıldı sayılır
         if (!_gameState.value.isFinished) {
             viewModelScope.launch {
-                repository.cancelMatch(matchId)
+                hasLeftGame = true
+                repository.cancelMatch(matchId, forfeitedByCurrentUser = true)
             }
         }
     }
@@ -962,5 +1054,6 @@ data class BlindRaceGameState(
     val isCancelled: Boolean = false,  // Oyun iptal edildi mi (birisi çıktı)?
     val canUndo: Boolean = false,
     val canRedo: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val resultMessage: String? = null
 )

@@ -1,5 +1,6 @@
 package com.extremesudoku.presentation.settings
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,15 +10,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.extremesudoku.R
+import com.extremesudoku.util.LocaleManager
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.AppShapes
 import com.extremesudoku.presentation.theme.LocalThemeColors
@@ -32,16 +35,37 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val themeColors = LocalThemeColors.current
+    val context = LocalContext.current
+    val activity = context as? Activity
+    
+    var currentLanguage by remember { 
+        mutableStateOf(LocaleManager.getSavedLanguage(context))
+    }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    
+    if (showLanguageDialog) {
+        LanguageSelectionDialog(
+            currentLanguage = currentLanguage,
+            onLanguageSelected = { language ->
+                currentLanguage = language
+                LocaleManager.setLocale(context, language)
+                showLanguageDialog = false
+                // Restart activity to apply language change
+                activity?.recreate()
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
     
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings", color = themeColors.text) },
+                title = { Text(stringResource(R.string.settings_title), color = themeColors.text) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.Default.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back),
                             tint = themeColors.iconTint
                         )
                     }
@@ -61,9 +85,66 @@ fun SettingsScreen(
                 .padding(start = AppDimensions.spacingMedium, end = AppDimensions.spacingMedium, top = AppDimensions.spacingMedium, bottom = AppDimensions.spacingExtraLarge),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.spacingSmall)
         ) {
+            // Language Settings
+            Text(
+                text = stringResource(R.string.language),
+                style = MaterialTheme.typography.titleMedium,
+                color = themeColors.primary
+            )
+            
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showLanguageDialog = true },
+                colors = CardDefaults.cardColors(
+                    containerColor = themeColors.cardBackground
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(AppDimensions.spacingMedium),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(AppDimensions.spacingMedium),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Language,
+                            contentDescription = stringResource(R.string.language),
+                            tint = themeColors.iconTint
+                        )
+                        Column {
+                            Text(
+                                text = stringResource(R.string.language),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = themeColors.text
+                            )
+                            Text(
+                                text = currentLanguage.displayName,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = themeColors.textSecondary
+                            )
+                        }
+                    }
+                    Icon(
+                        Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = themeColors.iconTint
+                    )
+                }
+            }
+            
+            Divider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = themeColors.divider
+            )
+            
             // Theme Settings
             Text(
-                text = "Appearance",
+                text = stringResource(R.string.settings_section_appearance),
                 style = MaterialTheme.typography.titleMedium,
                 color = themeColors.primary
             )
@@ -80,23 +161,23 @@ fun SettingsScreen(
             
             // Sound Settings
             Text(
-                text = "Sound & Haptics",
+                text = stringResource(R.string.settings_section_sound),
                 style = MaterialTheme.typography.titleMedium,
                 color = themeColors.primary
             )
             
             SettingToggle(
                 icon = Icons.Default.MusicNote,
-                title = "Sound Effects",
-                subtitle = "Play sounds for moves, hints, and completion",
+                title = stringResource(R.string.game_settings_sound_effects_title),
+                subtitle = stringResource(R.string.game_settings_sound_effects_description),
                 checked = uiState.soundEnabled,
                 onCheckedChange = { viewModel.toggleSound() }
             )
 
             SettingToggle(
                 icon = Icons.Default.VolumeUp,
-                title = "Vibration",
-                subtitle = "Haptic feedback for interactions",
+                title = stringResource(R.string.game_settings_vibration_title),
+                subtitle = stringResource(R.string.game_settings_vibration_description),
                 checked = uiState.vibrationEnabled,
                 onCheckedChange = { viewModel.toggleVibration() }
             )
@@ -108,79 +189,79 @@ fun SettingsScreen(
             
             // Game Settings
             Text(
-                text = "Visual Helpers",
+                text = stringResource(R.string.settings_section_visual_helpers),
                 style = MaterialTheme.typography.titleMedium,
                 color = themeColors.primary
             )
             
             SettingToggle(
                 icon = Icons.Default.Warning,
-                title = "Highlight Conflicts",
-                subtitle = "Show conflicting numbers in red",
+                title = stringResource(R.string.game_settings_highlight_conflicts_title),
+                subtitle = stringResource(R.string.game_settings_highlight_conflicts_description),
                 checked = uiState.highlightConflicts,
                 onCheckedChange = { viewModel.toggleHighlightConflicts() }
             )
 
             SettingToggle(
                 icon = Icons.Default.Visibility,
-                title = "Highlight Same Numbers",
-                subtitle = "Highlight all cells with selected number",
+                title = stringResource(R.string.game_settings_highlight_same_numbers_title),
+                subtitle = stringResource(R.string.game_settings_highlight_same_numbers_description),
                 checked = uiState.highlightSameNumbers,
                 onCheckedChange = { viewModel.toggleHighlightSameNumbers() }
             )
 
             SettingToggle(
                 icon = Icons.Default.FormatListNumbered,
-                title = "Show Remaining Numbers",
-                subtitle = "Display count below each number button",
+                title = stringResource(R.string.game_settings_show_remaining_numbers_title),
+                subtitle = stringResource(R.string.game_settings_show_remaining_numbers_description),
                 checked = uiState.showRemainingNumbers,
                 onCheckedChange = { viewModel.toggleShowRemainingNumbers() }
             )
 
             SettingToggle(
                 icon = Icons.Default.Timer,
-                title = "Show Timer",
-                subtitle = "Display elapsed game time",
+                title = stringResource(R.string.game_settings_show_timer_title),
+                subtitle = stringResource(R.string.game_settings_show_timer_description),
                 checked = uiState.showTimer,
                 onCheckedChange = { viewModel.toggleShowTimer() }
             )
 
             SettingToggle(
                 icon = Icons.Default.GridOn,
-                title = "Show Selected Area",
-                subtitle = "Highlight row, column and box of selected cell",
+                title = stringResource(R.string.game_settings_show_selected_area_title),
+                subtitle = stringResource(R.string.game_settings_show_selected_area_description),
                 checked = uiState.highlightSelectedArea,
                 onCheckedChange = { viewModel.toggleHighlightSelectedArea() }
             )
 
             SettingToggle(
                 icon = Icons.Default.TouchApp,
-                title = "Show Affected Areas",
-                subtitle = "Show all affected cells when tapping number pad",
+                title = stringResource(R.string.game_settings_show_affected_areas_title),
+                subtitle = stringResource(R.string.game_settings_show_affected_areas_description),
                 checked = uiState.showAffectedAreas,
                 onCheckedChange = { viewModel.toggleShowAffectedAreas() }
             )
 
             SettingToggle(
                 icon = Icons.Default.Edit,
-                title = "Auto-Remove Notes",
-                subtitle = "Automatically clear notes when placing a number",
+                title = stringResource(R.string.game_settings_auto_remove_notes_title),
+                subtitle = stringResource(R.string.game_settings_auto_remove_notes_description),
                 checked = uiState.autoRemoveNotes,
                 onCheckedChange = { viewModel.toggleAutoRemoveNotes() }
             )
 
             SettingToggle(
                 icon = Icons.Default.Star,
-                title = "Show Score & Streak",
-                subtitle = "Display score and streak counter during gameplay",
+                title = stringResource(R.string.game_settings_show_score_and_streak_title),
+                subtitle = stringResource(R.string.game_settings_show_score_and_streak_description),
                 checked = uiState.showScoreAndStreak,
                 onCheckedChange = { viewModel.toggleShowScoreAndStreak() }
             )
 
             SettingToggle(
                 icon = Icons.Default.Palette,
-                title = "Colorize Numbers",
-                subtitle = "Show correct numbers in green, wrong in red",
+                title = stringResource(R.string.game_settings_colorize_numbers_title),
+                subtitle = stringResource(R.string.game_settings_colorize_numbers_description),
                 checked = uiState.colorizeNumbers,
                 onCheckedChange = { viewModel.toggleColorizeNumbers() }
             )
@@ -192,15 +273,15 @@ fun SettingsScreen(
             
             // Advanced Settings
             Text(
-                text = "Advanced",
+                text = stringResource(R.string.settings_section_advanced),
                 style = MaterialTheme.typography.titleMedium,
                 color = themeColors.primary
             )
             
             SettingToggle(
                 icon = Icons.Default.Lightbulb,
-                title = "Auto-check Mistakes",
-                subtitle = "Prevent placing wrong numbers (Coming soon)",
+                title = stringResource(R.string.game_settings_auto_check_mistakes_title),
+                subtitle = stringResource(R.string.game_settings_auto_check_mistakes_description),
                 checked = uiState.autoCheckMistakes,
                 onCheckedChange = { viewModel.toggleAutoCheckMistakes() }
             )
@@ -212,7 +293,7 @@ fun SettingsScreen(
             
             // About
             Text(
-                text = "About",
+                text = stringResource(R.string.settings_section_about),
                 style = MaterialTheme.typography.titleMedium,
                 color = themeColors.primary
             )
@@ -232,12 +313,12 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            "Version",
+                            stringResource(R.string.settings_version_label),
                             style = MaterialTheme.typography.bodyMedium,
                             color = themeColors.text
                         )
                         Text(
-                            "1.0.5",
+                            stringResource(R.string.settings_version_value),
                             style = MaterialTheme.typography.bodyMedium,
                             color = themeColors.textSecondary
                         )
@@ -247,12 +328,12 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            "Puzzles Available",
+                            stringResource(R.string.settings_puzzles_available_label),
                             style = MaterialTheme.typography.bodyMedium,
                             color = themeColors.text
                         )
                         Text(
-                            "3.8M+",
+                            stringResource(R.string.settings_puzzles_available_value),
                             style = MaterialTheme.typography.bodyMedium,
                             color = themeColors.textSecondary
                         )
@@ -275,33 +356,33 @@ private fun ThemeSelector(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.spacingMedium)
     ) {
         ThemeOption(
+            themeType = ThemeType.GAZETE,
+            themeName = stringResource(R.string.settings_theme_gazete_name),
+            themeDescription = stringResource(R.string.settings_theme_gazete_description),
+            isSelected = currentTheme == ThemeType.GAZETE,
+            onSelected = { onThemeSelected(ThemeType.GAZETE) }
+        )
+
+        ThemeOption(
             themeType = ThemeType.LIGHT,
-            themeName = "Aydınlık Tema",
-            themeDescription = "Modern, parlak ve temiz - Mavi, Yeşil, Mor (WCAG AA Uyumlu)",
+            themeName = stringResource(R.string.settings_theme_light_name),
+            themeDescription = stringResource(R.string.settings_theme_light_description),
             isSelected = currentTheme == ThemeType.LIGHT,
             onSelected = { onThemeSelected(ThemeType.LIGHT) }
         )
 
         ThemeOption(
             themeType = ThemeType.DARK,
-            themeName = "Karanlık Tema",
-            themeDescription = "AMOLED Optimized - Açık Mavi, Yeşil, Mor (Göz Rahatlığı)",
+            themeName = stringResource(R.string.settings_theme_dark_name),
+            themeDescription = stringResource(R.string.settings_theme_dark_description),
             isSelected = currentTheme == ThemeType.DARK,
             onSelected = { onThemeSelected(ThemeType.DARK) }
         )
 
         ThemeOption(
-            themeType = ThemeType.GAZETE,
-            themeName = "Gazete Teması",
-            themeDescription = "Gazete kağıdı görünümü - Krem, Siyah, Gri (Klasik)",
-            isSelected = currentTheme == ThemeType.GAZETE,
-            onSelected = { onThemeSelected(ThemeType.GAZETE) }
-        )
-
-        ThemeOption(
             themeType = ThemeType.MONOCHROME,
-            themeName = "Monokrom Tema",
-            themeDescription = "Saf siyah-beyaz - Net kontrast, basit tasarım",
+            themeName = stringResource(R.string.settings_theme_monochrome_name),
+            themeDescription = stringResource(R.string.settings_theme_monochrome_description),
             isSelected = currentTheme == ThemeType.MONOCHROME,
             onSelected = { onThemeSelected(ThemeType.MONOCHROME) }
         )
@@ -365,5 +446,74 @@ private fun ThemeOption(
 
 private fun getThemePreviewColor(themeType: ThemeType): Color {
     return getColorPalette(themeType).background
+}
+
+@Composable
+private fun LanguageSelectionDialog(
+    currentLanguage: LocaleManager.Language,
+    onLanguageSelected: (LocaleManager.Language) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val themeColors = LocalThemeColors.current
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.language_selection_title),
+                color = themeColors.text
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(AppDimensions.spacingSmall)
+            ) {
+                LocaleManager.Language.values().forEach { language ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onLanguageSelected(language) },
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (currentLanguage == language) 
+                                themeColors.primary.copy(alpha = 0.1f) 
+                            else 
+                                themeColors.cardBackground
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(AppDimensions.spacingMedium),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = language.displayName,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = themeColors.text
+                            )
+                            
+                            if (currentLanguage == language) {
+                                Icon(
+                                    Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = themeColors.primary
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    color = themeColors.primary
+                )
+            }
+        },
+        containerColor = themeColors.surface
+    )
 }
 

@@ -12,9 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.extremesudoku.R
 import com.extremesudoku.data.models.scoring.BonusEvent
 import com.extremesudoku.data.models.scoring.BonusType
 import com.extremesudoku.presentation.theme.AppDimensions
@@ -135,7 +137,7 @@ private fun BonusPopup(
             
             if (bonus.points > 0) {
                 Text(
-                    text = "+${bonus.points} pts",
+                    text = stringResource(R.string.game_complete_points_format, bonus.points),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.SemiBold
                     ),
@@ -278,7 +280,7 @@ fun ComboMultiplierPopup(
                 fontSize = AppDimensions.scoreIconSize.value.sp
             )
             Text(
-                text = "${multiplier}x COMBO!",
+                text = stringResource(R.string.game_complete_combo_format, multiplier),
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Black
                 ),

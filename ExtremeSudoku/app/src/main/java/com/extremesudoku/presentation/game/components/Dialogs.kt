@@ -7,10 +7,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.extremesudoku.R
 import com.extremesudoku.presentation.theme.AppDimensions
 import com.extremesudoku.presentation.theme.LocalThemeColors
 import com.extremesudoku.utils.formatTime
@@ -24,16 +25,16 @@ fun PauseDialog(
     
     AlertDialog(
         onDismissRequest = onResume,
-        title = { Text("Game Paused", color = themeColors.text) },
-        text = { Text("Take a break or continue playing", color = themeColors.textSecondary) },
+        title = { Text(stringResource(R.string.game_paused), color = themeColors.text) },
+        text = { Text(stringResource(R.string.pause_dialog_message), color = themeColors.textSecondary) },
         confirmButton = {
             TextButton(onClick = onResume) {
-                Text("Resume", color = themeColors.primary)
+                Text(stringResource(R.string.resume), color = themeColors.primary)
             }
         },
         dismissButton = {
             TextButton(onClick = onQuit) {
-                Text("Quit", color = themeColors.textSecondary)
+                Text(stringResource(R.string.quit), color = themeColors.textSecondary)
             }
         },
         containerColor = themeColors.surface
@@ -65,7 +66,7 @@ fun CompletionDialog(
                 )
                 Spacer(modifier = Modifier.height(AppDimensions.spacingSmall))
                 Text(
-                    "Congratulations!",
+                    stringResource(R.string.completion_dialog_title),
                     textAlign = TextAlign.Center,
                     color = themeColors.text
                 )
@@ -77,7 +78,7 @@ fun CompletionDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "You completed the puzzle!",
+                    text = stringResource(R.string.completion_dialog_message),
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
                     color = themeColors.text
@@ -93,7 +94,7 @@ fun CompletionDialog(
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
-                        Text("Time", style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.stat_time), style = MaterialTheme.typography.bodySmall)
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
@@ -101,19 +102,19 @@ fun CompletionDialog(
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
-                        Text("Moves", style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.stat_moves), style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
         },
         confirmButton = {
             TextButton(onClick = onNewGame) {
-                Text("New Game")
+                Text(stringResource(R.string.new_game))
             }
         },
         dismissButton = {
             TextButton(onClick = onHome) {
-                Text("Home")
+                Text(stringResource(R.string.home))
             }
         }
     )
